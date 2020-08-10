@@ -3,12 +3,13 @@ import * as tinyhttpLogger from "@tinyhttp/logger";
 import socketIO from "socket.io";
 import * as net from "net";
 import * as graphqlSchema from "./graphql/schema";
-import { createFakeUser } from "./createFakeUser";
+import * as fakeData from "./fakeData";
 
 import { registerGraphQLLayer } from "./registerGraphQLLayer";
 import { siteContent } from "./static-html";
 import { UserStore } from "./user-store";
 import { SimpleLiveQueryStore } from "@n1ru4l/graphql-live-query-simple-store";
+import { MessageStore } from "./message-store";
 
 const app = new tinyhttpApp.App();
 
@@ -29,18 +30,27 @@ const socketServer = socketIO(server);
 
 const liveQueryStore = new SimpleLiveQueryStore();
 const userStore = new UserStore();
+const messageStore = new MessageStore();
 
 setInterval(() => {
-  userStore.add(createFakeUser());
-  // all live queries that select Query.users will receive an update.
+  userStore.add(fakeData.createFakeUser());
   liveQueryStore.triggerUpdate("Query.users");
-}, 1000).unref();
+}, 5000).unref();
+
+setInterval(() => {
+  // all live queries that select Query.users will receive an update.
+  const user = userStore.getRandom();
+  if (user) {
+    messageStore.add(fakeData.createFakeMessage(user.id));
+    liveQueryStore.triggerUpdate("Query.messages");
+  }
+}, 1619).unref();
 
 registerGraphQLLayer({
   socketServer,
   schema: graphqlSchema.schema,
   liveQueryStore,
-  createContext: () => ({ userStore }),
+  createContext: () => ({ userStore, messageStore, liveQueryStore }),
 });
 
 const connections = new Set<net.Socket>();

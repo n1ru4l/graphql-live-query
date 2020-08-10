@@ -81,16 +81,27 @@ export const schema = new gql.GraphQLSchema({
           },
         },
         resolve: (obj, args, context) => {
-          const users = context.userStore.getUsers();
+          const users = context.userStore.getAll();
           if (args.limit) {
-            return users.slice(0, args.limit);
+            return users.slice(-args.limit);
           }
           return users;
         },
       },
       messages: {
         type: GraphQLNonNullList(GraphQLMessageType),
-        resolve: () => [],
+        args: {
+          limit: {
+            type: gql.GraphQLInt,
+          },
+        },
+        resolve: (obj, args, context) => {
+          const messages = context.messageStore.getAll();
+          if (args.limit) {
+            return messages.slice(-args.limit);
+          }
+          return messages;
+        },
       },
     },
   }),
