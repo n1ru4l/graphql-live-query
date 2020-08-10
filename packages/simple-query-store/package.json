@@ -1,0 +1,15 @@
+{
+  "name": "@n1ru4l/graphql-live-query-simple-store",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "graphql": "15.x.x"
+  },
+  "peerDependencies": {
+    "graphql-live-query": "*"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}

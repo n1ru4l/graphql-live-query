@@ -1,0 +1,11 @@
+{
+  "name": "graphql-live-queries-root",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "n1ru4l <laurinquast@googlemail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}

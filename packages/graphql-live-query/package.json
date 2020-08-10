@@ -1,0 +1,20 @@
+{
+  "name": "@n1ru4l/graphql-live-queries",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "n1ru4l <laurinquast@googlemail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "fast-json-patch": "3.0.0-1"
+  },
+  "peerDependencies": {
+    "graphql": "15.x.x"
+  },
+  "devDependencies": {
+    "typescript": "3.9.7"
+  }
+}
