@@ -6,6 +6,8 @@ Proof of concept implementation of GraphQL Live Queries.
 
 There is no live query implementation that is not tied to a specific database out there (or at least I did not see any). This implementation serves as an example how it could be done without being tied to any database.
 
+GraphQL already has a solution for real-time: Subscriptions. However those feel very verbose when having to update the store on the client a lot. I think they are better off for triggering side effects such as "play a sound". For data I query I rather want the "updates without additional effort "developer experience on the frontend without having to do some cache wizardry (which often results in simply triggering a query refetch anyways cause nobody understands the cache code anymore).
+
 ## Concept
 
 The current definition of a live query for this project is a query operation that is annotated with a `@live` directive.
@@ -38,7 +40,7 @@ await db.users.push(createNewUser());
 liveQueryStore.triggerUpdate("Query.users");
 ```
 
-### 2. How are the updates sent to the client
+### 2. How are the updates sent/applied to the client
 
 The transport layer can be anything that transports data from the server to the client (most likely a browser). The examples in this repository use socket.io which sends data over websockets but also comes with a fallback over http polling per default.
 
