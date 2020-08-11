@@ -51,6 +51,8 @@ const GraphQLMessageType = new gql.GraphQLObjectType({
     },
     author: {
       type: GraphQLUserType,
+      resolve: (record, args, context) =>
+        context.userStore.getById(record.authorId),
     },
     content: {
       type: gql.GraphQLString,

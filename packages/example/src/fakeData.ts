@@ -8,6 +8,6 @@ export const createFakeUser = () => ({
 export const createFakeMessage = (authorId: string) => ({
   id: faker.random.uuid(),
   authorId,
-  content: faker.random.words(10),
+  content: faker.lorem.sentence(10),
   createdAt: new Date(),
 });

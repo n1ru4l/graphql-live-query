@@ -16,6 +16,10 @@ export class UserStore {
     return this._users[randomInt(this._users.length) - 1] || null;
   }
 
+  getById(id: string): User | null {
+    return this._users.find((user) => user.id === id) ?? null;
+  }
+
   add(user: User) {
     this._users.push(user);
   }
