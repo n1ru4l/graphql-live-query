@@ -26,7 +26,7 @@ const ChatApplicationMessageFragment = graphql`
   }
 `;
 
-const ChatApplicationMessage = createFragmentContainer(
+const ChatApplicationMessageRenderer = React.memo(
   ({ message }: { message: ChatApplication_ChatMessageFragment }) => {
     return (
       <Box key={message.id} d="flex">
@@ -36,7 +36,11 @@ const ChatApplicationMessage = createFragmentContainer(
         <Box padding="3">{message?.content}</Box>
       </Box>
     );
-  },
+  }
+);
+
+const ChatApplicationMessage = createFragmentContainer(
+  ChatApplicationMessageRenderer,
   {
     message: ChatApplicationMessageFragment,
   }
