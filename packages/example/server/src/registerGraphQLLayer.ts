@@ -15,7 +15,7 @@ export const registerGraphQLLayer = (d: {
     const liveSubscriptions = new Map<string, () => void>();
     const subscriptionSubscriptions = new Map<string, () => void>();
 
-    socket.on("graphql/execute", (message) => {
+    socket.on("@graphql/execute", (message) => {
       const id = message.id;
       const source = message.operation;
       const variableValues = message.variables;
@@ -47,7 +47,7 @@ export const registerGraphQLLayer = (d: {
           liveQuery,
           execQuery,
           (result: graphql.ExecutionResult) => {
-            socket.emit("graphql/result", { id, ...result });
+            socket.emit("@graphql/result", { id, ...result });
           }
         );
         liveSubscriptions.set(id, unsubscribe);
@@ -56,19 +56,19 @@ export const registerGraphQLLayer = (d: {
           result.errors?.forEach((error) => {
             console.error(error.originalError);
           });
-          socket.emit("graphql/result", { id, ...result });
+          socket.emit("@graphql/result", { id, ...result });
         });
       }
     });
 
-    socket.on("graphql/unsubscribe-live", (message) => {
+    socket.on("@graphql/unsubscribe-live", (message) => {
       const id = message.id;
       const subscription = liveSubscriptions.get(id);
       subscription?.();
       liveSubscriptions.delete(id);
     });
 
-    socket.on("graphql/subscribe", (message) => {
+    socket.on("@graphql/subscribe", (message) => {
       const id = message.id;
       const document = message.operation;
       const variables = message.variables;
@@ -88,18 +88,17 @@ export const registerGraphQLLayer = (d: {
             subscriptionSubscriptions.set(id, () => result.return?.(null));
             const run = async () => {
               for await (const subscriptionResult of result) {
-                socket.emit("graphql/update", { id, ...subscriptionResult });
+                socket.emit("@graphql/update", { id, ...subscriptionResult });
               }
             };
             run();
           } else {
-            console.log("Failed setting up GraphQL subscription.");
-            socket.emit("graphql/update", { id, ...result });
+            socket.emit("@graphql/update", { id, ...result });
           }
         });
     });
 
-    socket.on("graphql/unsubscribe", (message) => {
+    socket.on("@graphql/unsubscribe", (message) => {
       const id = message.id;
       const subscription = liveSubscriptions.get(id);
       subscription?.();

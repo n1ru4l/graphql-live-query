@@ -15,4 +15,8 @@ export class MessageStore {
   add(message: Message) {
     this._messages.push(message);
   }
+
+  getLast(): Message | null {
+    return this._messages[this._messages.length - 1] || null;
+  }
 }

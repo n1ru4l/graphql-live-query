@@ -5,9 +5,11 @@ export const createFakeUser = () => ({
   name: faker.internet.userName(),
 });
 
+export const randomSentence = () => faker.lorem.sentence(10);
+
 export const createFakeMessage = (authorId: string) => ({
   id: faker.random.uuid(),
   authorId,
-  content: faker.lorem.sentence(10),
+  content: randomSentence(),
   createdAt: new Date(),
 });

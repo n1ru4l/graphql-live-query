@@ -1,42 +1,25 @@
-/*
-`
-  type User {
-    id: ID!
-    name: String!
-  }
-  
-  type Message {
-    id: ID!
-    message: String!
-    author: User!
-  }
-  
-  type Query {
-    users: [User!]!
-    messages: [Message!]!
-  }
-  
-  input CreateMessageInput {
-    message: String!
-  }
-  
-  type Mutation {
-    createMessage(input: CreateMessageInput!): Boolean
-  }
-`
-*/
 import * as gql from "graphql";
 import { GraphQLLiveDirective } from "@n1ru4l/graphql-live-queries";
 
-const GraphQLUserType = new gql.GraphQLObjectType({
-  name: "User",
+const GraphQLNodeInterface = new gql.GraphQLInterfaceType({
+  name: "Node",
   fields: {
     id: {
-      type: gql.GraphQLID,
+      type: gql.GraphQLNonNull(gql.GraphQLID),
+    },
+  },
+});
+
+const GraphQLUserType = new gql.GraphQLObjectType({
+  name: "User",
+  interfaces: [GraphQLNodeInterface],
+  fields: {
+    id: {
+      type: gql.GraphQLNonNull(gql.GraphQLID),
       resolve: (record) => record.id,
     },
     name: {
-      type: gql.GraphQLString,
+      type: gql.GraphQLNonNull(gql.GraphQLString),
       resolve: (record) => record.name,
     },
   },
@@ -44,18 +27,19 @@ const GraphQLUserType = new gql.GraphQLObjectType({
 
 const GraphQLMessageType = new gql.GraphQLObjectType({
   name: "Message",
+  interfaces: [GraphQLNodeInterface],
   fields: {
     id: {
-      type: gql.GraphQLID,
+      type: gql.GraphQLNonNull(gql.GraphQLID),
       resolve: (record) => record.id,
     },
     author: {
-      type: GraphQLUserType,
+      type: gql.GraphQLNonNull(GraphQLUserType),
       resolve: (record, args, context) =>
         context.userStore.getById(record.authorId),
     },
     content: {
-      type: gql.GraphQLString,
+      type: gql.GraphQLNonNull(gql.GraphQLString),
       resolve: (record) => record.content,
     },
   },
@@ -69,7 +53,7 @@ const GraphQLCreateMessageInputType = new gql.GraphQLInputObjectType({
 });
 
 const GraphQLNonNullList = (input: gql.GraphQLObjectType) =>
-  gql.GraphQLNonNull(gql.GraphQLList(input));
+  gql.GraphQLNonNull(gql.GraphQLList(gql.GraphQLNonNull(input)));
 
 export const schema = new gql.GraphQLSchema({
   query: new gql.GraphQLObjectType({
@@ -105,6 +89,17 @@ export const schema = new gql.GraphQLSchema({
           return messages;
         },
       },
+      node: {
+        type: GraphQLNodeInterface,
+        args: {
+          id: {
+            type: gql.GraphQLNonNull(gql.GraphQLID),
+          },
+        },
+        resolve: (obj, args, context) => {
+          return null;
+        },
+      },
     },
   }),
   mutation: new gql.GraphQLObjectType({
@@ -117,6 +112,19 @@ export const schema = new gql.GraphQLSchema({
             type: GraphQLCreateMessageInputType,
           },
         },
+      },
+    },
+  }),
+  subscription: new gql.GraphQLObjectType({
+    name: "RootSubscriptionType",
+    fields: {
+      onNewMessage: {
+        type: gql.GraphQLBoolean,
+        resolve: (obj) => {
+          return obj;
+        },
+        subscribe: (obj, args, context) =>
+          context.subscriptionPubSub.asyncIterator("onNewMessage"),
       },
     },
   }),

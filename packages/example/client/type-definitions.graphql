@@ -1,0 +1,43 @@
+schema {
+  query: RootQueryType
+  mutation: RootMutationType
+  subscription: RootSubscriptionType
+}
+
+"""
+Instruction for establishing a live connection that is updated once the underlying data changes.
+"""
+directive @live on QUERY
+
+type RootQueryType {
+  users(limit: Int): [User]!
+  messages(limit: Int): [Message!]!
+  node(id: ID!): Node
+}
+
+type User implements Node {
+  id: ID!
+  name: String!
+}
+
+interface Node {
+  id: ID!
+}
+
+type Message implements Node {
+  id: ID!
+  author: User!
+  content: String!
+}
+
+type RootMutationType {
+  createMessage(input: CreateMessageInput): Boolean
+}
+
+input CreateMessageInput {
+  content: String
+}
+
+type RootSubscriptionType {
+  onNewMessage: Boolean
+}

@@ -6,10 +6,10 @@ import * as graphqlSchema from "./graphql/schema";
 import * as fakeData from "./fakeData";
 
 import { registerGraphQLLayer } from "./registerGraphQLLayer";
-import { siteContent } from "./static-html";
 import { UserStore } from "./user-store";
 import { SimpleLiveQueryStore } from "@n1ru4l/graphql-live-query-simple-store";
 import { MessageStore } from "./message-store";
+import { PubSub } from "graphql-subscriptions";
 
 const app = new tinyhttpApp.App();
 
@@ -23,34 +23,56 @@ const parsePortSafe = (port: string) => {
 
 const server = app
   .use(tinyhttpLogger.logger())
-  .use("/graphql", (req, res) => res.send(siteContent))
-  .listen(parsePortSafe(process.env.PORT || "3000"));
+  .use("/", (req, res) => res.send("Hello World."))
+  .listen(parsePortSafe(process.env.PORT || "3001"));
 
 const socketServer = socketIO(server);
 
+const subscriptionPubSub = new PubSub();
 const liveQueryStore = new SimpleLiveQueryStore();
 const userStore = new UserStore();
 const messageStore = new MessageStore();
 
+// lets add some new users randomly
 setInterval(() => {
   userStore.add(fakeData.createFakeUser());
   liveQueryStore.triggerUpdate("Query.users");
-}, 5000).unref();
+}, 10000).unref();
 
+// lets add some new messages randomly
 setInterval(() => {
   // all live queries that select Query.users will receive an update.
   const user = userStore.getRandom();
   if (user) {
     messageStore.add(fakeData.createFakeMessage(user.id));
     liveQueryStore.triggerUpdate("Query.messages");
+    subscriptionPubSub.publish("onNewMessage", true);
   }
-}, 1619).unref();
+}, 5000).unref();
+
+// Lets change some messages randomly
+setInterval(() => {
+  // all live queries that select Query.users will receive an update.
+  const user = userStore.getRandom();
+  if (user) {
+    const message = messageStore.getLast();
+    if (message) {
+      message.content = fakeData.randomSentence();
+      liveQueryStore.triggerUpdate("Query.messages");
+    }
+  }
+}, 2000).unref();
 
 registerGraphQLLayer({
   socketServer,
   schema: graphqlSchema.schema,
   liveQueryStore,
-  createContext: () => ({ userStore, messageStore, liveQueryStore }),
+  createContext: () => ({
+    userStore,
+    messageStore,
+    liveQueryStore,
+    subscriptionPubSub,
+  }),
 });
 
 const connections = new Set<net.Socket>();
