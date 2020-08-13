@@ -6,7 +6,9 @@ Proof of concept implementation of GraphQL Live Queries.
 
 There is no live query implementation that is not tied to a specific database out there (or at least I did not see any). This implementation serves as an example how it could be done without being tied to any database.
 
-GraphQL already has a solution for real-time: Subscriptions. However those feel very verbose when having to update the store on the client a lot. I think they are better off for triggering side effects such as "play a sound". For data I query I rather want the "updates without additional effort "developer experience on the frontend without having to do some cache wizardry (which often results in simply triggering a query refetch anyways cause nobody understands the cache code anymore).
+GraphQL already has a solution for real-time: Subscriptions. Subscriptions are the right tool for responding to events. An example for this would be triggering a sound or showing a toast message once a new message has been received. Subscriptions are also often used for updating existing query results on the client. Depending on the complexity cache update code can eventually become pretty bloated. Often it is more straight-forward to simply refetch the query once a subscription event is received.
+
+Live queries however should feel magically and update the UI with the latest data from the server without having to do some cache update wizardry.
 
 ## Concept
 
