@@ -45,6 +45,9 @@ const GraphQLMessageType = new gql.GraphQLObjectType({
   },
 });
 
+const GraphQLNonNullList = (input: gql.GraphQLObjectType) =>
+  gql.GraphQLNonNull(gql.GraphQLList(gql.GraphQLNonNull(input)));
+
 const GraphQLCreateMessageInputType = new gql.GraphQLInputObjectType({
   name: "CreateMessageInput",
   fields: {
@@ -52,8 +55,43 @@ const GraphQLCreateMessageInputType = new gql.GraphQLInputObjectType({
   },
 });
 
-const GraphQLNonNullList = (input: gql.GraphQLObjectType) =>
-  gql.GraphQLNonNull(gql.GraphQLList(gql.GraphQLNonNull(input)));
+const GraphQLPageInfoType = new gql.GraphQLObjectType({
+  name: "PageInfo",
+  fields: {
+    hasNextPage: {
+      type: gql.GraphQLBoolean,
+    },
+    hasPreviousPage: {
+      type: gql.GraphQLBoolean,
+    },
+    endCursor: {
+      type: gql.GraphQLString,
+    },
+    startCursor: {
+      type: gql.GraphQLString,
+    },
+  },
+});
+
+const GraphQLMessageEdgeType = new gql.GraphQLObjectType({
+  name: "MessageEdge",
+  fields: {
+    node: { type: GraphQLMessageType },
+    cursor: { type: gql.GraphQLString },
+  },
+});
+
+const GraphQLMessageConnectionType = new gql.GraphQLObjectType({
+  name: "MessageConnection",
+  fields: {
+    edges: {
+      type: GraphQLNonNullList(GraphQLMessageEdgeType),
+    },
+    pageInfo: {
+      type: GraphQLPageInfoType,
+    },
+  },
+});
 
 export const schema = new gql.GraphQLSchema({
   query: new gql.GraphQLObjectType({
@@ -75,18 +113,24 @@ export const schema = new gql.GraphQLSchema({
         },
       },
       messages: {
-        type: GraphQLNonNullList(GraphQLMessageType),
+        type: GraphQLMessageConnectionType,
         args: {
-          limit: {
+          first: {
             type: gql.GraphQLInt,
           },
         },
         resolve: (obj, args, context) => {
           const messages = context.messageStore.getAll();
-          if (args.limit) {
-            return messages.slice(-args.limit);
-          }
-          return messages;
+          // if (args.limit) {
+          //   return messages.slice(-args.limit);
+          // }
+          return {
+            edges: messages.map((message: any) => ({
+              cursor: message.id,
+              node: message,
+            })),
+            pageInfo: { hasNextPage: false },
+          };
         },
       },
       node: {

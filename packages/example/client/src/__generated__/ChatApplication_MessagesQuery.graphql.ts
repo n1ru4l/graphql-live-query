@@ -6,10 +6,14 @@ import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type ChatApplication_MessagesQueryVariables = {};
 export type ChatApplication_MessagesQueryResponse = {
-    readonly messages: ReadonlyArray<{
-        readonly id: string;
-        readonly " $fragmentRefs": FragmentRefs<"ChatApplication_ChatMessageFragment">;
-    }>;
+    readonly messages: {
+        readonly edges: ReadonlyArray<{
+            readonly cursor: string;
+            readonly node: {
+                readonly " $fragmentRefs": FragmentRefs<"ChatApplication_message">;
+            };
+        }>;
+    } | null;
 };
 export type ChatApplication_MessagesQuery = {
     readonly response: ChatApplication_MessagesQueryResponse;
@@ -20,13 +24,23 @@ export type ChatApplication_MessagesQuery = {
 
 /*
 query ChatApplication_MessagesQuery @live {
-  messages(limit: 10) {
-    id
-    ...ChatApplication_ChatMessageFragment
+  messages(first: 100000) {
+    edges {
+      cursor
+      node {
+        ...ChatApplication_message
+        id
+        __typename
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
   }
 }
 
-fragment ChatApplication_ChatMessageFragment on Message {
+fragment ChatApplication_message on Message {
   id
   content
   author {
@@ -37,14 +51,53 @@ fragment ChatApplication_ChatMessageFragment on Message {
 */
 
 const node: ConcreteRequest = (function(){
-var v0 = [
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "cursor",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "__typename",
+  "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "PageInfo",
+  "kind": "LinkedField",
+  "name": "pageInfo",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "endCursor",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "hasNextPage",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v3 = [
   {
     "kind": "Literal",
-    "name": "limit",
-    "value": 10
+    "name": "first",
+    "value": 100000
   }
 ],
-v1 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -59,21 +112,45 @@ return {
     "name": "ChatApplication_MessagesQuery",
     "selections": [
       {
-        "alias": null,
-        "args": (v0/*: any*/),
-        "concreteType": "Message",
+        "alias": "messages",
+        "args": null,
+        "concreteType": "MessageConnection",
         "kind": "LinkedField",
-        "name": "messages",
-        "plural": true,
+        "name": "__ChatApplication_messages_connection",
+        "plural": false,
         "selections": [
-          (v1/*: any*/),
           {
+            "alias": null,
             "args": null,
-            "kind": "FragmentSpread",
-            "name": "ChatApplication_ChatMessageFragment"
-          }
+            "concreteType": "MessageEdge",
+            "kind": "LinkedField",
+            "name": "edges",
+            "plural": true,
+            "selections": [
+              (v0/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "Message",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  (v1/*: any*/),
+                  {
+                    "args": null,
+                    "kind": "FragmentSpread",
+                    "name": "ChatApplication_message"
+                  }
+                ],
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          (v2/*: any*/)
         ],
-        "storageKey": "messages(limit:10)"
+        "storageKey": null
       }
     ],
     "type": "RootQueryType",
@@ -87,53 +164,98 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v0/*: any*/),
-        "concreteType": "Message",
+        "args": (v3/*: any*/),
+        "concreteType": "MessageConnection",
         "kind": "LinkedField",
         "name": "messages",
-        "plural": true,
+        "plural": false,
         "selections": [
-          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
-            "kind": "ScalarField",
-            "name": "content",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "User",
+            "concreteType": "MessageEdge",
             "kind": "LinkedField",
-            "name": "author",
-            "plural": false,
+            "name": "edges",
+            "plural": true,
             "selections": [
-              (v1/*: any*/),
+              (v0/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "name",
+                "concreteType": "Message",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  (v4/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "content",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "User",
+                    "kind": "LinkedField",
+                    "name": "author",
+                    "plural": false,
+                    "selections": [
+                      (v4/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "name",
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  },
+                  (v1/*: any*/)
+                ],
                 "storageKey": null
               }
             ],
             "storageKey": null
-          }
+          },
+          (v2/*: any*/)
         ],
-        "storageKey": "messages(limit:10)"
+        "storageKey": "messages(first:100000)"
+      },
+      {
+        "alias": null,
+        "args": (v3/*: any*/),
+        "filters": null,
+        "handle": "connection",
+        "key": "ChatApplication_messages",
+        "kind": "LinkedHandle",
+        "name": "messages"
       }
     ]
   },
   "params": {
-    "cacheID": "ed15e79d40a20f7e984ad778f6a8d816",
+    "cacheID": "35722de7b5b33483c9a2c0edcc5f1388",
     "id": null,
-    "metadata": {},
+    "metadata": {
+      "connection": [
+        {
+          "count": null,
+          "cursor": null,
+          "direction": "forward",
+          "path": [
+            "messages"
+          ]
+        }
+      ]
+    },
     "name": "ChatApplication_MessagesQuery",
     "operationKind": "query",
-    "text": "query ChatApplication_MessagesQuery @live {\n  messages(limit: 10) {\n    id\n    ...ChatApplication_ChatMessageFragment\n  }\n}\n\nfragment ChatApplication_ChatMessageFragment on Message {\n  id\n  content\n  author {\n    id\n    name\n  }\n}\n"
+    "text": "query ChatApplication_MessagesQuery @live {\n  messages(first: 100000) {\n    edges {\n      cursor\n      node {\n        ...ChatApplication_message\n        id\n        __typename\n      }\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ChatApplication_message on Message {\n  id\n  content\n  author {\n    id\n    name\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = '94276488f026c4bf64230eb1ef57d861';
+(node as any).hash = '9b65e82a5084235b69a9c7039a3ba5d7';
 export default node;

@@ -19,4 +19,8 @@ export class MessageStore {
   getLast(): Message | null {
     return this._messages[this._messages.length - 1] || null;
   }
+
+  delete(id: string) {
+    this._messages = this._messages.filter((message) => message.id !== id);
+  }
 }

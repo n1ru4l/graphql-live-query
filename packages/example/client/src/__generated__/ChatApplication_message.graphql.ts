@@ -4,19 +4,19 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type ChatApplication_ChatMessageFragment = {
+export type ChatApplication_message = {
     readonly id: string;
     readonly content: string;
     readonly author: {
         readonly id: string;
         readonly name: string;
     };
-    readonly " $refType": "ChatApplication_ChatMessageFragment";
+    readonly " $refType": "ChatApplication_message";
 };
-export type ChatApplication_ChatMessageFragment$data = ChatApplication_ChatMessageFragment;
-export type ChatApplication_ChatMessageFragment$key = {
-    readonly " $data"?: ChatApplication_ChatMessageFragment$data;
-    readonly " $fragmentRefs": FragmentRefs<"ChatApplication_ChatMessageFragment">;
+export type ChatApplication_message$data = ChatApplication_message;
+export type ChatApplication_message$key = {
+    readonly " $data"?: ChatApplication_message$data;
+    readonly " $fragmentRefs": FragmentRefs<"ChatApplication_message">;
 };
 
 
@@ -33,7 +33,7 @@ return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "ChatApplication_ChatMessageFragment",
+  "name": "ChatApplication_message",
   "selections": [
     (v0/*: any*/),
     {
@@ -67,5 +67,5 @@ return {
   "abstractKey": null
 };
 })();
-(node as any).hash = 'ce893fd2b5a48bbbc2b37a2a4cb93b59';
+(node as any).hash = 'fb572e6731ae8c212864f61d34b4e1b5';
 export default node;

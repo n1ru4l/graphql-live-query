@@ -11,8 +11,25 @@ directive @live on QUERY
 
 type RootQueryType {
   users(limit: Int): [User]!
-  messages(limit: Int): [Message!]!
+  messages(first: Int): MessageConnection
   node(id: ID!): Node
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  endCursor: String
+  startCursor: String
+}
+
+type MessageEdge {
+  cursor: String!
+  node: Message!
+}
+
+type MessageConnection {
+  pageInfo: PageInfo!
+  edges: [MessageEdge!]!
 }
 
 type User implements Node {

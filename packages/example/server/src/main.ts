@@ -33,11 +33,17 @@ const liveQueryStore = new SimpleLiveQueryStore();
 const userStore = new UserStore();
 const messageStore = new MessageStore();
 
+for (let i = 0; i < 10; i++) {
+  const user = fakeData.createFakeUser();
+  userStore.add(user);
+  // messageStore.add(fakeData.createFakeMessage(user.id));
+}
+
 // lets add some new users randomly
-setInterval(() => {
-  userStore.add(fakeData.createFakeUser());
-  liveQueryStore.triggerUpdate("Query.users");
-}, 10000).unref();
+// setInterval(() => {
+//   userStore.add(fakeData.createFakeUser());
+//   liveQueryStore.triggerUpdate("Query.users");
+// }, 10000).unref();
 
 // lets add some new messages randomly
 setInterval(() => {
@@ -51,17 +57,18 @@ setInterval(() => {
 }, 5000).unref();
 
 // Lets change some messages randomly
-setInterval(() => {
-  // all live queries that select Query.users will receive an update.
-  const user = userStore.getRandom();
-  if (user) {
-    const message = messageStore.getLast();
-    if (message) {
-      message.content = fakeData.randomSentence();
-      liveQueryStore.triggerUpdate("Query.messages");
-    }
-  }
-}, 2000).unref();
+// setInterval(() => {
+//   // all live queries that select Query.users will receive an update.
+//   // const user = userStore.getRandom();
+//   // if (user) {
+//   const message = messageStore.getLast();
+//   if (message) {
+//     // messageStore.delete(message.id);
+//     message.content = fakeData.randomSentence();
+//     liveQueryStore.triggerUpdate("Query.messages");
+//   }
+//   // }
+// }, 2000).unref();
 
 registerGraphQLLayer({
   socketServer,
