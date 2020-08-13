@@ -4,30 +4,19 @@ import graphql from "babel-plugin-relay/macro";
 import { QueryRenderer, createFragmentContainer } from "react-relay";
 import { Environment as RelayEnvironment } from "relay-runtime";
 import type { ChatApplication_MessagesQuery } from "./__generated__/ChatApplication_MessagesQuery.graphql";
-import { ChatApplication_ChatMessageFragment } from "./__generated__/ChatApplication_ChatMessageFragment.graphql";
+import { ChatApplication_message } from "./__generated__/ChatApplication_message.graphql";
 
 const ChatApplicationMessagesQuery = graphql`
   query ChatApplication_MessagesQuery @live {
     messages(limit: 10) {
       id
-      ...ChatApplication_ChatMessageFragment
-    }
-  }
-`;
-
-const ChatApplicationMessageFragment = graphql`
-  fragment ChatApplication_ChatMessageFragment on Message {
-    id
-    content
-    author {
-      id
-      name
+      ...ChatApplication_message
     }
   }
 `;
 
 const ChatApplicationMessageRenderer = React.memo(
-  ({ message }: { message: ChatApplication_ChatMessageFragment }) => {
+  ({ message }: { message: ChatApplication_message }) => {
     return (
       <Box key={message.id} d="flex">
         <Box padding="3" fontWeight="bold">
@@ -42,7 +31,16 @@ const ChatApplicationMessageRenderer = React.memo(
 const ChatApplicationMessage = createFragmentContainer(
   ChatApplicationMessageRenderer,
   {
-    message: ChatApplicationMessageFragment,
+    message: graphql`
+      fragment ChatApplication_message on Message {
+        id
+        content
+        author {
+          id
+          name
+        }
+      }
+    `,
   }
 );
 

@@ -8,7 +8,7 @@ export type ChatApplication_MessagesQueryVariables = {};
 export type ChatApplication_MessagesQueryResponse = {
     readonly messages: ReadonlyArray<{
         readonly id: string;
-        readonly " $fragmentRefs": FragmentRefs<"ChatApplication_ChatMessageFragment">;
+        readonly " $fragmentRefs": FragmentRefs<"ChatApplication_message">;
     }>;
 };
 export type ChatApplication_MessagesQuery = {
@@ -22,11 +22,11 @@ export type ChatApplication_MessagesQuery = {
 query ChatApplication_MessagesQuery @live {
   messages(limit: 10) {
     id
-    ...ChatApplication_ChatMessageFragment
+    ...ChatApplication_message
   }
 }
 
-fragment ChatApplication_ChatMessageFragment on Message {
+fragment ChatApplication_message on Message {
   id
   content
   author {
@@ -70,7 +70,7 @@ return {
           {
             "args": null,
             "kind": "FragmentSpread",
-            "name": "ChatApplication_ChatMessageFragment"
+            "name": "ChatApplication_message"
           }
         ],
         "storageKey": "messages(limit:10)"
@@ -126,14 +126,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ed15e79d40a20f7e984ad778f6a8d816",
+    "cacheID": "5bc496627ce8a3eb585ac936bd5463f6",
     "id": null,
     "metadata": {},
     "name": "ChatApplication_MessagesQuery",
     "operationKind": "query",
-    "text": "query ChatApplication_MessagesQuery @live {\n  messages(limit: 10) {\n    id\n    ...ChatApplication_ChatMessageFragment\n  }\n}\n\nfragment ChatApplication_ChatMessageFragment on Message {\n  id\n  content\n  author {\n    id\n    name\n  }\n}\n"
+    "text": "query ChatApplication_MessagesQuery @live {\n  messages(limit: 10) {\n    id\n    ...ChatApplication_message\n  }\n}\n\nfragment ChatApplication_message on Message {\n  id\n  content\n  author {\n    id\n    name\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = '94276488f026c4bf64230eb1ef57d861';
+(node as any).hash = 'e6d813196675afde31f7ddb4f92377c5';
 export default node;
