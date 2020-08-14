@@ -101,10 +101,10 @@ export const registerSocketIOGraphQLServer = (
               result.errors?.forEach((error) => {
                 onError(error);
               });
-
-              socket.emit("@graphql/result", { id, ...result });
+              socket.emit("@graphql/result", { id, isFinal: true, ...result });
             }
           });
+        return;
       }
 
       const executeOperation = () => graphql.graphql(executionParameter);
@@ -137,7 +137,7 @@ export const registerSocketIOGraphQLServer = (
         result.errors?.forEach((error) => {
           onError(error);
         });
-        socket.emit("@graphql/result", { id, ...result });
+        socket.emit("@graphql/result", { id, isFinal: true, ...result });
       });
     });
 

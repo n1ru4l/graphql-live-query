@@ -131,8 +131,8 @@ export const schema = new gql.GraphQLSchema({
     fields: {
       onNewMessage: {
         type: GraphQLOnLatestMessageType,
-        resolve: ({ messageId }) => {
-          return { messageId };
+        resolve: (obj) => {
+          return obj;
         },
         subscribe: (obj, args, context) =>
           context.subscriptionPubSub.asyncIterator("onNewMessage"),

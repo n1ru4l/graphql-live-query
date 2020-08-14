@@ -22,12 +22,15 @@ type Observable<T> = {
 };
 
 type Parameter = {
-  query: string;
+  operation: string;
   operationName: string;
   variables?: { [key: string]: any };
 };
 
-export type SocketIOGraphQLClient = (opts: Parameter) => Observable<any>;
+export type SocketIOGraphQLClient = {
+  execute: (opts: Parameter) => Observable<any>;
+  destroy: () => void;
+};
 
 type OperationRecord = {
   sink: Sink<unknown>;
@@ -40,18 +43,35 @@ export const createSocketIOGraphQLClient = (
   let currentOperationId = 0;
   const operations = new Map<number, OperationRecord>();
 
-  socket.on("@graphql/result", ({ id, ...result }: any) => {
-    const sink = operations.get(id);
-    sink?.sink.next(result);
-  });
+  const onExecutionResult = ({ id, isFinal, ...result }: any) => {
+    const record = operations.get(id);
+    if (!record) {
+      return;
+    }
+    record.sink.next(result);
 
-  socket.on("reconnect", () => {
+    // For non live queries we only get one result.
+    if (isFinal) {
+      record.sink.complete();
+      operations.delete(id);
+    }
+  };
+
+  const onReconnect = () => {
     for (const [, record] of operations) {
       record.execute();
     }
-  });
+  };
 
-  return ({ query: operation, variables }: Parameter) => {
+  socket.on("@graphql/result", onExecutionResult);
+  socket.on("reconnect", onReconnect);
+
+  const destroy = () => {
+    socket.off("@graphql/result", onExecutionResult);
+    socket.off("reconnect", onReconnect);
+  };
+
+  const execute = ({ operation, variables }: Parameter) => {
     const operationId = currentOperationId;
     currentOperationId = currentOperationId + 1;
 
@@ -89,5 +109,10 @@ export const createSocketIOGraphQLClient = (
         };
       },
     } as Observable<any>;
+  };
+
+  return {
+    execute,
+    destroy,
   };
 };

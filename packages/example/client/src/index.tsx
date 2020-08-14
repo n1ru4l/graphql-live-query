@@ -6,7 +6,7 @@ import { GraphiQLRoute } from "./GraphiQLRoute";
 import { BrowserRouter } from "react-router-dom";
 import { Global, css } from "@emotion/core";
 import io from "socket.io-client";
-import { createSocketIOGraphQLNetworkInterface } from "@n1ru4l/socket-io-graphql-network-interface";
+import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 import { ChatApplication } from "./ChatApplication";
 import { createRelayEnvironment } from "./createRelayEnvironment";
 
@@ -14,8 +14,8 @@ const root = window.document.getElementById("root");
 
 const socket = io();
 
-const executeOperation = createSocketIOGraphQLNetworkInterface(socket);
-const relayEnvironment = createRelayEnvironment(executeOperation);
+const socketIOGraphQLClient = createSocketIOGraphQLClient(socket);
+const relayEnvironment = createRelayEnvironment(socketIOGraphQLClient);
 
 const App: React.FunctionComponent = () => {
   const match = useRoutes([
@@ -23,7 +23,16 @@ const App: React.FunctionComponent = () => {
       path: "/",
       element: <ChatApplication relayEnvironment={relayEnvironment} />,
     },
-    { path: "/graphql", element: <GraphiQLRoute fetcher={executeOperation} /> },
+    {
+      path: "/graphql",
+      element: (
+        <GraphiQLRoute
+          fetcher={({ query: operation, ...execRest }: any) =>
+            socketIOGraphQLClient.execute({ operation, ...execRest })
+          }
+        />
+      ),
+    },
   ]);
   return match;
 };

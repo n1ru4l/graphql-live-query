@@ -1,4 +1,4 @@
-import { SocketIONetworkInterface } from "@n1ru4l/socket-io-graphql-network-interface";
+import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 import {
   Environment,
   Network,
@@ -10,16 +10,16 @@ import {
 } from "relay-runtime";
 
 export const createRelayEnvironment = (
-  networkInterface: SocketIONetworkInterface
+  networkInterface: SocketIOGraphQLClient
 ) => {
   const fetchQuery: FetchFunction = (request, variables) => {
     if (!request.text) throw new Error("Missing document.");
     const { text: operation, name } = request;
 
     return Observable.create((sink) => {
-      const observable = networkInterface({
-        query: operation,
-        variables: variables,
+      const observable = networkInterface.execute({
+        operation,
+        variables,
         operationName: name,
       });
 
@@ -36,8 +36,8 @@ export const createRelayEnvironment = (
     const { text: operation, name } = request;
 
     return Observable.create((sink) => {
-      const observable = networkInterface({
-        query: operation,
+      const observable = networkInterface.execute({
+        operation,
         variables: variables,
         operationName: name,
       });
@@ -50,9 +50,15 @@ export const createRelayEnvironment = (
     });
   };
 
+  const store = new Store(new RecordSource());
+
+  // setInterval(() => {
+  //   console.log(Object.entries(store.getSource().toJSON()));
+  // }, 1000);
+
   const environment = new Environment({
     network: Network.create(fetchQuery, setupSubscription),
-    store: new Store(new RecordSource()),
+    store: store,
   });
 
   return environment;
