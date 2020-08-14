@@ -1,9 +1,6 @@
 import * as graphql from "graphql";
 import { isAsyncIterable } from "./isAsyncIterable";
-import {
-  LiveQueryStore,
-  extractLiveQueries,
-} from "@n1ru4l/graphql-live-queries";
+import { LiveQueryStore, extractLiveQueries } from "@n1ru4l/graphql-live-query";
 
 export type ErrorHandler = (error: graphql.GraphQLError) => void;
 
@@ -45,7 +42,7 @@ const isSubscriptionOperation = (ast: graphql.DocumentNode) =>
       def.kind === "OperationDefinition" && def.operation === "subscription"
   );
 
-export const registerSocketIOGraphQLLayer = (
+export const registerSocketIOGraphQLServer = (
   socketServer: SocketIO.Server,
   getExecutionParameter: GetExecutionParameterFunction
 ) => {

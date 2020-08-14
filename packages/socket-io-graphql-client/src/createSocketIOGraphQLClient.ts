@@ -27,16 +27,16 @@ type Parameter = {
   variables?: { [key: string]: any };
 };
 
-export type SocketIONetworkInterface = (opts: Parameter) => Observable<any>;
+export type SocketIOGraphQLClient = (opts: Parameter) => Observable<any>;
 
 type OperationRecord = {
   sink: Sink<unknown>;
   execute: () => void;
 };
 
-export const createSocketIOGraphQLNetworkInterface = (
+export const createSocketIOGraphQLClient = (
   socket: SocketIOClient.Socket
-): SocketIONetworkInterface => {
+): SocketIOGraphQLClient => {
   let currentOperationId = 0;
   const operations = new Map<number, OperationRecord>();
 

@@ -1,5 +1,5 @@
 import * as gql from "graphql";
-import { GraphQLLiveDirective } from "@n1ru4l/graphql-live-queries";
+import { GraphQLLiveDirective } from "@n1ru4l/graphql-live-query";
 
 const GraphQLNodeInterface = new gql.GraphQLInterfaceType({
   name: "Node",

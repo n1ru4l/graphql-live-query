@@ -2,16 +2,16 @@ import type { OperationDefinitionNode, ExecutionResult } from "graphql";
 import {
   extractLiveQueryRootIdentifier,
   LiveQueryStore,
-} from "@n1ru4l/graphql-live-queries";
+} from "@n1ru4l/graphql-live-query";
 
-type LiveQueryStoreRecord = {
+type StoreRecord = {
   publishUpdate: (patch: ExecutionResult) => void;
   identifier: string[];
   executeQuery: () => Promise<ExecutionResult>;
 };
 
-export class SimpleLiveQueryStore implements LiveQueryStore {
-  private _store = new Map<OperationDefinitionNode, LiveQueryStoreRecord>();
+export class InMemoryLiveQueryStore implements LiveQueryStore {
+  private _store = new Map<OperationDefinitionNode, StoreRecord>();
 
   register(
     document: OperationDefinitionNode,

@@ -1,13 +1,14 @@
 {
-  "name": "@n1ru4l/socket-io-graphql-network-interface",
+  "name": "@n1ru4l/socket-io-graphql-server",
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "devDependencies": {
     "typescript": "3.9.7"
   },
-  "peerDependencies": {
-    "socket.io-client": "^2.3.0"
+  "dependencies": {
+    "@n1ru4l/graphql-live-query": "*",
+    "graphql": "^15.3.0"
   },
   "scripts": {
     "build": "tsc"

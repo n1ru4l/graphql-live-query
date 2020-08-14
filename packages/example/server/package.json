@@ -9,9 +9,9 @@
     "build": "exit 0"
   },
   "dependencies": {
-    "@n1ru4l/graphql-live-queries": "*",
-    "@n1ru4l/graphql-live-query-simple-store": "*",
-    "@n1ru4l/socket-io-graphql-layer": "*",
+    "@n1ru4l/graphql-live-query": "*",
+    "@n1ru4l/in-memory-live-query-store": "*",
+    "@n1ru4l/socket-io-graphql-server": "*",
     "@tinyhttp/app": "0.2.40",
     "@tinyhttp/logger": "0.3.12",
     "faker": "4.1.0",

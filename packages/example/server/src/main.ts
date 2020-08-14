@@ -6,8 +6,8 @@ import * as graphqlSchema from "./graphql/schema";
 import * as fakeData from "./fakeData";
 
 import { UserStore } from "./user-store";
-import { SimpleLiveQueryStore } from "@n1ru4l/graphql-live-query-simple-store";
-import { registerSocketIOGraphQLLayer } from "@n1ru4l/socket-io-graphql-layer";
+import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import { MessageStore } from "./message-store";
 import { PubSub } from "graphql-subscriptions";
 
@@ -29,7 +29,7 @@ const server = app
 const socketServer = socketIO(server);
 
 const subscriptionPubSub = new PubSub();
-const liveQueryStore = new SimpleLiveQueryStore();
+const liveQueryStore = new InMemoryLiveQueryStore();
 const userStore = new UserStore();
 const messageStore = new MessageStore();
 
@@ -52,19 +52,18 @@ setInterval(() => {
 }, 100).unref();
 
 // Lets change some messages randomly
-// setInterval(() => {
-//   // all live queries that select Query.users will receive an update.
-//   const user = userStore.getRandom();
-//   if (user) {
-//     const message = messageStore.getLast();
-//     if (message) {
-//       message.content = fakeData.randomSentence();
-//       liveQueryStore.triggerUpdate("Query.messages");
-//     }
-//   }
-// }, 2000).unref();
+setInterval(() => {
+  const user = userStore.getRandom();
+  if (user) {
+    const message = messageStore.getLast();
+    if (message) {
+      message.content = fakeData.randomSentence();
+      liveQueryStore.triggerUpdate("Query.messages");
+    }
+  }
+}, 2000).unref();
 
-registerSocketIOGraphQLLayer(socketServer, () => ({
+registerSocketIOGraphQLServer(socketServer, () => ({
   liveQueryStore,
   graphQLExecutionParameter: {
     schema: graphqlSchema.schema,
