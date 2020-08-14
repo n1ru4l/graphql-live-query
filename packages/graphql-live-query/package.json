@@ -8,9 +8,6 @@
   "scripts": {
     "build": "tsc"
   },
-  "dependencies": {
-    "fast-json-patch": "3.0.0-1"
-  },
   "peerDependencies": {
     "graphql": "^15.3.0"
   },
