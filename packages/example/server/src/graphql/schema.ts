@@ -52,6 +52,17 @@ const GraphQLCreateMessageInputType = new gql.GraphQLInputObjectType({
   },
 });
 
+const GraphQLOnLatestMessageType = new gql.GraphQLObjectType({
+  name: "OnLatestMessage",
+  fields: {
+    message: {
+      type: GraphQLMessageType,
+      resolve: (obj, args, context) =>
+        context.messageStore.getById(obj.messageId),
+    },
+  },
+});
+
 const GraphQLNonNullList = (input: gql.GraphQLObjectType) =>
   gql.GraphQLNonNull(gql.GraphQLList(gql.GraphQLNonNull(input)));
 
@@ -119,9 +130,9 @@ export const schema = new gql.GraphQLSchema({
     name: "RootSubscriptionType",
     fields: {
       onNewMessage: {
-        type: gql.GraphQLBoolean,
-        resolve: (obj) => {
-          return obj;
+        type: GraphQLOnLatestMessageType,
+        resolve: ({ messageId }) => {
+          return { messageId };
         },
         subscribe: (obj, args, context) =>
           context.subscriptionPubSub.asyncIterator("onNewMessage"),

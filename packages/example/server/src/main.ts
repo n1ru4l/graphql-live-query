@@ -5,9 +5,9 @@ import * as net from "net";
 import * as graphqlSchema from "./graphql/schema";
 import * as fakeData from "./fakeData";
 
-import { registerGraphQLLayer } from "./registerGraphQLLayer";
 import { UserStore } from "./user-store";
 import { SimpleLiveQueryStore } from "@n1ru4l/graphql-live-query-simple-store";
+import { registerSocketIOGraphQLLayer } from "@n1ru4l/socket-io-graphql-layer";
 import { MessageStore } from "./message-store";
 import { PubSub } from "graphql-subscriptions";
 
@@ -44,30 +44,31 @@ setInterval(() => {
   // all live queries that select Query.users will receive an update.
   const user = userStore.getRandom();
   if (user) {
-    messageStore.add(fakeData.createFakeMessage(user.id));
+    const newMessage = fakeData.createFakeMessage(user.id);
+    messageStore.add(newMessage);
     liveQueryStore.triggerUpdate("Query.messages");
-    subscriptionPubSub.publish("onNewMessage", true);
+    subscriptionPubSub.publish("onNewMessage", { messageId: newMessage.id });
   }
-}, 5000).unref();
+}, 100).unref();
 
 // Lets change some messages randomly
-setInterval(() => {
-  // all live queries that select Query.users will receive an update.
-  const user = userStore.getRandom();
-  if (user) {
-    const message = messageStore.getLast();
-    if (message) {
-      message.content = fakeData.randomSentence();
-      liveQueryStore.triggerUpdate("Query.messages");
-    }
-  }
-}, 2000).unref();
+// setInterval(() => {
+//   // all live queries that select Query.users will receive an update.
+//   const user = userStore.getRandom();
+//   if (user) {
+//     const message = messageStore.getLast();
+//     if (message) {
+//       message.content = fakeData.randomSentence();
+//       liveQueryStore.triggerUpdate("Query.messages");
+//     }
+//   }
+// }, 2000).unref();
 
-registerGraphQLLayer({
+registerSocketIOGraphQLLayer({
   socketServer,
   schema: graphqlSchema.schema,
   liveQueryStore,
-  createContext: () => ({
+  getContext: () => ({
     userStore,
     messageStore,
     liveQueryStore,

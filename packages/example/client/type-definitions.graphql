@@ -24,6 +24,10 @@ interface Node {
   id: ID!
 }
 
+type OnLatestMessage {
+  message: Message
+}
+
 type Message implements Node {
   id: ID!
   author: User!
@@ -39,5 +43,5 @@ input CreateMessageInput {
 }
 
 type RootSubscriptionType {
-  onNewMessage: Boolean
+  onNewMessage: OnLatestMessage
 }

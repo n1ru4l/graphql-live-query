@@ -11,12 +11,12 @@
   "dependencies": {
     "@n1ru4l/graphql-live-queries": "*",
     "@n1ru4l/graphql-live-query-simple-store": "*",
+    "@n1ru4l/socket-io-graphql-layer": "*",
     "@tinyhttp/app": "0.2.40",
     "@tinyhttp/logger": "0.3.12",
     "faker": "4.1.0",
     "graphql": "15.3.0",
     "graphql-subscriptions": "1.1.0",
-    "iterall": "1.3.0",
     "socket.io": "2.3.0"
   },
   "devDependencies": {

@@ -1,5 +1,3 @@
-import { parse } from "graphql";
-
 type Sink<T> = {
   next: (value: T) => void;
   error: (error: any) => void;
@@ -31,21 +29,26 @@ type Parameter = {
 
 export type SocketIONetworkInterface = (opts: Parameter) => Observable<any>;
 
+type OperationRecord = {
+  sink: Sink<unknown>;
+  execute: () => void;
+};
+
 export const createSocketIOGraphQLNetworkInterface = (
   socket: SocketIOClient.Socket
 ): SocketIONetworkInterface => {
   let currentOperationId = 0;
-  const responseHandlers = new Map();
-  const subscriptionHandlers = new Map();
+  const operations = new Map<number, OperationRecord>();
 
   socket.on("@graphql/result", ({ id, ...result }: any) => {
-    const sink = responseHandlers.get(id);
-    sink?.next(result);
+    const sink = operations.get(id);
+    sink?.sink.next(result);
   });
 
-  socket.on("@graphql/update", ({ id, ...result }: any) => {
-    const sink = subscriptionHandlers.get(id);
-    sink?.next(result);
+  socket.on("reconnect", () => {
+    for (const [, record] of operations) {
+      record.execute();
+    }
   });
 
   return ({ query: operation, variables }: Parameter) => {
@@ -62,55 +65,28 @@ export const createSocketIOGraphQLNetworkInterface = (
             ? { next: sinkOrNext, error: args[0], complete: args[1] }
             : sinkOrNext;
 
-        const ast = parse(operation);
+        const record: OperationRecord = {
+          execute: () => {
+            socket.emit("@graphql/execute", {
+              id: operationId,
+              operation,
+              variables,
+            });
+          },
+          sink,
+        };
 
-        const isLiveQuery = !!ast.definitions.find(
-          (def) =>
-            (def.kind === "OperationDefinition" &&
-              def.directives?.find(
-                (directive) => directive.name.value === "live"
-              )) ??
-            null
-        );
-        const isSubscription = !!ast.definitions.find(
-          (def) =>
-            def.kind === "OperationDefinition" &&
-            def.operation === "subscription"
-        );
+        operations.set(operationId, record);
+        record.execute();
 
-        if (isSubscription) {
-          socket.emit("@graphql/subscribe", {
-            id: operationId,
-            operation,
-            variables,
-          });
-
-          subscriptionHandlers.set(operationId, sink);
-          return {
-            unsubscribe: () => {
-              socket.emit("@graphql/unsubscribe", { id: operationId });
-              subscriptionHandlers.delete(operationId);
-            },
-          };
-        } else {
-          responseHandlers.set(operationId, sink);
-          socket.emit("@graphql/execute", {
-            id: operationId,
-            operation,
-            variables,
-          });
-
-          return {
-            unsubscribe: () => {
-              responseHandlers.delete(operationId);
-              if (isLiveQuery) {
-                socket.emit("@graphql/unsubscribe-live", {
-                  id: operationId,
-                });
-              }
-            },
-          };
-        }
+        return {
+          unsubscribe: () => {
+            operations.delete(operationId);
+            socket.emit("@graphql/unsubscribe", {
+              id: operationId,
+            });
+          },
+        };
       },
     } as Observable<any>;
   };

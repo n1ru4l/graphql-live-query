@@ -1,4 +1,4 @@
-import { OperationDefinitionNode, ExecutionResult } from "graphql";
+import type { OperationDefinitionNode, ExecutionResult } from "graphql";
 import {
   extractLiveQueryRootIdentifier,
   LiveQueryStore,
