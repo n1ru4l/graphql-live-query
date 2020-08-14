@@ -1,5 +1,5 @@
 import * as graphql from "graphql";
-import * as ia from "iterall";
+import { isAsyncIterable } from "./isAsyncIterable";
 import {
   LiveQueryStore,
   extractLiveQueries,
@@ -89,7 +89,7 @@ export const registerSocketIOGraphQLLayer = (
             document: documentAst,
           })
           .then((result) => {
-            if (ia.isAsyncIterable(result)) {
+            if (isAsyncIterable(result)) {
               subscriptions.set(id, () => result.return?.(null));
               const run = async () => {
                 for await (const subscriptionResult of result) {
