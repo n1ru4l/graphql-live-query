@@ -5,71 +5,87 @@ import {
   extractLiveQueries,
 } from "@n1ru4l/graphql-live-queries";
 
-const isSubscription = (ast: graphql.DocumentNode) =>
-  !!ast.definitions.find(
-    (def) =>
-      def.kind === "OperationDefinition" && def.operation === "subscription"
-  );
-
 export type ErrorHandler = (error: graphql.GraphQLError) => void;
 
 export const defaultErrorHandler: ErrorHandler = console.error;
 
 export type PromiseOrPlain<T> = T | Promise<T>;
 
-export type GetRootFunctionParameter = {
-  document: graphql.DocumentNode;
+export type GetExecutionParameterFunctionParameter = {
+  socket: SocketIO.Socket;
+  graphQLPayload: {
+    source: string;
+    variableValues: { [key: string]: any } | null;
+    operationName: string | null;
+  };
 };
 
-export type GetRootFunction = (
-  params: GetRootFunctionParameter
-) => PromiseOrPlain<unknown>;
-
-export type GetContextFunctionParameter = {
-  document: graphql.DocumentNode;
-};
-
-export type GetContextFunction = (
-  params: GetContextFunctionParameter
-) => PromiseOrPlain<unknown>;
-
-export const registerSocketIOGraphQLLayer = (d: {
-  socketServer: SocketIO.Server;
-  schema: graphql.GraphQLSchema;
+export type GetExecutionParameterFunction = (
+  parameter: GetExecutionParameterFunctionParameter
+) => PromiseOrPlain<{
+  graphQLExecutionParameter: {
+    schema: graphql.GraphQLSchema;
+    contextValue?: unknown;
+    rootValue?: unknown;
+    // These will be overwritten if provided; Useful for persisted queries etc.
+    operationName?: string;
+    source?: string;
+    variableValues?: { [key: string]: any } | null;
+  };
   liveQueryStore?: LiveQueryStore;
-  getContext?: GetContextFunction;
-  getRoot?: GetRootFunction;
-  onError?: (error: graphql.GraphQLError) => void;
-}) => {
-  const onError = d.onError ?? defaultErrorHandler;
-  const liveQueryStore = d.liveQueryStore ?? null;
+  onError?: ErrorHandler;
+}>;
 
-  d.socketServer.on("connection", (socket) => {
-    const subscriptions = new Map<string, () => void>();
+const isSome = <T>(input: T): input is Exclude<T, null | undefined> =>
+  input != null;
+
+const isSubscriptionOperation = (ast: graphql.DocumentNode) =>
+  !!ast.definitions.find(
+    (def) =>
+      def.kind === "OperationDefinition" && def.operation === "subscription"
+  );
+
+export const registerSocketIOGraphQLLayer = (
+  socketServer: SocketIO.Server,
+  getExecutionParameter: GetExecutionParameterFunction
+) => {
+  socketServer.on("connection", (socket) => {
+    const subscriptions = new Map<number, () => void>();
 
     socket.on("@graphql/execute", async (message) => {
-      const id = message.id;
-      const source = message.operation;
-      const variableValues = message.variables;
-      const operationName = message.operationName;
-      const documentAst = graphql.parse(source);
+      // TODO: Better validation
+      const id: number = message.id;
+      const source: string = message.operation;
+      const variableValues: { [key: string]: any } | null =
+        message.variables ?? null;
+      const operationName: string | null = message.operationName ?? null;
 
-      const contextValue = await d.getContext?.({ document: documentAst });
-      const rootValue = await d.getRoot?.({ document: documentAst });
+      const {
+        graphQLExecutionParameter,
+        liveQueryStore = null,
+        onError = defaultErrorHandler,
+      } = await getExecutionParameter({
+        socket,
+        graphQLPayload: {
+          source,
+          variableValues,
+          operationName,
+        },
+      });
 
-      const execOptions = {
-        schema: d.schema,
-        rootValue,
-        contextValue,
+      const executionParameter = {
         operationName,
         source,
         variableValues,
+        ...graphQLExecutionParameter,
       };
 
-      if (isSubscription(documentAst)) {
+      const documentAst = graphql.parse(source);
+
+      if (isSubscriptionOperation(documentAst)) {
         graphql
           .subscribe({
-            ...execOptions,
+            ...executionParameter,
             document: documentAst,
           })
           .then((result) => {
@@ -94,9 +110,9 @@ export const registerSocketIOGraphQLLayer = (d: {
           });
       }
 
-      const execQuery = () => graphql.graphql(execOptions);
+      const executeOperation = () => graphql.graphql(executionParameter);
 
-      if (liveQueryStore !== null) {
+      if (isSome(liveQueryStore)) {
         const liveQueries = extractLiveQueries(documentAst);
 
         if (liveQueries.length > 1) {
@@ -107,7 +123,7 @@ export const registerSocketIOGraphQLLayer = (d: {
           const [liveQuery] = liveQueries;
           const unsubscribe = liveQueryStore.register(
             liveQuery,
-            execQuery,
+            executeOperation,
             (result: graphql.ExecutionResult) => {
               result.errors?.forEach((error) => {
                 onError(error);
@@ -120,7 +136,7 @@ export const registerSocketIOGraphQLLayer = (d: {
         }
       }
 
-      execQuery().then((result) => {
+      executeOperation().then((result) => {
         result.errors?.forEach((error) => {
           onError(error);
         });
@@ -129,7 +145,7 @@ export const registerSocketIOGraphQLLayer = (d: {
     });
 
     socket.on("@graphql/unsubscribe", (message) => {
-      const id = String(message.id);
+      const id = message.id;
       const subscription = subscriptions.get(id);
       subscription?.();
       subscriptions.delete(id);

@@ -64,17 +64,18 @@ setInterval(() => {
 //   }
 // }, 2000).unref();
 
-registerSocketIOGraphQLLayer({
-  socketServer,
-  schema: graphqlSchema.schema,
+registerSocketIOGraphQLLayer(socketServer, () => ({
   liveQueryStore,
-  getContext: () => ({
-    userStore,
-    messageStore,
-    liveQueryStore,
-    subscriptionPubSub,
-  }),
-});
+  graphQLExecutionParameter: {
+    schema: graphqlSchema.schema,
+    contextValue: {
+      userStore,
+      messageStore,
+      liveQueryStore,
+      subscriptionPubSub,
+    },
+  },
+}));
 
 const connections = new Set<net.Socket>();
 server.on("connection", (connection) => {
