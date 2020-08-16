@@ -42,20 +42,91 @@ const isSubscriptionOperation = (ast: graphql.DocumentNode) =>
       def.kind === "OperationDefinition" && def.operation === "subscription"
   );
 
-export const registerSocketIOGraphQLServer = (
-  socketServer: SocketIO.Server,
-  getExecutionParameter: GetExecutionParameterFunction
-) => {
+type MessagePayload = {
+  id: number;
+  operation: string;
+  variables: { [key: string]: any } | null;
+  operationName: string | null;
+};
+
+const decodeMessage = (message: unknown): MessagePayload | Error => {
+  let id: number;
+  let operation: string | null = null;
+  let variables: { [key: string]: any } | null = null;
+  let operationName: string | null = null;
+
+  if (typeof message === "object" && message !== null) {
+    const maybeId: unknown = (message as any).id;
+    if (typeof maybeId === "number") {
+      id = maybeId;
+    } else {
+      return new Error("Invalid message format. Field 'id' is invalid.");
+    }
+    const maybeOperation: unknown = (message as any).operation;
+    if (typeof maybeOperation === "string") {
+      operation = maybeOperation;
+    } else {
+      return new Error("Invalid message format. Field 'operation' is invalid.");
+    }
+    const maybeVariables: unknown = (message as any).variables;
+    if (typeof maybeVariables === "object") {
+      variables = maybeVariables;
+    } else {
+      return new Error(
+        "Invalid message format. Field 'variableValues' is invalid."
+      );
+    }
+    const maybeOperationName: unknown = (message as any).operationName ?? null;
+    if (maybeOperationName === null || typeof maybeOperationName === "string") {
+      operationName = maybeOperationName ?? null;
+    } else {
+      return new Error(
+        "Invalid message format. Field 'operationName' is invalid."
+      );
+    }
+
+    return {
+      id,
+      operation,
+      variables,
+      operationName,
+    };
+  }
+
+  return new Error("Invalid message format. Sent message is not an object.");
+};
+
+export type DecodeErrorHandler = (error: Error) => void;
+
+export type RegisterSocketIOGraphQLServerParameter = {
+  socketServer: SocketIO.Server;
+  getExecutionParameter: GetExecutionParameterFunction;
+  onMessageDecodeError?: DecodeErrorHandler;
+};
+
+export const registerSocketIOGraphQLServer = ({
+  socketServer,
+  getExecutionParameter,
+  onMessageDecodeError = console.error,
+}: RegisterSocketIOGraphQLServerParameter) => {
   socketServer.on("connection", (socket) => {
     const subscriptions = new Map<number, () => void>();
 
-    socket.on("@graphql/execute", async (message) => {
-      // TODO: Better validation
-      const id: number = message.id;
-      const source: string = message.operation;
-      const variableValues: { [key: string]: any } | null =
-        message.variables ?? null;
-      const operationName: string | null = message.operationName ?? null;
+    socket.on("@graphql/execute", async (rawMessage) => {
+      const message = decodeMessage(rawMessage);
+
+      if (message instanceof Error) {
+        // TODO: Unify what we should do with this.
+        onMessageDecodeError(message);
+        return;
+      }
+
+      const {
+        id,
+        operation: source,
+        variables: variableValues,
+        operationName,
+      } = message;
 
       const {
         graphQLExecutionParameter,
