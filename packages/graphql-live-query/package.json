@@ -3,6 +3,21 @@
   "version": "0.1.0",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n1ru4l/graphql-live-queries.git",
+    "directory": "packages/graphql-live-query"
+  },
+  "bugs": {
+    "url": "https://github.com/n1ru4l/graphql-live-queries/issues"
+  },
+  "homepage": "https://github.com/n1ru4l/graphql-live-queries#readme",
+  "keywords": [
+    "graphql",
+    "query",
+    "live",
+    "real-time"
+  ],
   "scripts": {
     "prepack": "bob prepack"
   },

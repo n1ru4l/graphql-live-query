@@ -3,6 +3,28 @@
   "version": "0.0.1",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n1ru4l/graphql-live-queries.git",
+    "directory": "packages/socket-io-graphql-client"
+  },
+  "bugs": {
+    "url": "https://github.com/n1ru4l/graphql-live-queries/issues"
+  },
+  "homepage": "https://github.com/n1ru4l/graphql-live-queries#readme",
+  "keywords": [
+    "graphql",
+    "query",
+    "live",
+    "mutation",
+    "subscription",
+    "socket-io",
+    "socket.io",
+    "client",
+    "relay",
+    "apollo",
+    "websocket"
+  ],
   "scripts": {
     "prepack": "bob prepack"
   },
