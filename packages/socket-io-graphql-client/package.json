@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "prepack": "bob prepack"
+  },
   "devDependencies": {
     "typescript": "3.9.7"
   },
@@ -22,5 +24,9 @@
   },
   "buildOptions": {
     "input": "./src/index.ts"
+  },
+  "publishConfig": {
+    "directory": "dist",
+    "access": "public"
   }
 }

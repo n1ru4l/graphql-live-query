@@ -11,10 +11,27 @@
   ],
   "devDependencies": {
     "@changesets/cli": "2.10.0",
-    "bob-the-bundler": "1.1.0"
+    "bob-the-bundler": "1.1.0",
+    "husky": "4.2.5",
+    "lint-staged": "10.2.11"
   },
   "scripts": {
     "build": "yarn ts:transpile && bob build",
-    "ts:transpile": "tsc --project tsconfig.build.json"
+    "ts:transpile": "tsc --project tsconfig.build.json",
+    "prerelease": "yarn build",
+    "release": "changeset publish"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx,graphql,yml}": [
+      "prettier --write"
+    ],
+    "**/*.json": [
+      "prettier --write"
+    ]
   }
 }
