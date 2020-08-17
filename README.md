@@ -2,6 +2,8 @@
 
 Proof of concept implementation of GraphQL Live Queries.
 
+[Read the blog post](https://dev.to/n1ru4l/graphql-live-queries-with-socket-io-4mh6)
+
 ## Motivation
 
 There is no live query implementation that is not tied to a specific database out there (or at least I did not see any). This implementation serves as an example how it could be done without being tied to any database.
