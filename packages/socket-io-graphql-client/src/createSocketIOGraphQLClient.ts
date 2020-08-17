@@ -58,9 +58,9 @@ export const createSocketIOGraphQLClient = (
   };
 
   const onReconnect = () => {
-    for (const [, record] of operations) {
+    Array.from(operations.values()).forEach(record => {
       record.execute();
-    }
+    });
   };
 
   socket.on("@graphql/result", onExecutionResult);
@@ -90,10 +90,10 @@ export const createSocketIOGraphQLClient = (
             socket.emit("@graphql/execute", {
               id: operationId,
               operation,
-              variables,
+              variables
             });
           },
-          sink,
+          sink
         };
 
         operations.set(operationId, record);
@@ -103,16 +103,16 @@ export const createSocketIOGraphQLClient = (
           unsubscribe: () => {
             operations.delete(operationId);
             socket.emit("@graphql/unsubscribe", {
-              id: operationId,
+              id: operationId
             });
-          },
+          }
         };
-      },
+      }
     } as Observable<any>;
   };
 
   return {
     execute,
-    destroy,
+    destroy
   };
 };

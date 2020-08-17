@@ -1,12 +1,15 @@
 {
   "name": "@n1ru4l/graphql-live-query",
   "version": "0.0.1",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/main/index.js",
+  "module": "dist/module/index.js",
+  "types": "dist/module/index.d.ts",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "yarn build:module && yarn build:main",
+    "build:module": "tsc --target es2019 --module esnext --outDir dist/module",
+    "build:main": "tsc --target es2019 --module commonjs --outDir dist/main"
   },
   "peerDependencies": {
     "graphql": "^15.3.0"

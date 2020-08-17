@@ -1,6 +1,7 @@
 {
   "name": "example-server",
   "version": "0.0.1",
+  "private": true,
   "main": "dist/main.js",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",

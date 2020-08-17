@@ -1,6 +1,7 @@
 import * as graphql from "graphql";
-import { isAsyncIterable } from "./isAsyncIterable";
 import { LiveQueryStore, extractLiveQueries } from "@n1ru4l/graphql-live-query";
+import { isAsyncIterable } from "./isAsyncIterable";
+import { isSome } from "./isSome";
 
 export type ErrorHandler = (error: graphql.GraphQLError) => void;
 
@@ -33,12 +34,9 @@ export type GetExecutionParameterFunction = (
   onError?: ErrorHandler;
 }>;
 
-const isSome = <T>(input: T): input is Exclude<T, null | undefined> =>
-  input != null;
-
 const isSubscriptionOperation = (ast: graphql.DocumentNode) =>
   !!ast.definitions.find(
-    (def) =>
+    def =>
       def.kind === "OperationDefinition" && def.operation === "subscription"
   );
 
@@ -89,7 +87,7 @@ const decodeMessage = (message: unknown): MessagePayload | Error => {
       id,
       operation,
       variables,
-      operationName,
+      operationName
     };
   }
 
@@ -107,12 +105,12 @@ export type RegisterSocketIOGraphQLServerParameter = {
 export const registerSocketIOGraphQLServer = ({
   socketServer,
   getExecutionParameter,
-  onMessageDecodeError = console.error,
+  onMessageDecodeError = console.error
 }: RegisterSocketIOGraphQLServerParameter) => {
-  socketServer.on("connection", (socket) => {
+  socketServer.on("connection", socket => {
     const subscriptions = new Map<number, () => void>();
 
-    socket.on("@graphql/execute", async (rawMessage) => {
+    socket.on("@graphql/execute", async rawMessage => {
       const message = decodeMessage(rawMessage);
 
       if (message instanceof Error) {
@@ -125,27 +123,27 @@ export const registerSocketIOGraphQLServer = ({
         id,
         operation: source,
         variables: variableValues,
-        operationName,
+        operationName
       } = message;
 
       const {
         graphQLExecutionParameter,
         liveQueryStore = null,
-        onError = defaultErrorHandler,
+        onError = defaultErrorHandler
       } = await getExecutionParameter({
         socket,
         graphQLPayload: {
           source,
           variableValues,
-          operationName,
-        },
+          operationName
+        }
       });
 
       const executionParameter = {
         operationName,
         source,
         variableValues,
-        ...graphQLExecutionParameter,
+        ...graphQLExecutionParameter
       };
 
       const documentAst = graphql.parse(source);
@@ -154,14 +152,14 @@ export const registerSocketIOGraphQLServer = ({
         graphql
           .subscribe({
             ...executionParameter,
-            document: documentAst,
+            document: documentAst
           })
-          .then((result) => {
+          .then(result => {
             if (isAsyncIterable(result)) {
               subscriptions.set(id, () => result.return?.(null));
               const run = async () => {
                 for await (const subscriptionResult of result) {
-                  subscriptionResult.errors?.forEach((error) => {
+                  subscriptionResult.errors?.forEach(error => {
                     onError(error);
                   });
                   socket.emit("@graphql/result", { id, ...subscriptionResult });
@@ -169,7 +167,7 @@ export const registerSocketIOGraphQLServer = ({
               };
               run();
             } else {
-              result.errors?.forEach((error) => {
+              result.errors?.forEach(error => {
                 onError(error);
               });
               socket.emit("@graphql/result", { id, isFinal: true, ...result });
@@ -193,7 +191,7 @@ export const registerSocketIOGraphQLServer = ({
             liveQuery,
             executeOperation,
             (result: graphql.ExecutionResult) => {
-              result.errors?.forEach((error) => {
+              result.errors?.forEach(error => {
                 onError(error);
               });
               socket.emit("@graphql/result", { id, ...result });
@@ -204,15 +202,15 @@ export const registerSocketIOGraphQLServer = ({
         }
       }
 
-      executeOperation().then((result) => {
-        result.errors?.forEach((error) => {
+      executeOperation().then(result => {
+        result.errors?.forEach(error => {
           onError(error);
         });
         socket.emit("@graphql/result", { id, isFinal: true, ...result });
       });
     });
 
-    socket.on("@graphql/unsubscribe", (message) => {
+    socket.on("@graphql/unsubscribe", message => {
       const id = message.id;
       const subscription = subscriptions.get(id);
       subscription?.();
@@ -221,7 +219,7 @@ export const registerSocketIOGraphQLServer = ({
 
     socket.once("disconnect", () => {
       // Unsubscribe all pending GraphQL Live Queries and Subscriptions
-      subscriptions.forEach((unsubscribe) => unsubscribe());
+      subscriptions.forEach(unsubscribe => unsubscribe());
     });
   });
 };
