@@ -10,9 +10,11 @@
     "packages/example/*"
   ],
   "devDependencies": {
-    "@changesets/cli": "2.10.0"
+    "@changesets/cli": "2.10.0",
+    "bob-the-bundler": "1.1.0"
   },
   "scripts": {
-    "build": "yarn workspaces run build"
+    "build": "yarn ts:transpile && bob build",
+    "ts:transpile": "tsc --project tsconfig.build.json"
   }
 }

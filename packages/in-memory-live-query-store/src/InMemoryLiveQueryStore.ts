@@ -2,6 +2,7 @@ import type { OperationDefinitionNode, ExecutionResult } from "graphql";
 import {
   extractLiveQueryRootIdentifier,
   LiveQueryStore,
+  UnsubscribeHandler
 } from "@n1ru4l/graphql-live-query";
 
 type StoreRecord = {
@@ -10,6 +11,7 @@ type StoreRecord = {
   executeQuery: () => Promise<ExecutionResult>;
 };
 
+
 export class InMemoryLiveQueryStore implements LiveQueryStore {
   private _store = new Map<OperationDefinitionNode, StoreRecord>();
 
@@ -17,7 +19,7 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
     document: OperationDefinitionNode,
     executeQuery: () => Promise<ExecutionResult>,
     publishUpdate: (patch: ExecutionResult) => void
-  ) {
+  ): UnsubscribeHandler {
     const identifier = extractLiveQueryRootIdentifier(document);
     const record = {
       publishUpdate,

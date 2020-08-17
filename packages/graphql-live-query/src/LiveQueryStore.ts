@@ -1,6 +1,6 @@
 import { OperationDefinitionNode, ExecutionResult } from "graphql";
 
-type UnsubscribeHandler = () => void;
+export type UnsubscribeHandler = () => void;
 
 export abstract class LiveQueryStore {
   abstract async triggerUpdate(identifier: string): Promise<void>;

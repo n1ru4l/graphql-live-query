@@ -6,5 +6,5 @@
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["example-client", "example-server"]
+  "ignore": ["@n1ru4l/example-client", "@n1ru4l/example-server"]
 }

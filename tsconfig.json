@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+
+    "outDir": "dist",
+    "baseUrl": ".",
+
+    "target": "es2019",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": ["esnext"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "declaration": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@n1ru4l/*": ["packages/*/src/index.ts"]
+    }
+  },
+  "include": ["packages"],
+  "exclude": ["**/node_modules", "**/dist", "packages/example"]
+}

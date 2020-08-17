@@ -42,7 +42,6 @@ export const createSocketIOGraphQLClient = (
 ): SocketIOGraphQLClient => {
   let currentOperationId = 0;
   const operations = new Map<number, OperationRecord>();
-
   const onExecutionResult = ({ id, isFinal, ...result }: any) => {
     const record = operations.get(id);
     if (!record) {
