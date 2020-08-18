@@ -136,10 +136,10 @@ export const registerSocketIOGraphQLServer = ({
   isLazy = false
 }: RegisterSocketIOGraphQLServerParameter): SocketIOGraphQLServer => {
   let acceptNewConnections = true;
-  const unsubscribeHandlers = new Map<SocketIO.Socket, UnsubscribeHandler>();
+  const disposeHandlers = new Map<SocketIO.Socket, UnsubscribeHandler>();
   const registerSocket = (socket: SocketIO.Socket) => {
     // In case the socket is already registered :)
-    const dispose = unsubscribeHandlers.get(socket);
+    const dispose = disposeHandlers.get(socket);
     if (dispose) {
       return dispose;
     }
@@ -266,7 +266,7 @@ export const registerSocketIOGraphQLServer = ({
     const disconnectHandler = () => {
       // Unsubscribe all pending GraphQL Live Queries and Subscriptions
       subscriptions.forEach(unsubscribe => unsubscribe());
-      unsubscribeHandlers.delete(socket);
+      disposeHandlers.delete(socket);
     };
 
     socket.once("disconnect", disconnectHandler);
@@ -278,7 +278,7 @@ export const registerSocketIOGraphQLServer = ({
       disconnectHandler();
     };
 
-    unsubscribeHandlers.set(socket, disposeHandler);
+    disposeHandlers.set(socket, disposeHandler);
     return disposeHandler;
   };
 
@@ -288,12 +288,11 @@ export const registerSocketIOGraphQLServer = ({
 
   return {
     registerSocket: (socket: SocketIO.Socket) =>
-      unsubscribeHandlers.get(socket) ?? registerSocket(socket),
-    disposeSocket: (socket: SocketIO.Socket) =>
-      unsubscribeHandlers.get(socket)?.(),
+      disposeHandlers.get(socket) ?? registerSocket(socket),
+    disposeSocket: (socket: SocketIO.Socket) => disposeHandlers.get(socket)?.(),
     destroy: () => {
       socketServer.off("connection", registerSocket);
-      for (const dispose of unsubscribeHandlers.values()) {
+      for (const dispose of disposeHandlers.values()) {
         dispose();
       }
     }
