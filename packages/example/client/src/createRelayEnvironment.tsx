@@ -8,6 +8,30 @@ import {
   SubscribeFunction,
   Observable,
 } from "relay-runtime";
+import { throttle } from "./throttle";
+
+// by default relay is only scheduling cache garbage collection once a query is retained
+// as our queries are long living and update more often, garbage collection should be scheduled more often.
+// see https://github.com/facebook/relay/issues/3165
+const attachNotifyGarbageCollectionBehaviourToStore = (store: Store): Store => {
+  const notify = store.notify.bind(store);
+
+  const scheduleGarbageCollection = throttle(
+    // _scheduleGC is still private, but will be public soon :)
+    (store as any)._scheduleGC.bind(store),
+    5000
+  );
+
+  const newNotify: Store["notify"] = (...args) => {
+    scheduleGarbageCollection();
+
+    return notify(...args);
+  };
+
+  store.notify = newNotify;
+
+  return store;
+};
 
 export const createRelayEnvironment = (
   networkInterface: SocketIOGraphQLClient
@@ -50,16 +74,13 @@ export const createRelayEnvironment = (
     });
   };
 
-  const store = new Store(new RecordSource());
+  const network = Network.create(fetchQuery, setupSubscription);
+  const store = attachNotifyGarbageCollectionBehaviourToStore(
+    new Store(new RecordSource())
+  );
 
-  // setInterval(() => {
-  //   console.log(Object.entries(store.getSource().toJSON()));
-  // }, 1000);
-
-  const environment = new Environment({
-    network: Network.create(fetchQuery, setupSubscription),
-    store: store,
+  return new Environment({
+    network,
+    store,
   });
-
-  return environment;
 };
