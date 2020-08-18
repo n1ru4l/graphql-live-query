@@ -94,23 +94,59 @@ const decodeMessage = (message: unknown): MessagePayload | Error => {
   return new Error("Invalid message format. Sent message is not an object.");
 };
 
+const decodeUnsubscribeMessage = (message: unknown): { id: number } | Error => {
+  if (typeof message === "object" && message !== null) {
+    const maybeId: unknown = (message as any).id;
+    if (typeof maybeId === "number") {
+      return { id: maybeId };
+    } else {
+      return new Error("Invalid message format. Field 'id' is invalid.");
+    }
+  }
+
+  return new Error("Invalid message format. Sent message is not an object.");
+};
+
 export type DecodeErrorHandler = (error: Error) => void;
 
 export type RegisterSocketIOGraphQLServerParameter = {
   socketServer: SocketIO.Server;
   getExecutionParameter: GetExecutionParameterFunction;
+  /* error handler for failed message decoding attempts */
   onMessageDecodeError?: DecodeErrorHandler;
+  /* whether the GraphQL layer has to be enabled for each socket explicitly */
+  isLazy?: boolean;
+};
+
+export type UnsubscribeHandler = () => void;
+
+export type SocketIOGraphQLServer = {
+  /* register a single socket */
+  registerSocket: (socket: SocketIO.Socket) => UnsubscribeHandler;
+  /* dispose a single socket */
+  disposeSocket: (socket: SocketIO.Socket) => void;
+  /* dispose all connections and remove all listeners on the socketServer. */
+  destroy: () => void;
 };
 
 export const registerSocketIOGraphQLServer = ({
   socketServer,
   getExecutionParameter,
-  onMessageDecodeError = console.error
-}: RegisterSocketIOGraphQLServerParameter) => {
-  socketServer.on("connection", socket => {
+  onMessageDecodeError = console.error,
+  isLazy = false
+}: RegisterSocketIOGraphQLServerParameter): SocketIOGraphQLServer => {
+  let acceptNewConnections = true;
+  const disposeHandlers = new Map<SocketIO.Socket, UnsubscribeHandler>();
+  const registerSocket = (socket: SocketIO.Socket) => {
+    // In case the socket is already registered :)
+    const dispose = disposeHandlers.get(socket);
+    if (dispose) {
+      return dispose;
+    }
+
     const subscriptions = new Map<number, () => void>();
 
-    socket.on("@graphql/execute", async rawMessage => {
+    const executeHandler = async (rawMessage: unknown) => {
       const message = decodeMessage(rawMessage);
 
       if (message instanceof Error) {
@@ -208,18 +244,57 @@ export const registerSocketIOGraphQLServer = ({
         });
         socket.emit("@graphql/result", { id, isFinal: true, ...result });
       });
-    });
+    };
 
-    socket.on("@graphql/unsubscribe", message => {
+    socket.on("@graphql/execute", executeHandler);
+
+    const unsubscribeHandler = (rawMessage: unknown) => {
+      const message = decodeUnsubscribeMessage(rawMessage);
+      if (message instanceof Error) {
+        // TODO: Unify what we should do with this.
+        onMessageDecodeError(message);
+        return;
+      }
       const id = message.id;
       const subscription = subscriptions.get(id);
       subscription?.();
       subscriptions.delete(id);
-    });
+    };
 
-    socket.once("disconnect", () => {
+    socket.on("@graphql/unsubscribe", unsubscribeHandler);
+
+    const disconnectHandler = () => {
       // Unsubscribe all pending GraphQL Live Queries and Subscriptions
       subscriptions.forEach(unsubscribe => unsubscribe());
-    });
-  });
+      disposeHandlers.delete(socket);
+    };
+
+    socket.once("disconnect", disconnectHandler);
+
+    const disposeHandler = () => {
+      socket.off("@graphql/execute", executeHandler);
+      socket.off("@graphql/unsubscribe", unsubscribeHandler);
+      socket.off("disconnect", disconnectHandler);
+      disconnectHandler();
+    };
+
+    disposeHandlers.set(socket, disposeHandler);
+    return disposeHandler;
+  };
+
+  if (isLazy === false && acceptNewConnections === true) {
+    socketServer.on("connection", registerSocket);
+  }
+
+  return {
+    registerSocket: (socket: SocketIO.Socket) =>
+      disposeHandlers.get(socket) ?? registerSocket(socket),
+    disposeSocket: (socket: SocketIO.Socket) => disposeHandlers.get(socket)?.(),
+    destroy: () => {
+      socketServer.off("connection", registerSocket);
+      for (const dispose of disposeHandlers.values()) {
+        dispose();
+      }
+    }
+  };
 };

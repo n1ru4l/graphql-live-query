@@ -2,7 +2,9 @@
   "$schema": "https://unpkg.com/@changesets/config@1.3.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "linked": [],
+  "linked": [
+    ["@n1ru4l/socket-io-graphql-server", "@n1ru4l/socket-io-graphql-client"]
+  ],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
