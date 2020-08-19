@@ -64,7 +64,9 @@ In addition to that further optimizations could be achieved. E.g. the LiveQueryS
 
 ```
 yarn install
-yarn workspaces run build
-yarn workspace example-app start
-# visit localhost:3000/graphql in browser
+yarn build
+# start example app
+yarn workspace @n1ru4l/example-server start
+yarn workspace @n1ru4l/example-client start
+# visit http://localhost:3001 or http://localhost:3001/graphql in browser
 ```
