@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "@chakra-ui/core": "0.8.0",
-    "@emotion/core": "10.0.34",
+    "@emotion/core": "10.0.35",
     "@emotion/styled": "10.0.27",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "^4.2.4",
