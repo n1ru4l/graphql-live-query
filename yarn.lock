@@ -12574,10 +12574,10 @@ trim-newlines@^2.0.0:
   resolved "https://registry.yarnpkg.com/trim-newlines/-/trim-newlines-2.0.0.tgz#b403d0b91be50c331dfc4b82eeceb22c3de16d20"
   integrity sha1-tAPQuRvlDDMd/EuC7s6yLD3hbSA=
 
-ts-node-dev@1.0.0-pre.56:
-  version "1.0.0-pre.56"
-  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.0.0-pre.56.tgz#b74c0d1db2d98f005ad73f9eaa0a3c0a231f14da"
-  integrity sha512-+2a3FAShOja+W5X6ZxKgf1PG3kOOkHCiYzSu6s3lwhLVxeMBusJudcv7W6cZKOTp7+L7hPkKW97t1CGw7bCDaA==
+ts-node-dev@1.0.0-pre.59:
+  version "1.0.0-pre.59"
+  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.0.0-pre.59.tgz#fd84fd1f5ca280d6e1cd7503e0ae5eb10fb9d30e"
+  integrity sha512-ikXsddlZaP19rx0UHr3bEPpGnqtPa0P/nt+dgR+3Okdtysw0Wi8y1lRRJo/BEbg572iOXd2iQ1dNl1UtlTmSIA==
   dependencies:
     chokidar "^3.4.0"
     dateformat "~1.0.4-1.2.3"
