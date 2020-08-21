@@ -2133,13 +2133,13 @@
   resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.2.9.tgz#fe3fcc71b442aad7cd0ec17af2f13c6e29038337"
   integrity sha512-NWDbnWtxPqqzLd2NY6ZAye34GtvQNgmnHO4ogwRyNilhTC2p1X1AkSlHXCpSI8Ub4RVeC9FNI1LWyq2O5mHgpA==
 
-"@tinyhttp/logger@0.3.12":
-  version "0.3.12"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.3.12.tgz#182e41078c7c8dc62c4adc0cf23270a34b432a97"
-  integrity sha512-eNa6S93Ua9mqBMbpPD0nLC3AQrPfOjAOiODuzKK/VKcBHzJeyMhUV5i5tvv1Pw3coykn5CEiCcqU+tx9tECobw==
+"@tinyhttp/logger@0.3.16":
+  version "0.3.16"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.3.16.tgz#e8adde8575493f8d8a9b90afaad8fe7a4c1581c0"
+  integrity sha512-5XrZ9HojP479cCztep2lZoHCem8Blq2UHpU53Rf4m1yc5/eOkN1vg0tBdvQEj5gGe4Vmn/Of72qL7mrepR8TlA==
   dependencies:
     colorette "^1.2.1"
-    dayjs "^1.8.29"
+    dayjs "^1.8.33"
 
 "@types/aria-query@^4.2.0":
   version "4.2.0"
@@ -4720,10 +4720,10 @@ dateformat@~1.0.4-1.2.3:
     get-stdin "^4.0.1"
     meow "^3.3.0"
 
-dayjs@^1.8.29:
-  version "1.8.33"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.33.tgz#18bc4a2b6c1c6f4d67b4c4f2536c0b97e5b766f7"
-  integrity sha512-881TDLZCdpJFKbraWRHcUG8zfMLLX400ENf9rFZDuWc5zYMss6xifo2PhlDX0ftOmR2NRmaIY47bAa4gKQfXqw==
+dayjs@^1.8.33:
+  version "1.8.34"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.34.tgz#d3ad33cc43d6b0f24cb8686b90aad2c653708069"
+  integrity sha512-Olb+E6EoMvdPmAMq2QoucuyZycKHjTlBXmRx8Ada+wGtq4SIXuDCdtoaX4KkK0yjf1fJLnwXQURr8gQKWKaybw==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   version "2.6.9"
