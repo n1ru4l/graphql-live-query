@@ -10,7 +10,7 @@
     "packages/example/*"
   ],
   "devDependencies": {
-    "@changesets/cli": "2.10.0",
+    "@changesets/cli": "2.10.1",
     "bob-the-bundler": "1.1.0",
     "husky": "4.2.5",
     "lint-staged": "10.2.11",
