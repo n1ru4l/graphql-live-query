@@ -7,6 +7,7 @@
     "@emotion/core": "10.0.35",
     "@emotion/styled": "10.0.27",
     "@n1ru4l/socket-io-graphql-client": "*",
+    "@n1ru4l/live-query-transport-optimizer": "*",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^10.4.9",
     "@testing-library/user-event": "^7.1.2",

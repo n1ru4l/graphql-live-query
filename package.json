@@ -14,14 +14,16 @@
     "@types/jest": "26.0.10",
     "bob-the-bundler": "1.1.0",
     "husky": "4.2.5",
-    "jest": "26.4.2",
+    "jest": "24.9.0",
     "lint-staged": "10.2.11",
     "prettier": "2.1.0",
-    "ts-jest": "26.2.0"
+    "ts-jest": "26.2.0",
+    "tsc-watch": "4.2.9",
+    "typescript": "4.0.2"
   },
   "scripts": {
     "build": "yarn ts:transpile && bob build",
-    "watch-build": "npx tsc-watch --project tsconfig.json --onSuccess \"bob build\"",
+    "watch-build": "tsc-watch --project tsconfig.json --onSuccess \"bob build\"",
     "test": "jest --no-watchman",
     "ts:transpile": "tsc --project tsconfig.build.json",
     "prerelease": "yarn build",

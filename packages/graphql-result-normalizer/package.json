@@ -1,0 +1,46 @@
+{
+  "name": "@n1ru4l/graphql-result-normalizer",
+  "version": "0.1.0",
+  "author": "n1ru4l <laurinquast@googlemail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n1ru4l/graphql-live-queries.git",
+    "directory": "packages/graphql-result-normalizer"
+  },
+  "bugs": {
+    "url": "https://github.com/n1ru4l/graphql-live-queries/issues"
+  },
+  "homepage": "https://github.com/n1ru4l/graphql-live-queries#readme",
+  "keywords": [
+    "graphql",
+    "operation",
+    "query",
+    "mutation",
+    "normalize"
+  ],
+  "scripts": {
+    "prepack": "bob prepack"
+  },
+  "devDependencies": {
+    "typescript": "3.9.7"
+  },
+  "dependencies": {},
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "exports": {
+    "require": "dist/index.cjs.js",
+    "default": "dist/index.mjs"
+  },
+  "typings": "dist/index.d.ts",
+  "typescript": {
+    "definition": "dist/index.d.ts"
+  },
+  "buildOptions": {
+    "input": "./src/index.ts"
+  },
+  "publishConfig": {
+    "directory": "dist",
+    "access": "public"
+  }
+}

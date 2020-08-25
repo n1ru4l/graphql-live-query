@@ -7,6 +7,7 @@ import * as fakeData from "./fakeData";
 
 import { UserStore } from "./user-store";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+import { applyTransportOptimizerTrait } from "@n1ru4l/live-query-transport-optimizer";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import { MessageStore } from "./message-store";
 import { PubSub } from "graphql-subscriptions";
@@ -23,13 +24,15 @@ const parsePortSafe = (port: string) => {
 
 const server = app
   .use(tinyhttpLogger.logger())
-  .use("/", (req, res) => res.send("Hello World."))
+  .use("/", (_req, res) => res.send("Hello World."))
   .listen(parsePortSafe(process.env.PORT || "3001"));
 
 const socketServer = socketIO(server);
 
 const subscriptionPubSub = new PubSub();
-const liveQueryStore = new InMemoryLiveQueryStore();
+const liveQueryStore = applyTransportOptimizerTrait(
+  new InMemoryLiveQueryStore()
+);
 const userStore = new UserStore();
 const messageStore = new MessageStore();
 

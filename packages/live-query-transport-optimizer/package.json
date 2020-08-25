@@ -1,0 +1,51 @@
+{
+  "name": "@n1ru4l/live-query-transport-optimizer",
+  "version": "0.2.0",
+  "author": "n1ru4l <laurinquast@googlemail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n1ru4l/graphql-live-queries.git",
+    "directory": "packages/live-query-transport-optimizer"
+  },
+  "bugs": {
+    "url": "https://github.com/n1ru4l/graphql-live-queries/issues"
+  },
+  "homepage": "https://github.com/n1ru4l/graphql-live-queries#readme",
+  "keywords": [
+    "graphql",
+    "query",
+    "live",
+    "real-time",
+    "json-patch",
+    "rfc-6902"
+  ],
+  "scripts": {
+    "prepack": "bob prepack"
+  },
+  "devDependencies": {
+    "@types/graphql": "14.5.0"
+  },
+  "dependencies": {
+    "@n1ru4l/graphql-live-query": "0.2.0",
+    "@n1ru4l/graphql-result-normalizer": "0.1.0",
+    "fast-json-patch": "^3.0.0-1"
+  },
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "exports": {
+    "require": "dist/index.cjs.js",
+    "default": "dist/index.mjs"
+  },
+  "typings": "dist/index.d.ts",
+  "typescript": {
+    "definition": "dist/index.d.ts"
+  },
+  "buildOptions": {
+    "input": "./src/index.ts"
+  },
+  "publishConfig": {
+    "directory": "dist",
+    "access": "public"
+  }
+}

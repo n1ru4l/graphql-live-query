@@ -1,4 +1,5 @@
 import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
+import { applyTransportNormalizerTrait } from "@n1ru4l/live-query-transport-optimizer";
 import {
   Environment,
   Network,
@@ -36,6 +37,8 @@ const attachNotifyGarbageCollectionBehaviourToStore = (store: Store): Store => {
 export const createRelayEnvironment = (
   networkInterface: SocketIOGraphQLClient
 ) => {
+  networkInterface = applyTransportNormalizerTrait(networkInterface);
+
   const fetchQuery: FetchFunction = (request, variables) => {
     if (!request.text) throw new Error("Missing document.");
     const { text: operation, name } = request;
