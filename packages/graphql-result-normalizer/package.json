@@ -23,7 +23,8 @@
     "prepack": "bob prepack"
   },
   "devDependencies": {
-    "typescript": "3.9.7"
+    "typescript": "3.9.7",
+    "@types/graphql": "14.5.0"
   },
   "dependencies": {},
   "main": "dist/index.cjs.js",
