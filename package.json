@@ -17,7 +17,7 @@
     "jest": "26.4.2",
     "lint-staged": "10.2.13",
     "prettier": "2.1.0",
-    "ts-jest": "26.2.0"
+    "ts-jest": "26.3.0"
   },
   "scripts": {
     "build": "yarn ts:transpile && bob build",
