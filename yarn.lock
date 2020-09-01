@@ -2371,13 +2371,14 @@
   resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.2.15.tgz#5db2a47027034b709b2ec9eedd138f57c2941786"
   integrity sha512-96Twcq+NjsPp/1tGMaJ0KjsiPN2vrjy+nvlo0lwkUZYZLvLz63aCO3CPPq1AU3ti03rXMkKsIvZAUx+ZyBi6EQ==
 
-"@tinyhttp/logger@0.3.18":
-  version "0.3.18"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.3.18.tgz#51f8adb1191233dc6692fb01ee4451873ad9efb1"
-  integrity sha512-tGnqHUEpGt7Dd0zUiRtSYeqjSyVOFKWbB05ctxW9xWN0VpzuC9jgjAtGOLYJsvl4LFAGu/AESH1uRbcP5axXEg==
+"@tinyhttp/logger@0.3.22":
+  version "0.3.22"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.3.22.tgz#ba4d5b5b8d2bd131107e30db6b47bd0f657968fa"
+  integrity sha512-3ibDiHBB4mTn7/lS1gbfi0R+VLES2mzpf/ZQoyK6yMImxi1khQq910rSHOJ6jrcwSYIvxth6sJ182Y7VGtp3zA==
   dependencies:
     colorette "^1.2.1"
     dayjs "^1.8.34"
+    http-status-emojis "^2.2.0"
 
 "@types/aria-query@^4.2.0":
   version "4.2.0"
@@ -7218,6 +7219,11 @@ http-signature@~1.2.0:
     assert-plus "^1.0.0"
     jsprim "^1.2.2"
     sshpk "^1.7.0"
+
+http-status-emojis@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/http-status-emojis/-/http-status-emojis-2.2.0.tgz#2cf3316f0c1610c4fc94c6fccdada35aa70f992a"
+  integrity sha512-ompKtgwpx8ff0hsbpIB7oE4ax1LXoHmftsHHStMELX56ivG3GhofTX8ZHWlUaFKfGjcGjw6G3rPk7dJRXMmbbg==
 
 https-browserify@^1.0.0:
   version "1.0.0"
