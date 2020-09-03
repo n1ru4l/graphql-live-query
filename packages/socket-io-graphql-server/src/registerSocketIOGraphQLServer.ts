@@ -66,7 +66,7 @@ const decodeMessage = (message: unknown): MessagePayload | Error => {
     } else {
       return new Error("Invalid message format. Field 'operation' is invalid.");
     }
-    const maybeVariables: unknown = (message as any).variables;
+    const maybeVariables: unknown = (message as any).variables ?? null;
     if (typeof maybeVariables === "object") {
       variables = maybeVariables;
     } else {
