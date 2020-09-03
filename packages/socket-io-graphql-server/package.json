@@ -1,6 +1,6 @@
 {
   "name": "@n1ru4l/socket-io-graphql-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
   "repository": {
@@ -30,7 +30,7 @@
     "typescript": "4.0.2"
   },
   "dependencies": {
-    "@n1ru4l/graphql-live-query": "0.2.0",
+    "@n1ru4l/graphql-live-query": "0.3.0",
     "graphql": "^15.3.0"
   },
   "main": "dist/index.cjs.js",
