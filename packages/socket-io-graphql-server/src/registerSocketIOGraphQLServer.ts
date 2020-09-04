@@ -76,7 +76,7 @@ const decodeMessage = (message: unknown): MessagePayload | Error => {
     }
     const maybeOperationName: unknown = (message as any).operationName ?? null;
     if (maybeOperationName === null || typeof maybeOperationName === "string") {
-      operationName = maybeOperationName ?? null;
+      operationName = maybeOperationName;
     } else {
       return new Error(
         "Invalid message format. Field 'operationName' is invalid."

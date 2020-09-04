@@ -23,7 +23,7 @@ type Observable<T> = {
 
 type Parameter = {
   operation: string;
-  operationName: string;
+  operationName?: string | null;
   variables?: { [key: string]: any };
 };
 
@@ -57,7 +57,7 @@ export const createSocketIOGraphQLClient = (
   };
 
   const onReconnect = () => {
-    Array.from(operations.values()).forEach(record => {
+    Array.from(operations.values()).forEach((record) => {
       record.execute();
     });
   };
@@ -70,7 +70,7 @@ export const createSocketIOGraphQLClient = (
     socket.off("reconnect", onReconnect);
   };
 
-  const execute = ({ operation, variables }: Parameter) => {
+  const execute = ({ operation, variables, operationName }: Parameter) => {
     const operationId = currentOperationId;
     currentOperationId = currentOperationId + 1;
 
@@ -88,11 +88,12 @@ export const createSocketIOGraphQLClient = (
           execute: () => {
             socket.emit("@graphql/execute", {
               id: operationId,
+              operationName,
               operation,
-              variables
+              variables,
             });
           },
-          sink
+          sink,
         };
 
         operations.set(operationId, record);
@@ -102,16 +103,16 @@ export const createSocketIOGraphQLClient = (
           unsubscribe: () => {
             operations.delete(operationId);
             socket.emit("@graphql/unsubscribe", {
-              id: operationId
+              id: operationId,
             });
-          }
+          },
         };
-      }
+      },
     } as Observable<any>;
   };
 
   return {
     execute,
-    destroy
+    destroy,
   };
 };
