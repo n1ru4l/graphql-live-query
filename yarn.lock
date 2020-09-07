@@ -2342,7 +2342,7 @@
     "@theme-ui/core" "^0.3.1"
     "@theme-ui/mdx" "^0.3.0"
 
-"@tinyhttp/app@0.2.64":
+"@tinyhttp/app@0.2.64", "@tinyhttp/app@^0.2.64":
   version "0.2.64"
   resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.2.64.tgz#ea47eabc1b32069ebbdf4534efe5c61a7dd1832a"
   integrity sha512-NzO4tImla+AQWsNtIwwXYhPKwEiTEBJcW/pVRghHqcyk7TiAtU4air32fNF5KXDb/z/EJft5qlLgOZQk2/pxdg==
@@ -2373,11 +2373,12 @@
   resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.2.15.tgz#5db2a47027034b709b2ec9eedd138f57c2941786"
   integrity sha512-96Twcq+NjsPp/1tGMaJ0KjsiPN2vrjy+nvlo0lwkUZYZLvLz63aCO3CPPq1AU3ti03rXMkKsIvZAUx+ZyBi6EQ==
 
-"@tinyhttp/logger@0.3.22":
-  version "0.3.22"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.3.22.tgz#ba4d5b5b8d2bd131107e30db6b47bd0f657968fa"
-  integrity sha512-3ibDiHBB4mTn7/lS1gbfi0R+VLES2mzpf/ZQoyK6yMImxi1khQq910rSHOJ6jrcwSYIvxth6sJ182Y7VGtp3zA==
+"@tinyhttp/logger@0.3.23":
+  version "0.3.23"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.3.23.tgz#8f6882e438b9a93a72266d2c97852817a96093f2"
+  integrity sha512-oLAZChWUfN67Olq4USHwJl+3oVdKahStWBlj4m4KgIlTk8XNrCeVtxNyLv9QlY83AVVQjdISMZHIjgR0y9LFKw==
   dependencies:
+    "@tinyhttp/app" "^0.2.64"
     colorette "^1.2.1"
     dayjs "^1.8.34"
     http-status-emojis "^2.2.0"
