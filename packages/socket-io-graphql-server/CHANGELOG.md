@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-server
 
+## 0.4.0
+
+### Minor Changes
+
+- bb822cd: The client now also sends the operationName to the server if provided. The `operationName` is now also optional.
+
 ## 0.3.0
 
 ### Minor Changes
