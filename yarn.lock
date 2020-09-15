@@ -2282,14 +2282,14 @@
   dependencies:
     "@babel/runtime" "^7.10.2"
 
-"@tinyhttp/app@0.2.66", "@tinyhttp/app@^0.2.66":
-  version "0.2.66"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.2.66.tgz#2512342f1fd1eedf645e1a7148e69fdf15c7c337"
-  integrity sha512-dlD13Z0qpbir1GAZNFOcqHnReNwoCmcV0dBRKuDyep2Tl8WrSz6GSsFPDO2wwirEd2cI0citQazBP7sqGN3bYQ==
+"@tinyhttp/app@0.2.72", "@tinyhttp/app@^0.2.66":
+  version "0.2.72"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.2.72.tgz#2b60a6666ff8bd9217399abf0db53a9b21aed0d4"
+  integrity sha512-e9mNDUZKUb3+gR6bdSXrhW8wyeajICiF3cC9Ztk0Ls/LArQMb4U9VXfOcSn6k+ivuEvf0+h4ksAl+2wzHmk5Gg==
   dependencies:
-    "@tinyhttp/cookie" "0.1.17"
-    "@tinyhttp/cookie-signature" "0.1.14"
-    "@tinyhttp/etag" "0.2.15"
+    "@tinyhttp/cookie" "0.1.18"
+    "@tinyhttp/cookie-signature" "0.1.15"
+    "@tinyhttp/etag" "0.2.16"
     es-accepts "^0.0.21"
     es-content-type "^0.0.10"
     es-fresh "^0.0.8"
@@ -2298,20 +2298,20 @@
     range-parser "^1.2.1"
     regexparam "^1.3.0"
 
-"@tinyhttp/cookie-signature@0.1.14":
-  version "0.1.14"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/cookie-signature/-/cookie-signature-0.1.14.tgz#9dc926576c1c33f42324e561f36f0f8ed4888c50"
-  integrity sha512-IV+Uf7ScAVIMjRglAxcCvuJ2T8j5BxDQuSrh1Q30jKmu8jEe3R7ypIbmFipOXZOpBjbhntFTKoMN3LUxumAVcQ==
+"@tinyhttp/cookie-signature@0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/cookie-signature/-/cookie-signature-0.1.15.tgz#9b81a5ce0e86978dff3606e7a0e4b2730bb87737"
+  integrity sha512-U5qtiwAR2eptatgOZDbd/OFCHpPSkCg+oK/PKASKya4B8YMpDBQnZpsAakKMzLurTMqr7v1Ce93H/iYItfxRFQ==
 
-"@tinyhttp/cookie@0.1.17":
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/cookie/-/cookie-0.1.17.tgz#8d50a6498ec33e2cfde0ded490bbe57c69483a3a"
-  integrity sha512-UwgrzxF7ThAeFYBxoMko3PWqLc60EzRsRXmAIxUeq2vFgPt4Y090EvFYR5W75a4LTqw5KhenZA+rwmKItdDAQw==
+"@tinyhttp/cookie@0.1.18":
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/cookie/-/cookie-0.1.18.tgz#b31529da926a4c6248d6a12d74a77f968810b537"
+  integrity sha512-SKhWt8aHWFlQ4KSyrHUxFn5fbrLu8fwZEQFYhV7/S6TcSTGg5+LsoUsZmsy3hRk3TKgSmec5m0ChzSgRyeF14g==
 
-"@tinyhttp/etag@0.2.15":
-  version "0.2.15"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.2.15.tgz#5db2a47027034b709b2ec9eedd138f57c2941786"
-  integrity sha512-96Twcq+NjsPp/1tGMaJ0KjsiPN2vrjy+nvlo0lwkUZYZLvLz63aCO3CPPq1AU3ti03rXMkKsIvZAUx+ZyBi6EQ==
+"@tinyhttp/etag@0.2.16":
+  version "0.2.16"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.2.16.tgz#c0f1fff113cc630fdf14c3e28699bbb39727d569"
+  integrity sha512-y1Q5LrAOs31wZiYEqNW7+0jnOmzHQES3R1FzMIWAmeDgDttHPMRsr+yS1wM0yIyMtBMa09v0PTh4qG7ALsE88A==
 
 "@tinyhttp/logger@0.3.25":
   version "0.3.25"
