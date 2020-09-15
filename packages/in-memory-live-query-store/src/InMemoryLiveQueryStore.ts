@@ -2,12 +2,10 @@ import type { DocumentNode, ExecutionResult } from "graphql";
 import {
   OperationVariables,
   extractLiveQueries,
-} from "@n1ru4l/graphql-live-query";
-import {
-  extractLiveQueryRootIdentifier,
   LiveQueryStore,
   UnsubscribeHandler,
 } from "@n1ru4l/graphql-live-query";
+import { extractLiveQueryRootIdentifier } from "./extractLiveQueryRootIdentifier";
 
 type StoreRecord = {
   publishUpdate: (executionResult: ExecutionResult, payload: any) => void;
@@ -20,6 +18,7 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
 
   register(
     operationDocument: DocumentNode,
+    operationName: string | null,
     _operationVariables: OperationVariables,
     executeQuery: () => Promise<ExecutionResult>,
     publishUpdate: (executionResult: ExecutionResult, payload: any) => void
@@ -29,7 +28,10 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
       throw new Error("Cannot register live query for the given document.");
     }
 
-    const identifier = extractLiveQueryRootIdentifier(liveQuery);
+    const identifier = extractLiveQueryRootIdentifier(
+      operationDocument,
+      operationName
+    );
     const record = {
       publishUpdate,
       identifier,

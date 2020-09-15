@@ -7,6 +7,7 @@ export abstract class LiveQueryStore {
   abstract async triggerUpdate(identifier: string): Promise<void>;
   abstract register(
     operationDocument: DocumentNode,
+    operationName: string | null,
     operationVariables: OperationVariables,
     executeQuery: () => Promise<ExecutionResult>,
     publishUpdate: (executionResult: ExecutionResult, payload: any) => void

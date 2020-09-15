@@ -224,6 +224,7 @@ export const registerSocketIOGraphQLServer = ({
         } else if (liveQueries.length === 1) {
           const unsubscribe = liveQueryStore.register(
             documentAst,
+            operationName,
             variableValues,
             executeOperation,
             (result: graphql.ExecutionResult, payload: any) => {
