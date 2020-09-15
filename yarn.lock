@@ -2282,7 +2282,7 @@
   dependencies:
     "@babel/runtime" "^7.10.2"
 
-"@tinyhttp/app@0.2.72", "@tinyhttp/app@^0.2.66":
+"@tinyhttp/app@0.2.72", "@tinyhttp/app@^0.2.72":
   version "0.2.72"
   resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.2.72.tgz#2b60a6666ff8bd9217399abf0db53a9b21aed0d4"
   integrity sha512-e9mNDUZKUb3+gR6bdSXrhW8wyeajICiF3cC9Ztk0Ls/LArQMb4U9VXfOcSn6k+ivuEvf0+h4ksAl+2wzHmk5Gg==
@@ -2313,14 +2313,14 @@
   resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.2.16.tgz#c0f1fff113cc630fdf14c3e28699bbb39727d569"
   integrity sha512-y1Q5LrAOs31wZiYEqNW7+0jnOmzHQES3R1FzMIWAmeDgDttHPMRsr+yS1wM0yIyMtBMa09v0PTh4qG7ALsE88A==
 
-"@tinyhttp/logger@0.3.25":
-  version "0.3.25"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.3.25.tgz#caf6a336b46f5f592677335526d428fa84ad3b88"
-  integrity sha512-QXSiFk8VguhyJK54XfunVevY2qu56Vll0+4TQr4HlFrl/kl58Ve11y2TJc/2WpxZ0jyrjCOKl0xkzWcVCjOggw==
+"@tinyhttp/logger@0.3.31":
+  version "0.3.31"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.3.31.tgz#a674d44c72349cec0dd8aa7d570a97b894953d27"
+  integrity sha512-88/ce2h8lb3sGAKmr/0FyIIfAU/EfRAKcWBLWrJJwZ0A9+s//J0eIS+Mowkb40a16Dw9uzgdwHL6TtJ8xT1JBA==
   dependencies:
-    "@tinyhttp/app" "^0.2.66"
+    "@tinyhttp/app" "^0.2.72"
     colorette "^1.2.1"
-    dayjs "^1.8.34"
+    dayjs "^1.8.35"
     http-status-emojis "^2.2.0"
 
 "@types/aria-query@^4.2.0":
@@ -5049,10 +5049,10 @@ dateformat@~1.0.4-1.2.3:
     get-stdin "^4.0.1"
     meow "^3.3.0"
 
-dayjs@^1.8.34:
-  version "1.8.34"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.34.tgz#d3ad33cc43d6b0f24cb8686b90aad2c653708069"
-  integrity sha512-Olb+E6EoMvdPmAMq2QoucuyZycKHjTlBXmRx8Ada+wGtq4SIXuDCdtoaX4KkK0yjf1fJLnwXQURr8gQKWKaybw==
+dayjs@^1.8.35:
+  version "1.8.35"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.35.tgz#67118378f15d31623f3ee2992f5244b887606888"
+  integrity sha512-isAbIEenO4ilm6f8cpqvgjZCsuerDAz2Kb7ri201AiNn58aqXuaLJEnCtfIMdCvERZHNGRY5lDMTr/jdAnKSWQ==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   version "2.6.9"
