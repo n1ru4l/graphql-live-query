@@ -1,52 +1,51 @@
 import type { DocumentNode, ExecutionResult } from "graphql";
 import {
-  OperationVariables,
   extractLiveQueries,
   LiveQueryStore,
+  LiveQueryStoreRegisterParameter,
   UnsubscribeHandler,
 } from "@n1ru4l/graphql-live-query";
-import { extractLiveQueryRootIdentifier } from "./extractLiveQueryRootIdentifier";
+import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 
 type StoreRecord = {
   publishUpdate: (executionResult: ExecutionResult, payload: any) => void;
   identifier: string[];
-  executeQuery: () => Promise<ExecutionResult>;
+  executeOperation: () => Promise<ExecutionResult>;
 };
 
 export class InMemoryLiveQueryStore implements LiveQueryStore {
   private _store = new Map<DocumentNode, StoreRecord>();
 
-  register(
-    operationDocument: DocumentNode,
-    operationName: string | null,
-    _operationVariables: OperationVariables,
-    executeQuery: () => Promise<ExecutionResult>,
-    publishUpdate: (executionResult: ExecutionResult, payload: any) => void
-  ): UnsubscribeHandler {
+  register({
+    operationDocument,
+    operationName,
+    executeOperation,
+    publishUpdate,
+  }: LiveQueryStoreRegisterParameter): UnsubscribeHandler {
     const [liveQuery] = extractLiveQueries(operationDocument);
     if (!liveQuery) {
       throw new Error("Cannot register live query for the given document.");
     }
 
-    const identifier = extractLiveQueryRootIdentifier(
+    const identifier = extractLiveQueryRootFieldCoordinates(
       operationDocument,
       operationName
     );
     const record = {
       publishUpdate,
       identifier,
-      executeQuery,
+      executeOperation,
     };
     this._store.set(operationDocument, record);
     // Execute initial query
-    executeQuery().then((result) => record.publishUpdate(result, result));
+    executeOperation().then((result) => record.publishUpdate(result, result));
     return () => void this._store.delete(operationDocument);
   }
 
   async triggerUpdate(identifier: string) {
     for (const record of this._store.values()) {
       if (record.identifier.includes(identifier)) {
-        const result = await record.executeQuery();
+        const result = await record.executeOperation();
         record.publishUpdate(result, result);
       }
     }

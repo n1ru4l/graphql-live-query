@@ -40,9 +40,9 @@ const gatherFields = (
 };
 
 /**
- * Returns an array that contains all the root query type field selections for a given graphql operation.
+ * Returns an array that contains all the root query type field coordinates for a given graphql operation.
  */
-export const extractLiveQueryRootIdentifier = (
+export const extractLiveQueryRootFieldCoordinates = (
   documentNode: DocumentNode,
   operationName?: string
 ) => {
