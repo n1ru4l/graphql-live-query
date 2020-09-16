@@ -14,7 +14,7 @@
     "@n1ru4l/in-memory-live-query-store": "*",
     "@n1ru4l/socket-io-graphql-server": "*",
     "@tinyhttp/app": "0.2.72",
-    "@tinyhttp/logger": "0.3.31",
+    "@tinyhttp/logger": "0.3.33",
     "faker": "5.1.0",
     "graphql": "15.3.0",
     "graphql-subscriptions": "1.1.0",
