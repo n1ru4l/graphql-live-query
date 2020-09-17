@@ -2282,22 +2282,6 @@
   dependencies:
     "@babel/runtime" "^7.10.2"
 
-"@tinyhttp/app@0.2.72":
-  version "0.2.72"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.2.72.tgz#2b60a6666ff8bd9217399abf0db53a9b21aed0d4"
-  integrity sha512-e9mNDUZKUb3+gR6bdSXrhW8wyeajICiF3cC9Ztk0Ls/LArQMb4U9VXfOcSn6k+ivuEvf0+h4ksAl+2wzHmk5Gg==
-  dependencies:
-    "@tinyhttp/cookie" "0.1.18"
-    "@tinyhttp/cookie-signature" "0.1.15"
-    "@tinyhttp/etag" "0.2.16"
-    es-accepts "^0.0.21"
-    es-content-type "^0.0.10"
-    es-fresh "^0.0.8"
-    es-mime-types "^0.0.15"
-    proxy-addr "^2.0.6"
-    range-parser "^1.2.1"
-    regexparam "^1.3.0"
-
 "@tinyhttp/app@0.2.78":
   version "0.2.78"
   resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.2.78.tgz#96228c31eb492f570dcd95bd67f5c7a969bf1497"
@@ -2310,30 +2294,15 @@
     proxy-addr "^2.0.6"
     regexparam "^1.3.0"
 
-"@tinyhttp/cookie-signature@0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/cookie-signature/-/cookie-signature-0.1.15.tgz#9b81a5ce0e86978dff3606e7a0e4b2730bb87737"
-  integrity sha512-U5qtiwAR2eptatgOZDbd/OFCHpPSkCg+oK/PKASKya4B8YMpDBQnZpsAakKMzLurTMqr7v1Ce93H/iYItfxRFQ==
-
 "@tinyhttp/cookie-signature@0.1.16":
   version "0.1.16"
   resolved "https://registry.yarnpkg.com/@tinyhttp/cookie-signature/-/cookie-signature-0.1.16.tgz#4b6b981a652757fe1ed17009939630fd2ff35c21"
   integrity sha512-FadziLh71ogtPJsjgCZ2AwO58o7XGfbqxaHoO6fAp/7t+o8mZoNtyR2toDSmjhG44QHe50klV7exky/cg4COtg==
 
-"@tinyhttp/cookie@0.1.18":
-  version "0.1.18"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/cookie/-/cookie-0.1.18.tgz#b31529da926a4c6248d6a12d74a77f968810b537"
-  integrity sha512-SKhWt8aHWFlQ4KSyrHUxFn5fbrLu8fwZEQFYhV7/S6TcSTGg5+LsoUsZmsy3hRk3TKgSmec5m0ChzSgRyeF14g==
-
 "@tinyhttp/cookie@0.1.20":
   version "0.1.20"
   resolved "https://registry.yarnpkg.com/@tinyhttp/cookie/-/cookie-0.1.20.tgz#554ed371a604221000152cf913d8fd944b66143c"
   integrity sha512-Y431NyL0HjNCmKr8jOnGFGNRdequuyI+QlOAgPc0Wl7bfI0biCO+yAs6BmWU9wOe0kx5pRjBEywRLwVAAlA99g==
-
-"@tinyhttp/etag@0.2.16":
-  version "0.2.16"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.2.16.tgz#c0f1fff113cc630fdf14c3e28699bbb39727d569"
-  integrity sha512-y1Q5LrAOs31wZiYEqNW7+0jnOmzHQES3R1FzMIWAmeDgDttHPMRsr+yS1wM0yIyMtBMa09v0PTh4qG7ALsE88A==
 
 "@tinyhttp/etag@0.2.17":
   version "0.2.17"
