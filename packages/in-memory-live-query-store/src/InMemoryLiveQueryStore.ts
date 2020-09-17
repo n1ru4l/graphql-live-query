@@ -8,7 +8,6 @@ import {
   isNonNullType,
   GraphQLOutputType,
   GraphQLScalarType,
-  GraphQLFieldResolver,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
 import {
@@ -32,21 +31,50 @@ const isIDScalarType = (type: GraphQLOutputType): type is GraphQLScalarType => {
   return false;
 };
 
-const attachIdCollectorToSchema = (schema: GraphQLSchema): GraphQLSchema => {
-  return wrapSchema(schema, [
-    new TransformObjectFields((typeName, fieldName, fieldConfig) => {
-      if (fieldName === "id" && isIDScalarType(fieldConfig.type)) {
-        let resolve = fieldConfig.resolve;
-        fieldConfig.resolve = (async (src, args, context, info) => {
-          const id = await resolve!(src, args, context, info);
-          context?.__gatherId?.(typeName, id);
-          return id;
-        }) as GraphQLFieldResolver<any, any, any>;
-      }
+const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
+
+const isPromise = (input: unknown): input is Promise<unknown> => {
+  return (
+    typeof input === "object" &&
+    "then" in input &&
+    typeof input["then"] === "function"
+  );
+};
+
+const addResourceIdentifierCollectorToSchema = (
+  schema: GraphQLSchema
+): GraphQLSchema =>
+  wrapSchema(schema, [
+    new TransformObjectFields((typename, fieldName, fieldConfig) => {
+      let isIDField = fieldName === "id" && isIDScalarType(fieldConfig.type);
+
+      let resolve = fieldConfig.resolve;
+      fieldConfig.resolve = (src, args, context, info) => {
+        if (!context || !context[ORIGINAL_CONTEXT_SYMBOL]) {
+          return resolve(src, args, context, info);
+        }
+
+        const gatherId = context.gatherId;
+        context = context[ORIGINAL_CONTEXT_SYMBOL];
+        const result = resolve(src, args, context, info);
+        if (isIDField) {
+          if (isPromise(result)) {
+            result.then(
+              (value) => gatherId(typename, value),
+              () => undefined
+            );
+          } else {
+            gatherId(typename, result);
+          }
+        }
+        return result;
+      };
+
       return fieldConfig;
     }),
   ]);
-};
+
+type ResourceGatherFunction = (typename: string, id: string) => void;
 
 export class InMemoryLiveQueryStore implements LiveQueryStore {
   private _store = new Map<DocumentNode, StoreRecord>();
@@ -74,7 +102,7 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
 
     let schema = this._cache.get(inputSchema);
     if (!schema) {
-      schema = attachIdCollectorToSchema(inputSchema);
+      schema = addResourceIdentifierCollectorToSchema(inputSchema);
       this._cache.set(inputSchema, schema);
     }
 
@@ -88,15 +116,17 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
         executionCounter = executionCounter + 1;
         const counter = executionCounter;
         const newIds: string[] = [];
+        const gatherId: ResourceGatherFunction = (typename, id) =>
+          newIds.push(`${typename}:${id}`);
+
         return graphql({
           schema,
           source: print(operationDocument),
           operationName,
           rootValue,
           contextValue: {
-            // @ts-ignore
-            ...contextValue,
-            __gatherId: (typeName, id) => newIds.push(`${typeName}:${id}`),
+            [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
+            gatherId,
           },
           variableValues: operationVariables,
         }).finally(() => {
