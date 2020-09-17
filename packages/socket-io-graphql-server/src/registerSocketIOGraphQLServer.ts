@@ -222,17 +222,23 @@ export const registerSocketIOGraphQLServer = ({
             "Document is allowed to only contain one live query."
           );
         } else if (liveQueries.length === 1) {
-          const unsubscribe = liveQueryStore.register(
-            documentAst,
-            variableValues,
+          const publishUpdate = (
+            result: graphql.ExecutionResult,
+            payload: any
+          ) => {
+            result.errors?.forEach((error) => {
+              onError(error);
+            });
+            socket.emit("@graphql/result", { ...payload, id });
+          };
+
+          const unsubscribe = liveQueryStore.register({
+            operationDocument: documentAst,
+            operationName,
+            operationVariables: variableValues,
             executeOperation,
-            (result: graphql.ExecutionResult, payload: any) => {
-              result.errors?.forEach((error) => {
-                onError(error);
-              });
-              socket.emit("@graphql/result", { ...payload, id });
-            }
-          );
+            publishUpdate,
+          });
           subscriptions.set(id, unsubscribe);
           return;
         }
