@@ -20,7 +20,7 @@ import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFiel
 
 type StoreRecord = {
   publishUpdate: (executionResult: ExecutionResult, payload: any) => void;
-  identifier: string[];
+  identifier: Set<string>;
   executeOperation: () => Promise<ExecutionResult>;
 };
 
@@ -111,13 +111,13 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
 
     const record = {
       publishUpdate,
-      identifier: [...rootFieldIdentifier],
+      identifier: new Set(rootFieldIdentifier),
       executeOperation: () => {
         executionCounter = executionCounter + 1;
         const counter = executionCounter;
-        const newIds: string[] = [];
+        const newIdentifier = new Set(rootFieldIdentifier);
         const gatherId: ResourceGatherFunction = (typename, id) =>
-          newIds.push(`${typename}:${id}`);
+          newIdentifier.add(`${typename}:${id}`);
 
         return graphql({
           schema,
@@ -131,7 +131,7 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
           variableValues: operationVariables,
         }).finally(() => {
           if (counter === executionCounter) {
-            record.identifier = [...rootFieldIdentifier, ...newIds];
+            record.identifier = newIdentifier;
           }
         });
       },
@@ -147,7 +147,7 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
 
   async triggerUpdate(identifier: string) {
     for (const record of this._store.values()) {
-      if (record.identifier.includes(identifier)) {
+      if (record.identifier.has(identifier)) {
         const result = await record.executeOperation();
         record.publishUpdate(result, result);
       }
