@@ -2294,6 +2294,18 @@
     proxy-addr "^2.0.6"
     regexparam "^1.3.0"
 
+"@tinyhttp/app@0.2.80":
+  version "0.2.80"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.2.80.tgz#44b89aba1ed7c1f1a47d5c7ef4a2e0f6b78e6b2d"
+  integrity sha512-y5eI3jDZJfTQ+mMYg8l/EjOmD3eV7fev8FWZiL4bnAQHkGxbio6M0r9vDsrhrcbcbK4gQa0SrqdgO+x9If2ySA==
+  dependencies:
+    "@tinyhttp/cookie" "0.1.20"
+    "@tinyhttp/req" "^0.0.1"
+    "@tinyhttp/res" "0.0.4"
+    "@tinyhttp/router" "0.0.5"
+    proxy-addr "^2.0.6"
+    regexparam "^1.3.0"
+
 "@tinyhttp/cookie-signature@0.1.16":
   version "0.1.16"
   resolved "https://registry.yarnpkg.com/@tinyhttp/cookie-signature/-/cookie-signature-0.1.16.tgz#4b6b981a652757fe1ed17009939630fd2ff35c21"
@@ -2339,10 +2351,26 @@
     "@tinyhttp/send" "0.0.2"
     es-mime-types "^0.0.15"
 
+"@tinyhttp/res@0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/res/-/res-0.0.4.tgz#6917f456fe6926f8eb8300d2f62331cb5bb593e0"
+  integrity sha512-qO+FgrvfpbyhSESvdC8gOuOBYm9NBaMxBRGVx4K+eAfUpfHEl4Q+9In68ZqjwQ2z+uLBHuIohnBJrqxkddrHig==
+  dependencies:
+    "@tinyhttp/cookie" "0.1.20"
+    "@tinyhttp/cookie-signature" "0.1.16"
+    "@tinyhttp/req" "^0.0.1"
+    "@tinyhttp/send" "0.0.3"
+    es-mime-types "^0.0.15"
+
 "@tinyhttp/router@0.0.4":
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/@tinyhttp/router/-/router-0.0.4.tgz#356791fe44a8f8c1b6267b84e8d248707f6ec2b3"
   integrity sha512-zdYeydfV1NR2/7uTUpudvt2uMGkXZM9C3wu+6SAigbzACimMvDtc2W7DCEkpawJtn1qhc2bh1jZzbSvq+KV5ww==
+
+"@tinyhttp/router@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/router/-/router-0.0.5.tgz#2750cbbb857a7186fba95cea179348e66472641c"
+  integrity sha512-wQgZIlV+G9sZiCC48XztxgEoTFXYG/4mcgUGpd0VBxXPtLg9uei6MT819D2mkPQpAcWDVr9DvBiN3iKYBfO61w==
 
 "@tinyhttp/send@0.0.2":
   version "0.0.2"
@@ -2351,6 +2379,15 @@
   dependencies:
     "@tinyhttp/etag" "0.2.17"
     es-content-type "^0.0.10"
+
+"@tinyhttp/send@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/send/-/send-0.0.3.tgz#e7fd2b087af8f061576876851364b2fd6c1fa8bd"
+  integrity sha512-+Ab+DG3W7gQ7SKkuy9n8gMsSR77jxo+yMKhDudDk9AXPwGHl2fHnoPbiitCC2rI0xxBPoSDTsQtU6nZVLFqV7A==
+  dependencies:
+    "@tinyhttp/etag" "0.2.17"
+    es-content-type "^0.0.10"
+    es-mime-types "^0.0.15"
 
 "@types/aria-query@^4.2.0":
   version "4.2.0"
