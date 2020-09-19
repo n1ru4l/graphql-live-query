@@ -3,11 +3,10 @@ import {
   ExecutionResult,
   GraphQLSchema,
   isScalarType,
-  graphql,
-  print,
   isNonNullType,
   GraphQLOutputType,
   GraphQLScalarType,
+  execute,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
 import {
@@ -18,10 +17,11 @@ import {
 } from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 
+type PromiseOrValue<T> = T | Promise<T>;
 type StoreRecord = {
   publishUpdate: (executionResult: ExecutionResult, payload: any) => void;
   identifier: Set<string>;
-  executeOperation: () => Promise<ExecutionResult>;
+  executeOperation: () => PromiseOrValue<ExecutionResult>;
 };
 
 const isIDScalarType = (type: GraphQLOutputType): type is GraphQLScalarType => {
@@ -39,6 +39,15 @@ const isPromise = (input: unknown): input is Promise<unknown> => {
     "then" in input &&
     typeof input["then"] === "function"
   );
+};
+
+// invokes the callback with the resolved or sync input. Handy when you don't know whether the input is a Promise or the actual value you want.
+const runWith = (input: unknown, callback: (value: unknown) => void) => {
+  if (isPromise(input)) {
+    input.then(callback, () => undefined);
+  } else {
+    callback(input);
+  }
 };
 
 const addResourceIdentifierCollectorToSchema = (
@@ -119,9 +128,9 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
         const gatherId: ResourceGatherFunction = (typename, id) =>
           newIdentifier.add(`${typename}:${id}`);
 
-        return graphql({
+        const result = execute({
           schema,
-          source: print(operationDocument),
+          document: operationDocument,
           operationName,
           rootValue,
           contextValue: {
@@ -129,18 +138,23 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
             gatherId,
           },
           variableValues: operationVariables,
-        }).finally(() => {
+        });
+
+        runWith(result, () => {
           if (counter === executionCounter) {
             record.identifier = newIdentifier;
           }
         });
+
+        return result;
       },
     };
+
     this._store.set(operationDocument, record);
     // Execute initial query
-    record
-      .executeOperation()
-      .then((result) => record.publishUpdate(result, result));
+    runWith(record.executeOperation(), (result) => {
+      record.publishUpdate(result, result);
+    });
 
     return () => void this._store.delete(operationDocument);
   }
