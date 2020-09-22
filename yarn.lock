@@ -2302,14 +2302,14 @@
     proxy-addr "^2.0.6"
     regexparam "^1.3.0"
 
-"@tinyhttp/app@0.3.11":
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.3.11.tgz#d11e166bf3961616b58e4078385c169cbd88a40c"
-  integrity sha512-RgKrJkE9LsxdYi+tAb6mJ+l3UpAbGHwMr7gSvO45GU2NITFmZQxWHAr1gXNscGnkBargzgRad1uHNhmul4y+UA==
+"@tinyhttp/app@0.3.14":
+  version "0.3.14"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.3.14.tgz#8f110830015a5840dd7943ed93f95b453ebc9bf3"
+  integrity sha512-WPLQhFpBItl6qUxHyfTtF0ymKYZqAevz2jTbSMmbhXFJU9Zy9UZX/0y9CmRv0sGDKNmWFGv9PpZn6ap2fS2Wdw==
   dependencies:
     "@tinyhttp/cookie" "0.2.3"
-    "@tinyhttp/req" "^0.1.7"
-    "@tinyhttp/res" "0.1.10"
+    "@tinyhttp/req" "^0.1.8"
+    "@tinyhttp/res" "0.1.12"
     "@tinyhttp/router" "0.1.3"
     proxy-addr "^2.0.6"
 
@@ -2362,10 +2362,10 @@
     es-fresh "^0.0.8"
     range-parser "^1.2.1"
 
-"@tinyhttp/req@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/req/-/req-0.1.7.tgz#44121b3d726f02d8fe59920a73070b6f78111a96"
-  integrity sha512-YveqWaxAOJSBYClIpNt/8I67VmMLBRa1uMyi4dCAt7owRoU6gA/c/O2BpY8Tz9pcF8beCgg5KqEyLj/Wywjy2g==
+"@tinyhttp/req@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/req/-/req-0.1.8.tgz#97d0bf176c35f5e6116d36674b19350f8aa1d937"
+  integrity sha512-PVgPcBy53G9xIiC+qW6ZKVdjNN1paaoB5nNYgiHmXDQed6meOhJbYlXxvkO1jVeay6Taypwf/xNDEv/Y5bMm/w==
   dependencies:
     "@tinyhttp/accepts" "0.0.24"
     "@tinyhttp/url" "^0.0.0"
@@ -2383,14 +2383,14 @@
     "@tinyhttp/send" "0.0.3"
     es-mime-types "^0.0.15"
 
-"@tinyhttp/res@0.1.10":
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/res/-/res-0.1.10.tgz#dc904ed771042014052808f9c42ecec984b881de"
-  integrity sha512-MeA+EK510C3A+Y104BAq19qSjV1/Rm/GxYPhzda4ur9sKfrA4pl+LbQGQurbXlbdgZ7eN3P1LidWx4J1cgH5KQ==
+"@tinyhttp/res@0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/res/-/res-0.1.12.tgz#1c1b46b1e828f09b4f470b06ad8536b94f2fde44"
+  integrity sha512-wvHQKC2UY2z9uTZM2zdjRLDnHRaMalxpiKmR2XmHa9vFuWu1H89GuTPrYEsbpyIexfrWJvCSJTlKY32wEdCA3Q==
   dependencies:
     "@tinyhttp/cookie" "0.2.3"
     "@tinyhttp/cookie-signature" "0.2.2"
-    "@tinyhttp/req" "^0.1.7"
+    "@tinyhttp/req" "^0.1.8"
     "@tinyhttp/send" "0.1.3"
     es-mime-types "^0.0.16"
     es-vary "^0.0.7"
