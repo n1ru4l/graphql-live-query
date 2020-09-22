@@ -10,7 +10,7 @@
     "packages/example/*"
   ],
   "devDependencies": {
-    "@changesets/cli": "2.10.2",
+    "@changesets/cli": "2.10.3",
     "@types/jest": "26.0.14",
     "bob-the-bundler": "1.1.0",
     "husky": "4.3.0",
