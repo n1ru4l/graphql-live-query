@@ -21,7 +21,7 @@
     "socket.io": "2.3.0"
   },
   "devDependencies": {
-    "@types/faker": "5.1.0",
+    "@types/faker": "5.1.2",
     "@types/node": "14.11.2",
     "@types/socket.io": "2.1.11",
     "ts-node-dev": "1.0.0-pre.63",
