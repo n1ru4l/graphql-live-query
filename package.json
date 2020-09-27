@@ -20,6 +20,9 @@
     "prettier": "2.1.2",
     "ts-jest": "26.3.0"
   },
+  "resolutions": {
+    "graphql": "15.3.0"
+  },
   "scripts": {
     "build": "yarn ts:transpile && bob build",
     "watch-build": "npx tsc-watch --project tsconfig.json --onSuccess \"bob build\"",

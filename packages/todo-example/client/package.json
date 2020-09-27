@@ -1,0 +1,50 @@
+{
+  "name": "@n1ru4l/todo-example-client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "react-scripts": "3.4.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "@types/react-dom": "16.9.8",
+    "@types/react-relay": "7.0.9",
+    "@types/relay-runtime": "10.0.3",
+    "@types/socket.io-client": "1.4.33",
+    "babel-plugin-relay": "10.0.1",
+    "relay-compiler": "10.0.1",
+    "relay-compiler-language-typescript": "13.0.1",
+    "relay-config": "10.0.1",
+    "relay-runtime": "10.0.1",
+    "socket.io-client": "2.3.0",
+    "todomvc-app-css": "2.3.0",
+    "classnames": "2.2.6",
+    "@types/classnames": "2.2.10"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "relay-compiler": "relay-compiler",
+    "relay-compiler:watch": "relay-compiler --watch"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
