@@ -1,13 +1,4 @@
-import {
-  DocumentNode,
-  ExecutionResult,
-  GraphQLSchema,
-  isScalarType,
-  isNonNullType,
-  GraphQLOutputType,
-  GraphQLScalarType,
-  execute,
-} from "graphql";
+import { DocumentNode, ExecutionResult, GraphQLSchema, execute } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
 import {
   extractLiveQueries,
@@ -16,6 +7,8 @@ import {
   UnsubscribeHandler,
 } from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
+import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
+import { runWith } from "./runWith";
 
 type PromiseOrValue<T> = T | Promise<T>;
 type StoreRecord = {
@@ -24,38 +17,22 @@ type StoreRecord = {
   executeOperation: () => PromiseOrValue<ExecutionResult>;
 };
 
-const isIDScalarType = (type: GraphQLOutputType): type is GraphQLScalarType => {
-  if (isNonNullType(type)) {
-    return isScalarType(type.ofType);
-  }
-  return false;
-};
+type ResourceIdentifierCollectorFunction = (
+  parameter: Readonly<{
+    typename: string;
+    id: string;
+  }>
+) => void;
 
 const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
-
-const isPromise = (input: unknown): input is Promise<unknown> => {
-  return (
-    typeof input === "object" &&
-    "then" in input &&
-    typeof input["then"] === "function"
-  );
-};
-
-// invokes the callback with the resolved or sync input. Handy when you don't know whether the input is a Promise or the actual value you want.
-const runWith = (input: unknown, callback: (value: unknown) => void) => {
-  if (isPromise(input)) {
-    input.then(callback, () => undefined);
-  } else {
-    callback(input);
-  }
-};
 
 const addResourceIdentifierCollectorToSchema = (
   schema: GraphQLSchema
 ): GraphQLSchema =>
   wrapSchema(schema, [
     new TransformObjectFields((typename, fieldName, fieldConfig) => {
-      let isIDField = fieldName === "id" && isIDScalarType(fieldConfig.type);
+      let isIDField =
+        fieldName === "id" && isNonNullIDScalarType(fieldConfig.type);
 
       let resolve = fieldConfig.resolve;
       fieldConfig.resolve = (src, args, context, info) => {
@@ -63,18 +40,14 @@ const addResourceIdentifierCollectorToSchema = (
           return resolve(src, args, context, info);
         }
 
-        const gatherId = context.gatherId;
+        const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
+          context.collectResourceIdentifier;
         context = context[ORIGINAL_CONTEXT_SYMBOL];
         const result = resolve(src, args, context, info);
         if (isIDField) {
-          if (isPromise(result)) {
-            result.then(
-              (value) => gatherId(typename, value),
-              () => undefined
-            );
-          } else {
-            gatherId(typename, result);
-          }
+          runWith(result, (id: string) =>
+            collectResourceIdentifier({ typename, id })
+          );
         }
         return result;
       };
@@ -83,12 +56,32 @@ const addResourceIdentifierCollectorToSchema = (
     }),
   ]);
 
-type ResourceGatherFunction = (typename: string, id: string) => void;
+export type BuildResourceIdentifierFunction = (
+  parameter: Readonly<{
+    typename: string;
+    id: string;
+  }>
+) => string;
+
+export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunction = (
+  params
+) => `${params.typename}:${params.id}`;
+
+type InMemoryLiveQueryStoreParameter = {
+  buildResourceIdentifier?: BuildResourceIdentifierFunction;
+};
 
 export class InMemoryLiveQueryStore implements LiveQueryStore {
   private _store = new Map<DocumentNode, StoreRecord>();
   // cache that stores all patched schema objects
   private _cache = new Map<GraphQLSchema, GraphQLSchema>();
+  private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
+
+  constructor(params: InMemoryLiveQueryStoreParameter) {
+    if (params.buildResourceIdentifier) {
+      this._buildResourceIdentifier = params.buildResourceIdentifier;
+    }
+  }
 
   register({
     schema: inputSchema,
@@ -125,8 +118,9 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
         executionCounter = executionCounter + 1;
         const counter = executionCounter;
         const newIdentifier = new Set(rootFieldIdentifier);
-        const gatherId: ResourceGatherFunction = (typename, id) =>
-          newIdentifier.add(`${typename}:${id}`);
+        const collectResourceIdentifier: ResourceIdentifierCollectorFunction = (
+          parameter
+        ) => newIdentifier.add(this._buildResourceIdentifier(parameter));
 
         const result = execute({
           schema,
@@ -135,7 +129,7 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
           rootValue,
           contextValue: {
             [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
-            gatherId,
+            collectResourceIdentifier,
           },
           variableValues: operationVariables,
         });
