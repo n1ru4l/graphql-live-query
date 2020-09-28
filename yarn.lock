@@ -2301,6 +2301,17 @@
     "@tinyhttp/router" "0.4.0"
     proxy-addr "^2.0.6"
 
+"@tinyhttp/app@0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.3.tgz#466857439fb4fe8d2f2c1a993db88888c86663fd"
+  integrity sha512-YhWQ54adhw1MN7tCCThH39FvuWg5UzJ8sD0t6KWYm4iDCgyRZvQY/M9gu0FhOcQjiYM/g44lh0yeSPCFeCHg2Q==
+  dependencies:
+    "@tinyhttp/cookie" "0.4.0"
+    "@tinyhttp/req" "0.4.0"
+    "@tinyhttp/res" "0.4.1"
+    "@tinyhttp/router" "0.4.0"
+    proxy-addr "^2.0.6"
+
 "@tinyhttp/content-disposition@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@tinyhttp/content-disposition/-/content-disposition-0.4.0.tgz#7d1abc19ec61ec7c9f79862a353b4fe3fd1fd6cc"
