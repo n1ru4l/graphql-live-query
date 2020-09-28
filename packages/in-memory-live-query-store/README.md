@@ -10,7 +10,7 @@ yarn add -E @n1ru4l/in-memory-live-query-store
 
 ## Usage
 
-The `InMemoryLiveQueryStore` can be used to register a live query. The store will keep track of all root query field coordinates (e.g. `Query.todos`) and global resource identifiers (e.q. `Todo:1`). The store can than be notified to re-execute queries that select a given root query field or resource identifier by notifying it via the `triggerUpdate` method with the corresponding input. A resource identifier is composed out of the typename and the actual resolved id value separated by a colon. For ensuring that the store keeps track of all your query resources you should always select the `id` field on your object types. The store will only keep track of fields with the name `id` and the type `ID!` (`GraphQLNonNull(GraphQLID)`).
+The `InMemoryLiveQueryStore` can be used to register a live query. The store will keep track of all root query field coordinates (e.g. `Query.todos`) and global resource identifiers (e.g. `Todo:1`). The store can than be notified to re-execute live query operations that select a given root query field or resource identifier via the `triggerUpdate` method with the corresponding input. A resource identifier is composed out of the typename and the actual resolved id value separated by a colon, but can be customized. For ensuring that the store keeps track of all your query resources you should always select the `id` field on your object types. The store will only keep track of fields with the name `id` and the type `ID!` (`GraphQLNonNull(GraphQLID)`).
 
 ```ts
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
