@@ -1,0 +1,39 @@
+### THIS FILE IS AUTO GENERATED
+
+"""
+Instruction for establishing a live connection that is updated once the underlying data changes.
+"""
+directive @live on QUERY
+
+type Query {
+  todos: [Todo!]!
+}
+
+type Todo {
+  id: ID!
+  content: String!
+  isCompleted: Boolean!
+}
+
+type Mutation {
+  todoAdd(id: ID!, content: String!): TodoAddResult!
+  todoDelete(id: ID!): TodoRemoveResult!
+  todoToggleIsCompleted(id: ID!): TodoToggleIsCompletedResult!
+  todoChangeContent(id: ID!, content: String!): TodoChangeContentResult!
+}
+
+type TodoAddResult {
+  addedTodo: Todo!
+}
+
+type TodoRemoveResult {
+  removedTodoId: ID!
+}
+
+type TodoToggleIsCompletedResult {
+  toggledTodo: Todo!
+}
+
+type TodoChangeContentResult {
+  changedTodo: Todo!
+}

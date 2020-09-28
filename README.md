@@ -58,7 +58,8 @@ In addition to that further optimizations could be achieved. E.g. the LiveQueryS
 - [x] [`@n1ru4l/in-memory-live-query-store`](packages/in-memory-live-query-store) - A simple query store that holds the queries in memory.
 - [x] [`@n1ru4l/socket-io-graphql-server`](packages/socket-io-graphql-server) - A layer for serving a GraphQL schema via a socket.io server. Supports Queries, Mutations, Subscriptions and Live Queries.
 - [x] [`@n1ru4l/socket-io-graphql-client`](packages/socket-io-graphql-client) - A network interface for consuming a GraphQL schema that is served via `@n1ru4l/socket-io-graphql-server`.
-- [ ] [`example-app`](packages/example) - A simple chat app that uses all the above packages.
+- [x] [todo-example-app](packages/todo-example) - The classic Todo App - but with state that sync across clients
+- [ ] [chat-example-app`](packages/example) - A simple chat app that uses all the above packages.
 
 ## Setup
 

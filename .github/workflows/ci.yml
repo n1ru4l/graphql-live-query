@@ -24,4 +24,6 @@ jobs:
 
       - name: Build Packages
         run: yarn build
-      # TODO: TEST packages :)
+
+      - name: "Test Packages"
+        run: yarn test

@@ -1,9 +1,17 @@
-import * as graphql from "graphql";
+import {
+  graphql,
+  parse,
+  subscribe,
+  GraphQLSchema,
+  DocumentNode,
+  ExecutionResult,
+  GraphQLError,
+} from "graphql";
 import { LiveQueryStore, extractLiveQueries } from "@n1ru4l/graphql-live-query";
 import { isAsyncIterable } from "./isAsyncIterable";
 import { isSome } from "./isSome";
 
-export type ErrorHandler = (error: graphql.GraphQLError) => void;
+export type ErrorHandler = (error: GraphQLError) => void;
 
 export const defaultErrorHandler: ErrorHandler = console.error;
 
@@ -22,7 +30,7 @@ export type GetExecutionParameterFunction = (
   parameter: GetExecutionParameterFunctionParameter
 ) => PromiseOrPlain<{
   graphQLExecutionParameter: {
-    schema: graphql.GraphQLSchema;
+    schema: GraphQLSchema;
     contextValue?: unknown;
     rootValue?: unknown;
     // These will be overwritten if provided; Useful for persisted queries etc.
@@ -34,7 +42,7 @@ export type GetExecutionParameterFunction = (
   onError?: ErrorHandler;
 }>;
 
-const isSubscriptionOperation = (ast: graphql.DocumentNode) =>
+const isSubscriptionOperation = (ast: DocumentNode) =>
   !!ast.definitions.find(
     (def) =>
       def.kind === "OperationDefinition" && def.operation === "subscription"
@@ -182,37 +190,33 @@ export const registerSocketIOGraphQLServer = ({
         ...graphQLExecutionParameter,
       };
 
-      const documentAst = graphql.parse(source);
+      const documentAst = parse(source);
 
       if (isSubscriptionOperation(documentAst)) {
-        graphql
-          .subscribe({
-            ...executionParameter,
-            document: documentAst,
-          })
-          .then((result) => {
-            if (isAsyncIterable(result)) {
-              subscriptions.set(id, () => result.return?.(null));
-              const run = async () => {
-                for await (const subscriptionResult of result) {
-                  subscriptionResult.errors?.forEach((error) => {
-                    onError(error);
-                  });
-                  socket.emit("@graphql/result", { ...subscriptionResult, id });
-                }
-              };
-              run();
-            } else {
-              result.errors?.forEach((error) => {
-                onError(error);
-              });
-              socket.emit("@graphql/result", { ...result, id, isFinal: true });
-            }
-          });
+        subscribe({
+          ...executionParameter,
+          document: documentAst,
+        }).then((result) => {
+          if (isAsyncIterable(result)) {
+            subscriptions.set(id, () => result.return?.(null));
+            const run = async () => {
+              for await (const subscriptionResult of result) {
+                subscriptionResult.errors?.forEach((error) => {
+                  onError(error);
+                });
+                socket.emit("@graphql/result", { ...subscriptionResult, id });
+              }
+            };
+            run();
+          } else {
+            result.errors?.forEach((error) => {
+              onError(error);
+            });
+            socket.emit("@graphql/result", { ...result, id, isFinal: true });
+          }
+        });
         return;
       }
-
-      const executeOperation = () => graphql.graphql(executionParameter);
 
       if (isSome(liveQueryStore)) {
         const liveQueries = extractLiveQueries(documentAst);
@@ -222,10 +226,7 @@ export const registerSocketIOGraphQLServer = ({
             "Document is allowed to only contain one live query."
           );
         } else if (liveQueries.length === 1) {
-          const publishUpdate = (
-            result: graphql.ExecutionResult,
-            payload: any
-          ) => {
+          const publishUpdate = (result: ExecutionResult, payload: any) => {
             result.errors?.forEach((error) => {
               onError(error);
             });
@@ -233,10 +234,12 @@ export const registerSocketIOGraphQLServer = ({
           };
 
           const unsubscribe = liveQueryStore.register({
+            schema: graphQLExecutionParameter.schema,
+            rootValue: graphQLExecutionParameter.rootValue,
+            contextValue: graphQLExecutionParameter.contextValue,
             operationDocument: documentAst,
             operationName,
             operationVariables: variableValues,
-            executeOperation,
             publishUpdate,
           });
           subscriptions.set(id, unsubscribe);
@@ -244,7 +247,7 @@ export const registerSocketIOGraphQLServer = ({
         }
       }
 
-      executeOperation().then((result) => {
+      graphql(executionParameter).then((result) => {
         result.errors?.forEach((error) => {
           onError(error);
         });

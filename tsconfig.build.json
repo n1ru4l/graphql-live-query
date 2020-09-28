@@ -6,6 +6,7 @@
     "**/tests",
     "**/test-assets",
     "**/test-files",
-    "packages/example"
+    "packages/example",
+    "packages/todo-example"
   ]
 }
