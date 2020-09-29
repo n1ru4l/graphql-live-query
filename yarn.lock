@@ -2397,33 +2397,6 @@
     es-mime-types "^0.0.16"
     negotiator "^0.6.2"
 
-"@tinyhttp/app@0.2.72":
-  version "0.2.72"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.2.72.tgz#2b60a6666ff8bd9217399abf0db53a9b21aed0d4"
-  integrity sha512-e9mNDUZKUb3+gR6bdSXrhW8wyeajICiF3cC9Ztk0Ls/LArQMb4U9VXfOcSn6k+ivuEvf0+h4ksAl+2wzHmk5Gg==
-  dependencies:
-    "@tinyhttp/cookie" "0.1.18"
-    "@tinyhttp/cookie-signature" "0.1.15"
-    "@tinyhttp/etag" "0.2.16"
-    es-accepts "^0.0.21"
-    es-content-type "^0.0.10"
-    es-fresh "^0.0.8"
-    es-mime-types "^0.0.15"
-    proxy-addr "^2.0.6"
-    range-parser "^1.2.1"
-    regexparam "^1.3.0"
-
-"@tinyhttp/app@0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.3.tgz#466857439fb4fe8d2f2c1a993db88888c86663fd"
-  integrity sha512-YhWQ54adhw1MN7tCCThH39FvuWg5UzJ8sD0t6KWYm4iDCgyRZvQY/M9gu0FhOcQjiYM/g44lh0yeSPCFeCHg2Q==
-  dependencies:
-    "@tinyhttp/cookie" "0.4.0"
-    "@tinyhttp/req" "0.4.0"
-    "@tinyhttp/res" "0.4.1"
-    "@tinyhttp/router" "0.4.0"
-    proxy-addr "^2.0.6"
-
 "@tinyhttp/app@0.4.5":
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.5.tgz#67dc17e60bc7cbc78678516ccb43d07df1aeeb3c"
@@ -2440,30 +2413,15 @@
   resolved "https://registry.yarnpkg.com/@tinyhttp/content-disposition/-/content-disposition-0.4.0.tgz#7d1abc19ec61ec7c9f79862a353b4fe3fd1fd6cc"
   integrity sha512-0tn+Jy0fgvM4o24uZEpRbC9AhsGD5MHpn+j45CSnaNd4huaXGoCmTh25bQSqcSJHKQKXYu6DAs1y6c/cZj+XSw==
 
-"@tinyhttp/cookie-signature@0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/cookie-signature/-/cookie-signature-0.1.15.tgz#9b81a5ce0e86978dff3606e7a0e4b2730bb87737"
-  integrity sha512-U5qtiwAR2eptatgOZDbd/OFCHpPSkCg+oK/PKASKya4B8YMpDBQnZpsAakKMzLurTMqr7v1Ce93H/iYItfxRFQ==
-
 "@tinyhttp/cookie-signature@0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@tinyhttp/cookie-signature/-/cookie-signature-0.4.0.tgz#eab5a4bb18e4ba26dd11954baa83d941668f79f2"
   integrity sha512-7LF13vQway7KM+VuKviW0Ejh1g18BJsF5P44u8Et4xk8OrgsC79YMGcHGsso0x6LKh5Mw5ZKRWZrcZa86XTgvw==
 
-"@tinyhttp/cookie@0.1.18":
-  version "0.1.18"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/cookie/-/cookie-0.1.18.tgz#b31529da926a4c6248d6a12d74a77f968810b537"
-  integrity sha512-SKhWt8aHWFlQ4KSyrHUxFn5fbrLu8fwZEQFYhV7/S6TcSTGg5+LsoUsZmsy3hRk3TKgSmec5m0ChzSgRyeF14g==
-
 "@tinyhttp/cookie@0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@tinyhttp/cookie/-/cookie-0.4.0.tgz#4921a02ee2c485d1e6d5cc7b022e248d01a72644"
   integrity sha512-EzBodM4LF+sN1w5A8/goJ2tJHlN3kxthmVmZeaJCuAPJ5Whkhw81UvOuxK7TGFjNls+K1rZSltER/Wl4bRClhA==
-
-"@tinyhttp/etag@0.2.16":
-  version "0.2.16"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.2.16.tgz#c0f1fff113cc630fdf14c3e28699bbb39727d569"
-  integrity sha512-y1Q5LrAOs31wZiYEqNW7+0jnOmzHQES3R1FzMIWAmeDgDttHPMRsr+yS1wM0yIyMtBMa09v0PTh4qG7ALsE88A==
 
 "@tinyhttp/etag@0.4.0":
   version "0.4.0"
@@ -5898,14 +5856,6 @@ es-abstract@^1.17.0, es-abstract@^1.17.0-next.1, es-abstract@^1.17.2, es-abstrac
     string.prototype.trimend "^1.0.1"
     string.prototype.trimstart "^1.0.1"
 
-es-accepts@^0.0.21:
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/es-accepts/-/es-accepts-0.0.21.tgz#8210b8ce8a18530f929fa01b4e691c1a13865df6"
-  integrity sha512-OLRpeWeL5rd7Wu/0UJOGUNAk4isqrz2YiDcuP+HcxJsJQPfwm7rr3vd0WMpIoXVlRjXe8chEJW3emipH6XHBVA==
-  dependencies:
-    es-mime-types "^0.0.15"
-    negotiator "^0.6.2"
-
 es-content-type@^0.0.10:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/es-content-type/-/es-content-type-0.0.10.tgz#98ffeacf8399eaa080c521fe751144a8cc0f3222"
@@ -5915,13 +5865,6 @@ es-fresh@^0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/es-fresh/-/es-fresh-0.0.8.tgz#d4ac7157161362abb8c7fb53b0477bd55308fd5d"
   integrity sha512-ZM+K/T/zHJVuOhaz19iymidACazB1fl2uihBtSfRie8YzN1YM+KldVmNaU+GSmVvTOPSO2utKOhxcOinr5tKjw==
-
-es-mime-types@^0.0.15:
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/es-mime-types/-/es-mime-types-0.0.15.tgz#06b8fc7f6b2d0e0044f77b84f1e893c011eef4cd"
-  integrity sha512-sq0ySRM26OfrXDaJv2+hgE9a6GuxJu7xt1uwBDeKNAHOofmmf5eJc/onimK3Ub6/JfdWcpPOH173A2R694ZvMw==
-  dependencies:
-    mime-db "^1.44.0"
 
 es-mime-types@^0.0.16:
   version "0.0.16"
