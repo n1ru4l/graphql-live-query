@@ -2424,6 +2424,17 @@
     "@tinyhttp/router" "0.4.0"
     proxy-addr "^2.0.6"
 
+"@tinyhttp/app@0.4.5":
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.5.tgz#67dc17e60bc7cbc78678516ccb43d07df1aeeb3c"
+  integrity sha512-lswZMd6XEtncaUZhnHlgPjx/QdIBHa7bIXPqKf5lKjIVt4fPh4/T89f3rrvaw//KYTTxRXCfmplTUzJE3tRcNA==
+  dependencies:
+    "@tinyhttp/cookie" "0.4.0"
+    "@tinyhttp/req" "0.4.0"
+    "@tinyhttp/res" "0.4.1"
+    "@tinyhttp/router" "0.4.0"
+    proxy-addr "^2.0.6"
+
 "@tinyhttp/content-disposition@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@tinyhttp/content-disposition/-/content-disposition-0.4.0.tgz#7d1abc19ec61ec7c9f79862a353b4fe3fd1fd6cc"
@@ -2459,12 +2470,12 @@
   resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.4.0.tgz#1234296ea9ff4fb5c15c6b6b18b724666b23d9fa"
   integrity sha512-E22YQ22eZLD3qGawz9JxdBlsFSoe4VI2nkOIC+8/dpkw955O/CA3+2eV+klWZ2qDFxOH1L+LVqkMIWg7qurrYQ==
 
-"@tinyhttp/logger@0.4.22":
-  version "0.4.22"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.4.22.tgz#a075b18325136d3c92356a4db3dca02138ce1ea9"
-  integrity sha512-f/a0THETUb0s/+IrJMzo2E/Q+BAuWoyNZx+Dbr/CY/rSvXhUad2EFW0VuosXbGNKOkXPRhAJZE+S7Gw4YfxuOw==
+"@tinyhttp/logger@0.4.24":
+  version "0.4.24"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.4.24.tgz#462eb6b8bc106d91c9279cb7f1b7c64ca4e935bd"
+  integrity sha512-koMgkE3AcTJZbR9l2RU5GamJy+Nt5mfBkqTIWBddbE6atBM5aCnu6mV6xLNycppHHR8Z73SBJonjiqMYUFPPYw==
   dependencies:
-    "@tinyhttp/app" "0.4.3"
+    "@tinyhttp/app" "0.4.5"
     colorette "^1.2.1"
     dayjs "^1.8.36"
     http-status-emojis "^2.2.0"
