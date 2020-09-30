@@ -4,6 +4,8 @@ Proof of concept implementation of GraphQL Live Queries.
 
 [Read the blog post](https://dev.to/n1ru4l/graphql-live-queries-with-socket-io-4mh6)
 
+[Learn how `InMemoryLiveQueryStore` keeps track of the resources consumed by clients](https://dev.to/n1ru4l/collecting-graphql-live-query-resource-identifier-with-graphql-tools-5fm5)
+
 ## Motivation
 
 There is no live query implementation that is not tied to a specific database out there (or at least I did not see any). This implementation serves as an example how it could be done without being tied to any database.
