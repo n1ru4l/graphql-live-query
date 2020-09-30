@@ -2397,17 +2397,6 @@
     es-mime-types "^0.0.16"
     negotiator "^0.6.2"
 
-"@tinyhttp/app@0.4.5":
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.5.tgz#67dc17e60bc7cbc78678516ccb43d07df1aeeb3c"
-  integrity sha512-lswZMd6XEtncaUZhnHlgPjx/QdIBHa7bIXPqKf5lKjIVt4fPh4/T89f3rrvaw//KYTTxRXCfmplTUzJE3tRcNA==
-  dependencies:
-    "@tinyhttp/cookie" "0.4.0"
-    "@tinyhttp/req" "0.4.0"
-    "@tinyhttp/res" "0.4.1"
-    "@tinyhttp/router" "0.4.0"
-    proxy-addr "^2.0.6"
-
 "@tinyhttp/app@0.4.7":
   version "0.4.7"
   resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.7.tgz#3aaa184c13f5fba30812049f588894a32360801e"
@@ -2439,12 +2428,12 @@
   resolved "https://registry.yarnpkg.com/@tinyhttp/etag/-/etag-0.4.0.tgz#1234296ea9ff4fb5c15c6b6b18b724666b23d9fa"
   integrity sha512-E22YQ22eZLD3qGawz9JxdBlsFSoe4VI2nkOIC+8/dpkw955O/CA3+2eV+klWZ2qDFxOH1L+LVqkMIWg7qurrYQ==
 
-"@tinyhttp/logger@0.4.24":
-  version "0.4.24"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.4.24.tgz#462eb6b8bc106d91c9279cb7f1b7c64ca4e935bd"
-  integrity sha512-koMgkE3AcTJZbR9l2RU5GamJy+Nt5mfBkqTIWBddbE6atBM5aCnu6mV6xLNycppHHR8Z73SBJonjiqMYUFPPYw==
+"@tinyhttp/logger@0.4.26":
+  version "0.4.26"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/logger/-/logger-0.4.26.tgz#1109b71aa92e6405da4f5572257c51244cd9b77d"
+  integrity sha512-iSGBqiPkGetDwuzRdIMK5XV2A/WSdv55FLLiPvVvhJhYCLPQXwxM4T918zs2IH0WLfG3TBSGOytY625ttnCITA==
   dependencies:
-    "@tinyhttp/app" "0.4.5"
+    "@tinyhttp/app" "0.4.7"
     colorette "^1.2.1"
     dayjs "^1.8.36"
     http-status-emojis "^2.2.0"
@@ -2459,20 +2448,6 @@
     "@tinyhttp/url" "0.4.0"
     es-fresh "^0.0.8"
     range-parser "^1.2.1"
-
-"@tinyhttp/res@0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/res/-/res-0.4.1.tgz#f97411fc18308ccdbe9de14cda3d4b85a9d3c340"
-  integrity sha512-MUdRjjm4jnjhfSMc1uR5GZHXFU6OO50QJPvHGvyWLhIg9nQgc4p81QJ2GsIp0lm//f3Mm01RmneS1hFSvetjXA==
-  dependencies:
-    "@tinyhttp/content-disposition" "^0.4.0"
-    "@tinyhttp/cookie" "0.4.0"
-    "@tinyhttp/cookie-signature" "0.4.0"
-    "@tinyhttp/req" "0.4.0"
-    "@tinyhttp/send" "0.4.1"
-    es-mime-types "^0.0.16"
-    es-vary "^0.0.7"
-    escape-html "^1.0.3"
 
 "@tinyhttp/res@0.4.3":
   version "0.4.3"
@@ -2492,15 +2467,6 @@
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@tinyhttp/router/-/router-0.4.0.tgz#d7291d843c78852203916a7e7c965fbe2ed345eb"
   integrity sha512-82vr6KiAOsPzy3pMN7QmyONzVpKzl3MA5Q0FsG3DMCF1td4kcITEve+PT6RlnzYiBk0IfR3FPc3hhYq8SSzE7A==
-
-"@tinyhttp/send@0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@tinyhttp/send/-/send-0.4.1.tgz#a824089ed44747ab77c7c47ab61f6ed420ba11d2"
-  integrity sha512-+IggFmhAfsi5bVhS+hkI4SRW9x4Gg07EpHJXbteJ9OlmbwDcClJwOkxtvIkvOB9Eekgg5IlJE2iNH0wQT27wSg==
-  dependencies:
-    "@tinyhttp/etag" "0.4.0"
-    es-content-type "^0.0.10"
-    es-mime-types "^0.0.16"
 
 "@tinyhttp/send@0.4.3":
   version "0.4.3"
