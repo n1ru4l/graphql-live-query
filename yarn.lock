@@ -2408,6 +2408,17 @@
     "@tinyhttp/router" "0.4.0"
     proxy-addr "^2.0.6"
 
+"@tinyhttp/app@0.4.7":
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.7.tgz#3aaa184c13f5fba30812049f588894a32360801e"
+  integrity sha512-qpvs/IGxr9STwAE0W+Uuz+PSO0ZvyPcRFpNLf99vp/CnvVRo/l5T/HeCCZ4O2a+IBO3Eakifw4/8Pu83UaCRmA==
+  dependencies:
+    "@tinyhttp/cookie" "0.4.0"
+    "@tinyhttp/req" "0.4.0"
+    "@tinyhttp/res" "0.4.3"
+    "@tinyhttp/router" "0.4.0"
+    proxy-addr "^2.0.6"
+
 "@tinyhttp/content-disposition@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@tinyhttp/content-disposition/-/content-disposition-0.4.0.tgz#7d1abc19ec61ec7c9f79862a353b4fe3fd1fd6cc"
@@ -2463,6 +2474,20 @@
     es-vary "^0.0.7"
     escape-html "^1.0.3"
 
+"@tinyhttp/res@0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/res/-/res-0.4.3.tgz#4fcbf944ccfd9a6a293bd660c130ab7061a361a4"
+  integrity sha512-TTMZ41gTx4lGCTRZShmPKhH9j9QZbzKx+MiFftCJpKz9r4ZcCzoNY/2TaVElZKroB4eu14qkZrIZtoyvfQ1Bkw==
+  dependencies:
+    "@tinyhttp/content-disposition" "^0.4.0"
+    "@tinyhttp/cookie" "0.4.0"
+    "@tinyhttp/cookie-signature" "0.4.0"
+    "@tinyhttp/req" "0.4.0"
+    "@tinyhttp/send" "0.4.3"
+    es-mime-types "^0.0.16"
+    es-vary "^0.0.7"
+    escape-html "^1.0.3"
+
 "@tinyhttp/router@0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@tinyhttp/router/-/router-0.4.0.tgz#d7291d843c78852203916a7e7c965fbe2ed345eb"
@@ -2472,6 +2497,15 @@
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@tinyhttp/send/-/send-0.4.1.tgz#a824089ed44747ab77c7c47ab61f6ed420ba11d2"
   integrity sha512-+IggFmhAfsi5bVhS+hkI4SRW9x4Gg07EpHJXbteJ9OlmbwDcClJwOkxtvIkvOB9Eekgg5IlJE2iNH0wQT27wSg==
+  dependencies:
+    "@tinyhttp/etag" "0.4.0"
+    es-content-type "^0.0.10"
+    es-mime-types "^0.0.16"
+
+"@tinyhttp/send@0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/send/-/send-0.4.3.tgz#63c8236fcb3fca90f4425db79de7b195dd023549"
+  integrity sha512-/dzJFVsvI1Sk8aVaJUf+rtggmIx+uzrkDaGT8ukKdCd1xNgF6b5T2kmy3zvbG1so8wCTowqQJTurQ5JLProosw==
   dependencies:
     "@tinyhttp/etag" "0.4.0"
     es-content-type "^0.0.10"
