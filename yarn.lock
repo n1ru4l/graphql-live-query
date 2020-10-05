@@ -2397,6 +2397,17 @@
     es-mime-types "^0.0.16"
     negotiator "^0.6.2"
 
+"@tinyhttp/app@0.4.10":
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.10.tgz#2557967149a7ba894c6fb9677a72ece04027da30"
+  integrity sha512-gnF7kgygKGP+i/FIa5qKGFy392t9WsV2BjZxcOXL+xZfZr0xEOfydjtNBS7BM0KyV/W6+LO74SgzvncOvlvsxA==
+  dependencies:
+    "@tinyhttp/cookie" "0.4.0"
+    "@tinyhttp/req" "0.4.2"
+    "@tinyhttp/res" "0.4.5"
+    "@tinyhttp/router" "0.4.0"
+    proxy-addr "^2.0.6"
+
 "@tinyhttp/app@0.4.9":
   version "0.4.9"
   resolved "https://registry.yarnpkg.com/@tinyhttp/app/-/app-0.4.9.tgz#899961dd7de3290bfa66051c5e8c359642d3f90d"
