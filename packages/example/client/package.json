@@ -9,7 +9,7 @@
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.0.4",
-    "@testing-library/user-event": "^12.1.6",
+    "@testing-library/user-event": "^12.1.7",
     "@types/graphql": "14.5.0",
     "@types/react": "16.9.50",
     "@types/react-dom": "16.9.8",
