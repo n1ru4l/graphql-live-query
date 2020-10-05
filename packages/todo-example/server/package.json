@@ -6,7 +6,7 @@
     "@n1ru4l/in-memory-live-query-store": "*",
     "@n1ru4l/socket-io-graphql-server": "*",
     "@tinyhttp/app": "0.4.10",
-    "@tinyhttp/logger": "0.4.28",
+    "@tinyhttp/logger": "0.4.29",
     "graphql": "15.3.0",
     "socket.io": "2.3.0"
   },
