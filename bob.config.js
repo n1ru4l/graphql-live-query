@@ -4,6 +4,7 @@ module.exports = {
     "@n1ru4l/example-client",
     "@n1ru4l/example-server",
     "@n1ru4l/todo-example-client",
+    "@n1ru4l/todo-example-client-apollo",
     "@n1ru4l/todo-example-server",
   ], // ignored packages
   base: "origin/main",

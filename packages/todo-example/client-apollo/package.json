@@ -1,0 +1,49 @@
+{
+  "name": "@n1ru4l/todo-example-client-apollo",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/client": "3.2.2",
+    "graphql": "15.3.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "1.17.10",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^12.1.7",
+    "@types/classnames": "2.2.10",
+    "@types/react-dom": "16.9.8",
+    "@types/socket.io-client": "1.4.34",
+    "classnames": "2.2.6",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.3",
+    "socket.io-client": "2.3.1",
+    "todomvc-app-css": "2.3.0",
+    "@graphql-codegen/typescript-operations": "1.17.8",
+    "@graphql-codegen/typescript": "1.17.10",
+    "@graphql-codegen/typescript-react-apollo": "2.0.7"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "generate:types": "graphql-codegen --config codegen.yml"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+mutation TodoApplication_TodoChangeContentMutation(
+  $id: ID!
+  $content: String!
+) {
+  todoChangeContent(id: $id, content: $content) {
+    __typename
+  }
+}

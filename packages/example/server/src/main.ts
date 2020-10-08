@@ -29,7 +29,7 @@ const server = app
 const socketServer = socketIO(server);
 
 const subscriptionPubSub = new PubSub();
-const liveQueryStore = new InMemoryLiveQueryStore();
+const liveQueryStore = new InMemoryLiveQueryStore({});
 const userStore = new UserStore();
 const messageStore = new MessageStore();
 
