@@ -1,0 +1,15 @@
+diff --git a/node_modules/bob-the-bundler/dist/commands/build.js b/node_modules/bob-the-bundler/dist/commands/build.js
+index 1e2bcf9..bfe9efa 100644
+--- a/node_modules/bob-the-bundler/dist/commands/build.js
++++ b/node_modules/bob-the-bundler/dist/commands/build.js
+@@ -270,8 +270,8 @@ function validatePackageJson(pkg) {
+     expect("typings", `${distDir}/index.d.ts`);
+     expect("typescript.definition", `${distDir}/index.d.ts`);
+     if (pkg.exports) {
+-        expect("exports.require", pkg.main);
+-        expect("exports.default", `${distDir}/index.mjs`);
++       expect("exports.require",  `./${pkg.main}`);
++       expect("exports.default", `./${distDir}/index.mjs`);
+     }
+ }
+ exports.validatePackageJson = validatePackageJson;
