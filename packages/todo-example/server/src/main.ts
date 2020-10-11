@@ -22,7 +22,7 @@ const server = app
   .listen(parsePortSafe(process.env.PORT || "3001"));
 
 const socketServer = socketIO(server);
-const liveQueryStore = new InMemoryLiveQueryStore({});
+const liveQueryStore = new InMemoryLiveQueryStore();
 
 const rootValue = {
   todos: new Map(),

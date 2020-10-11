@@ -77,8 +77,8 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
   private _cache = new Map<GraphQLSchema, GraphQLSchema>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
 
-  constructor(params: InMemoryLiveQueryStoreParameter) {
-    if (params.buildResourceIdentifier) {
+  constructor(params?: InMemoryLiveQueryStoreParameter) {
+    if (params?.buildResourceIdentifier) {
       this._buildResourceIdentifier = params.buildResourceIdentifier;
     }
   }
