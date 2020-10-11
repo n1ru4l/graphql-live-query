@@ -43,7 +43,7 @@ Practical example:
 // somewhere inside a mutation resolver
 await db.users.push(createNewUser());
 // all live queries that select Query.users must be updated.
-liveQueryStore.triggerUpdate("Query.users");
+liveQueryStore.emit("Query.users");
 ```
 
 ### 2. How are the updates sent/applied to the client

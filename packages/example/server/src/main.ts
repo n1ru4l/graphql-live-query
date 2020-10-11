@@ -36,7 +36,7 @@ const messageStore = new MessageStore();
 // lets add some new users randomly
 setInterval(() => {
   userStore.add(fakeData.createFakeUser());
-  liveQueryStore.triggerUpdate("Query.users");
+  liveQueryStore.emit("Query.users");
 }, 10000).unref();
 
 // lets add some new messages randomly
@@ -46,7 +46,7 @@ setInterval(() => {
   if (user) {
     const newMessage = fakeData.createFakeMessage(user.id);
     messageStore.add(newMessage);
-    liveQueryStore.triggerUpdate("Query.messages");
+    liveQueryStore.emit("Query.messages");
     subscriptionPubSub.publish("onNewMessage", { messageId: newMessage.id });
   }
 }, 100).unref();
@@ -58,7 +58,7 @@ setInterval(() => {
     const message = messageStore.getLast();
     if (message) {
       message.content = fakeData.randomSentence();
-      liveQueryStore.triggerUpdate("Query.messages");
+      liveQueryStore.emit("Query.messages");
     }
   }
 }, 2000).unref();

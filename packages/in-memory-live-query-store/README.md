@@ -47,7 +47,7 @@ const registration = inMemoryLiveQueryStore.register({
 });
 
 rootValue.todos[0].isComplete = true;
-inMemoryLiveQueryStore.triggerUpdate(`Todo:1`);
+inMemoryLiveQueryStore.emit(`Todo:1`);
 rootValue.todos.push({ id: "2", content: "Baz", isComplete: false });
-inMemoryLiveQueryStore.triggerUpdate(`Query.todos`);
+inMemoryLiveQueryStore.emit(`Query.todos`);
 ```

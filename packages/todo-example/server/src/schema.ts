@@ -116,7 +116,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
           isCompleted: false,
         };
         root.todos.set(args.id, addedTodo);
-        context.liveQueryStore.triggerUpdate(`Query.todos`);
+        context.liveQueryStore.emit(`Query.todos`);
         return {
           addedTodo,
         };
@@ -131,7 +131,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
       },
       resolve: (root, args, context) => {
         root.todos.delete(args.id);
-        context.liveQueryStore.triggerUpdate(`Query.todos`);
+        context.liveQueryStore.emit(`Query.todos`);
         return {
           removedTodoId: args.id,
         };
@@ -150,7 +150,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
           throw new Error(`Todo with id '${args.id}' does not exist.`);
         }
         todo.isCompleted = !todo.isCompleted;
-        context.liveQueryStore.triggerUpdate(`Todo:${args.id}`);
+        context.liveQueryStore.emit(`Todo:${args.id}`);
         return {
           toggledTodo: todo,
         };
@@ -172,7 +172,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
           throw new Error(`Todo with id '${args.id}' does not exist.`);
         }
         todo.content = args.content;
-        context.liveQueryStore.triggerUpdate(`Todo:${args.id}`);
+        context.liveQueryStore.emit(`Todo:${args.id}`);
         return {
           changedTodo: todo,
         };

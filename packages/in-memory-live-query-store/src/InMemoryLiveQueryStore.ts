@@ -153,11 +153,18 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
     return () => void this._store.delete(operationDocument);
   }
 
-  async triggerUpdate(identifier: string) {
-    for (const record of this._store.values()) {
-      if (record.identifier.has(identifier)) {
-        const result = await record.executeOperation();
-        record.publishUpdate(result, result);
+  async emit(identifiers: string[] | string) {
+    if (typeof identifiers === "string") {
+      identifiers = [identifiers];
+    }
+
+    // Todo it might be better to simply use a hash map of the events ninstead of iterating through everything...
+    for (const identifier of identifiers) {
+      for (const record of this._store.values()) {
+        if (record.identifier.has(identifier)) {
+          const result = await record.executeOperation();
+          record.publishUpdate(result, result);
+        }
       }
     }
   }
