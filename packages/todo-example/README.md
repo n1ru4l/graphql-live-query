@@ -5,4 +5,26 @@ That means all changes to the TODO list are immediately synced across all schema
 
 The backend is written with "plain" `graphql-js` and without persistent storage. It is super lightweight and only has around ~300 lines of code.
 
-The frontend is written using `create-react-app` and `relay`.
+There are three frontend implementations available that use the most widely adopted React GraphQL clients.
+
+All the "frontends" use `create-react-app` as the base.
+
+- Relay
+- Apollo Client
+- Urql
+
+## Starting the server
+
+```bash
+cd server
+yarn start
+```
+
+## Starting the client
+
+```bash
+cd client-relay # or client-apollo or client-urql
+yarn start
+```
+
+Visit http://localhost:3000
