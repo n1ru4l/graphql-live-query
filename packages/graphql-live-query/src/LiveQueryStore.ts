@@ -14,7 +14,7 @@ export type LiveQueryStoreRegisterParameter = {
 };
 
 export abstract class LiveQueryStore {
-  abstract async triggerUpdate(identifier: string): Promise<void>;
+  abstract emit(identifier: string): Promise<void>;
   abstract register(
     params: LiveQueryStoreRegisterParameter
   ): UnsubscribeHandler;
