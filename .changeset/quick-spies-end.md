@@ -3,4 +3,4 @@
 "@n1ru4l/in-memory-live-query-store": minor
 ---
 
-rename triggerUpdate method to emit
+**BREAKING CHANG** rename triggerUpdate method to emit
