@@ -43,16 +43,16 @@ Practical example:
 // somewhere inside a mutation resolver
 await db.users.push(createNewUser());
 // all live queries that select Query.users must be updated.
-liveQueryStore.emit("Query.users");
+liveQueryStore.invalidate("Query.users");
 ```
 
 ### 2. How are the updates sent/applied to the client
 
-The transport layer can be anything that transports data from the server to the client (most likely a browser). The examples in this repository use socket.io which sends data over websockets but also comes with a fallback over http polling per default.
+The transport layer can be anything that transports data from the server to the client (most likely a browser or mobile device). The examples in this repository use socket.io which sends data over websockets but also comes with a fallback over http polling per default.
 
 Most GraphQL clients (even GraphiQL) have support for Observable data structures which are perfect for describing both Subscription and Live Queries. Ideally a GraphQL Live Query implementation uses a Observable for pushing the latest query data to the client framework that consumes the data.
 
-In addition to that further optimizations could be achieved. E.g. the LiveQueryStore could only send patches to the client which should be applied to the initial query result or clients that have the same selection set could be merged so that the query must be only executed once when the underlying data changes. A distributed backend with many clients could leverage a query store that relies on redis etc.
+Further optimizations could be achieved. E.g. the LiveQueryStore could only send patches to the client which should be applied to the initial query result or clients that have the same selection set could be merged so that the query must be only executed once when the underlying data changes. A distributed backend with many clients could leverage a query store that relies on redis etc.
 
 ## Implementation
 
@@ -61,7 +61,6 @@ In addition to that further optimizations could be achieved. E.g. the LiveQueryS
 - [x] [`@n1ru4l/socket-io-graphql-server`](packages/socket-io-graphql-server) - A layer for serving a GraphQL schema via a socket.io server. Supports Queries, Mutations, Subscriptions and Live Queries.
 - [x] [`@n1ru4l/socket-io-graphql-client`](packages/socket-io-graphql-client) - A network interface for consuming a GraphQL schema that is served via `@n1ru4l/socket-io-graphql-server`.
 - [x] [todo-example-app](packages/todo-example) - The classic Todo App - but with state that sync across clients
-- [ ] [chat-example-app`](packages/example) - A simple chat app that uses all the above packages.
 
 ## Setup
 

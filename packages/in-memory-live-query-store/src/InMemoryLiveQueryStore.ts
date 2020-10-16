@@ -1,20 +1,25 @@
-import { DocumentNode, ExecutionResult, GraphQLSchema, execute } from "graphql";
+import {
+  DocumentNode,
+  ExecutionResult,
+  GraphQLSchema,
+  execute as defaultExecute,
+  GraphQLError,
+} from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
 import {
+  ExecuteLiveQueryParameter,
   extractLiveQueries,
-  LiveQueryStore,
-  LiveQueryStoreRegisterParameter,
-  UnsubscribeHandler,
 } from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
+import { PushPullAsyncIterableIterator } from "./PushPullAsyncIterableIterator";
 
 type PromiseOrValue<T> = T | Promise<T>;
 type StoreRecord = {
-  publishUpdate: (executionResult: ExecutionResult, payload: any) => void;
+  iterator: PushPullAsyncIterableIterator<ExecutionResult>;
   identifier: Set<string>;
-  executeOperation: () => PromiseOrValue<ExecutionResult>;
+  run: () => PromiseOrValue<void>;
 };
 
 type ResourceIdentifierCollectorFunction = (
@@ -69,36 +74,48 @@ export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunctio
 
 type InMemoryLiveQueryStoreParameter = {
   buildResourceIdentifier?: BuildResourceIdentifierFunction;
+  execute?: typeof defaultExecute;
 };
 
-export class InMemoryLiveQueryStore implements LiveQueryStore {
+export class InMemoryLiveQueryStore {
   private _store = new Map<DocumentNode, StoreRecord>();
   // cache that stores all patched schema objects
   private _cache = new Map<GraphQLSchema, GraphQLSchema>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
+  private _execute = defaultExecute;
 
   constructor(params?: InMemoryLiveQueryStoreParameter) {
     if (params?.buildResourceIdentifier) {
       this._buildResourceIdentifier = params.buildResourceIdentifier;
     }
+    if (params?.execute) {
+      this._execute = params.execute;
+    }
   }
 
-  register({
+  execute = async ({
     schema: inputSchema,
-    operationDocument,
+    document,
     rootValue,
     contextValue,
-    operationVariables,
+    variableValues,
     operationName,
-    publishUpdate,
-  }: LiveQueryStoreRegisterParameter): UnsubscribeHandler {
-    const [liveQuery] = extractLiveQueries(operationDocument);
-    if (!liveQuery) {
-      throw new Error("Cannot register live query for the given document.");
+  }: ExecuteLiveQueryParameter): Promise<
+    AsyncIterableIterator<ExecutionResult> | ExecutionResult
+  > => {
+    const liveQueries = extractLiveQueries(document);
+    if (liveQueries.length !== 1) {
+      return {
+        errors: [
+          new GraphQLError(
+            "Query document is only allowed to contain one query annotated with @live."
+          ),
+        ],
+      };
     }
 
     const rootFieldIdentifier = extractLiveQueryRootFieldCoordinates(
-      operationDocument,
+      document,
       operationName
     );
 
@@ -108,13 +125,15 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
       this._cache.set(inputSchema, schema);
     }
 
+    const iterator = new PushPullAsyncIterableIterator<ExecutionResult>();
+
     // keep track that current execution is the latest in order to prevent race-conditions :)
     let executionCounter = 0;
 
     const record = {
-      publishUpdate,
+      iterator,
       identifier: new Set(rootFieldIdentifier),
-      executeOperation: () => {
+      run: () => {
         executionCounter = executionCounter + 1;
         const counter = executionCounter;
         const newIdentifier = new Set(rootFieldIdentifier);
@@ -122,50 +141,55 @@ export class InMemoryLiveQueryStore implements LiveQueryStore {
           parameter
         ) => newIdentifier.add(this._buildResourceIdentifier(parameter));
 
-        const result = execute({
+        const result = this._execute({
           schema,
-          document: operationDocument,
+          document,
           operationName,
           rootValue,
           contextValue: {
             [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
             collectResourceIdentifier,
           },
-          variableValues: operationVariables,
+          variableValues,
         });
 
-        runWith(result, () => {
+        runWith(result, (result) => {
           if (counter === executionCounter) {
             record.identifier = newIdentifier;
+            record.iterator.push(result);
           }
         });
-
-        return result;
       },
     };
 
-    this._store.set(operationDocument, record);
+    this._store.set(document, record);
     // Execute initial query
-    runWith(record.executeOperation(), (result) => {
-      record.publishUpdate(result, result);
-    });
+    record.run();
 
-    return () => void this._store.delete(operationDocument);
-  }
+    return iterator;
+  };
 
-  async emit(identifiers: string[] | string) {
+  /**
+   * Invalidate queries (and schedule their re-execution) via a resource identifier.
+   * @param identifiers A single or list of resource identifiers that should be invalidated.
+   */
+  async invalidate(identifiers: string[] | string) {
     if (typeof identifiers === "string") {
       identifiers = [identifiers];
     }
 
-    // Todo it might be better to simply use a hash map of the events ninstead of iterating through everything...
+    const invalidatedRecords = new Set<StoreRecord>();
+
+    // Todo: it might be better to simply use a hash map of the events instead of iterating through everything...
     for (const identifier of identifiers) {
       for (const record of this._store.values()) {
         if (record.identifier.has(identifier)) {
-          const result = await record.executeOperation();
-          record.publishUpdate(result, result);
+          invalidatedRecords.add(record);
         }
       }
+    }
+    for (const record of invalidatedRecords) {
+      record.run();
     }
   }
 }

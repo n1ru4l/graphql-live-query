@@ -7,10 +7,8 @@ import {
   GraphQLSchema,
   GraphQLList,
 } from "graphql";
-import {
-  LiveQueryStore,
-  GraphQLLiveDirective,
-} from "@n1ru4l/graphql-live-query";
+import { GraphQLLiveDirective } from "@n1ru4l/graphql-live-query";
+import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 
 type Todo = {
   id: string;
@@ -23,7 +21,7 @@ type Root = {
 };
 
 type Context = {
-  liveQueryStore: LiveQueryStore;
+  liveQueryStore: InMemoryLiveQueryStore;
 };
 
 const GraphQLTodoType = new GraphQLObjectType<Todo>({
@@ -116,7 +114,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
           isCompleted: false,
         };
         root.todos.set(args.id, addedTodo);
-        context.liveQueryStore.emit(`Query.todos`);
+        context.liveQueryStore.invalidate(`Query.todos`);
         return {
           addedTodo,
         };
@@ -131,7 +129,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
       },
       resolve: (root, args, context) => {
         root.todos.delete(args.id);
-        context.liveQueryStore.emit(`Query.todos`);
+        context.liveQueryStore.invalidate(`Query.todos`);
         return {
           removedTodoId: args.id,
         };
@@ -150,7 +148,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
           throw new Error(`Todo with id '${args.id}' does not exist.`);
         }
         todo.isCompleted = !todo.isCompleted;
-        context.liveQueryStore.emit(`Todo:${args.id}`);
+        context.liveQueryStore.invalidate(`Todo:${args.id}`);
         return {
           toggledTodo: todo,
         };
@@ -172,7 +170,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
           throw new Error(`Todo with id '${args.id}' does not exist.`);
         }
         todo.content = args.content;
-        context.liveQueryStore.emit(`Todo:${args.id}`);
+        context.liveQueryStore.invalidate(`Todo:${args.id}`);
         return {
           changedTodo: todo,
         };
