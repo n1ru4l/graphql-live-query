@@ -23,7 +23,6 @@ const server = app
 
 const socketServer = socketIO(server);
 const liveQueryStore = new InMemoryLiveQueryStore();
-
 const rootValue = {
   todos: new Map(),
 };
@@ -36,8 +35,8 @@ rootValue.todos.set("1", {
 
 registerSocketIOGraphQLServer({
   socketServer,
-  getExecutionParameter: () => ({
-    liveQueryStore,
+  getParameter: ({ socket, graphQLPayload }) => ({
+    executeLiveQuery: liveQueryStore.execute,
     graphQLExecutionParameter: {
       schema,
       rootValue,

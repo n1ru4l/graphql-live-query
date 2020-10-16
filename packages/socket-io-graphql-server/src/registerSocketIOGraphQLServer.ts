@@ -1,13 +1,16 @@
 import {
-  graphql,
+  execute as defaultExecute,
+  subscribe as defaultSubscribe,
   parse,
-  subscribe,
   GraphQLSchema,
   DocumentNode,
   ExecutionResult,
   GraphQLError,
 } from "graphql";
-import { LiveQueryStore, extractLiveQueries } from "@n1ru4l/graphql-live-query";
+import {
+  ExecuteLiveQueryFunction,
+  extractLiveQueries,
+} from "@n1ru4l/graphql-live-query";
 import { isAsyncIterable } from "./isAsyncIterable";
 import { isSome } from "./isSome";
 
@@ -17,7 +20,7 @@ export const defaultErrorHandler: ErrorHandler = console.error;
 
 export type PromiseOrPlain<T> = T | Promise<T>;
 
-export type GetExecutionParameterFunctionParameter = {
+export type GetParameterFunctionParameter = {
   socket: SocketIO.Socket;
   graphQLPayload: {
     source: string;
@@ -26,8 +29,8 @@ export type GetExecutionParameterFunctionParameter = {
   };
 };
 
-export type GetExecutionParameterFunction = (
-  parameter: GetExecutionParameterFunctionParameter
+export type GetParameterFunction = (
+  parameter: GetParameterFunctionParameter
 ) => PromiseOrPlain<{
   graphQLExecutionParameter: {
     schema: GraphQLSchema;
@@ -38,7 +41,9 @@ export type GetExecutionParameterFunction = (
     source?: string;
     variableValues?: { [key: string]: any } | null;
   };
-  liveQueryStore?: LiveQueryStore;
+  execute?: typeof defaultExecute;
+  subscribe?: typeof defaultSubscribe;
+  executeLiveQuery?: ExecuteLiveQueryFunction;
   onError?: ErrorHandler;
 }>;
 
@@ -119,7 +124,8 @@ export type DecodeErrorHandler = (error: Error) => void;
 
 export type RegisterSocketIOGraphQLServerParameter = {
   socketServer: SocketIO.Server;
-  getExecutionParameter: GetExecutionParameterFunction;
+  /* get the parameters for a incoming GraphQL operation */
+  getParameter: GetParameterFunction;
   /* error handler for failed message decoding attempts */
   onMessageDecodeError?: DecodeErrorHandler;
   /* whether the GraphQL layer has to be enabled for each socket explicitly */
@@ -139,7 +145,7 @@ export type SocketIOGraphQLServer = {
 
 export const registerSocketIOGraphQLServer = ({
   socketServer,
-  getExecutionParameter,
+  getParameter,
   onMessageDecodeError = console.error,
   isLazy = false,
 }: RegisterSocketIOGraphQLServerParameter): SocketIOGraphQLServer => {
@@ -172,9 +178,11 @@ export const registerSocketIOGraphQLServer = ({
 
       const {
         graphQLExecutionParameter,
-        liveQueryStore = null,
         onError = defaultErrorHandler,
-      } = await getExecutionParameter({
+        subscribe = defaultSubscribe,
+        execute = defaultExecute,
+        executeLiveQuery = null,
+      } = await getParameter({
         socket,
         graphQLPayload: {
           source,
@@ -183,71 +191,61 @@ export const registerSocketIOGraphQLServer = ({
         },
       });
 
+      const documentAst = parse(source);
+
       const executionParameter = {
+        document: documentAst,
         operationName,
         source,
         variableValues,
         ...graphQLExecutionParameter,
       };
 
-      const documentAst = parse(source);
+      const asyncIteratorHandler = (
+        result: AsyncIterableIterator<ExecutionResult> | ExecutionResult
+      ) => {
+        if (isAsyncIterable(result)) {
+          subscriptions.set(id, () => result.return?.(null));
+          const run = async () => {
+            for await (const subscriptionResult of result) {
+              subscriptionResult.errors?.forEach((error) => {
+                onError(error);
+              });
+              socket.emit("@graphql/result", { ...subscriptionResult, id });
+            }
+          };
+          run();
+        } else {
+          result.errors?.forEach((error) => {
+            onError(error);
+          });
+          socket.emit("@graphql/result", { ...result, id, isFinal: true });
+        }
+      };
 
       if (isSubscriptionOperation(documentAst)) {
         subscribe({
           ...executionParameter,
           document: documentAst,
-        }).then((result) => {
-          if (isAsyncIterable(result)) {
-            subscriptions.set(id, () => result.return?.(null));
-            const run = async () => {
-              for await (const subscriptionResult of result) {
-                subscriptionResult.errors?.forEach((error) => {
-                  onError(error);
-                });
-                socket.emit("@graphql/result", { ...subscriptionResult, id });
-              }
-            };
-            run();
-          } else {
-            result.errors?.forEach((error) => {
-              onError(error);
-            });
-            socket.emit("@graphql/result", { ...result, id, isFinal: true });
-          }
-        });
+        }).then(asyncIteratorHandler);
         return;
-      }
-
-      if (isSome(liveQueryStore)) {
+      } else if (isSome(executeLiveQuery)) {
         const liveQueries = extractLiveQueries(documentAst);
 
-        if (liveQueries.length > 1) {
-          throw new Error(
-            "Document is allowed to only contain one live query."
-          );
-        } else if (liveQueries.length === 1) {
-          const publishUpdate = (result: ExecutionResult, payload: any) => {
-            result.errors?.forEach((error) => {
-              onError(error);
-            });
-            socket.emit("@graphql/result", { ...payload, id });
-          };
-
-          const unsubscribe = liveQueryStore.register({
+        if (liveQueries.length > 0) {
+          executeLiveQuery({
             schema: graphQLExecutionParameter.schema,
             rootValue: graphQLExecutionParameter.rootValue,
             contextValue: graphQLExecutionParameter.contextValue,
-            operationDocument: documentAst,
+            document: documentAst,
             operationName,
-            operationVariables: variableValues,
-            publishUpdate,
-          });
-          subscriptions.set(id, unsubscribe);
+            variableValues,
+          }).then(asyncIteratorHandler);
           return;
         }
       }
 
-      graphql(executionParameter).then((result) => {
+      Promise.resolve(execute(executionParameter)).then((result) => {
         result.errors?.forEach((error) => {
           onError(error);
         });
