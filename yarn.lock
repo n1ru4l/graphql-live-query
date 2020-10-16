@@ -15034,27 +15034,10 @@ ts-log@^2.2.3:
   resolved "https://registry.yarnpkg.com/ts-log/-/ts-log-2.2.3.tgz#4da5640fe25a9fb52642cd32391c886721318efb"
   integrity sha512-XvB+OdKSJ708Dmf9ore4Uf/q62AYDTzFcAdxc8KNML1mmAWywRFVt/dn1KYJH8Agt5UJNujfM3znU5PxgAzA2w==
 
-ts-node-dev@1.0.0-pre.62:
-  version "1.0.0-pre.62"
-  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.0.0-pre.62.tgz#835644c43669b659a880379b9d06df86cef665ad"
-  integrity sha512-hfsEuCqUZOVnZ86l7A3icxD1nFt1HEmLVbx4YOHCkrbSHPBNWcw+IczAPZo3zz7YiOm9vs0xG6OENNrkgm89tQ==
-  dependencies:
-    chokidar "^3.4.0"
-    dateformat "~1.0.4-1.2.3"
-    dynamic-dedupe "^0.3.0"
-    minimist "^1.2.5"
-    mkdirp "^1.0.4"
-    resolve "^1.0.0"
-    rimraf "^2.6.1"
-    source-map-support "^0.5.12"
-    tree-kill "^1.2.2"
-    ts-node "^8.10.2"
-    tsconfig "^7.0.0"
-
-ts-node-dev@1.0.0-pre.63:
-  version "1.0.0-pre.63"
-  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.0.0-pre.63.tgz#0e69df26cef35a728362d93348f13caa2cb2c512"
-  integrity sha512-KURricXsXtiB4R+NCgiKgE01wyTe/GlXTdAPIhliDhF3kCn00kzyepAc1H8kbUJCmz0oYQq/GQ6CMtiWovs9qg==
+ts-node-dev@1.0.0-pre.65:
+  version "1.0.0-pre.65"
+  resolved "https://registry.yarnpkg.com/ts-node-dev/-/ts-node-dev-1.0.0-pre.65.tgz#694490be002ed01ca9968b437e07e30df631bb21"
+  integrity sha512-OHzPbq0M08pxj4pW/OZFWVQUJs2ea41uwAcN8nIhmIW3dTqs4qNd9XDRHD+wDpcRkeL0GHjX0OnioxoH/YyU1A==
   dependencies:
     chokidar "^3.4.0"
     dateformat "~1.0.4-1.2.3"
