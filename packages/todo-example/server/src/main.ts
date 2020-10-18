@@ -35,8 +35,8 @@ rootValue.todos.set("1", {
 
 registerSocketIOGraphQLServer({
   socketServer,
-  getParameter: ({ socket, graphQLPayload }) => ({
-    executeLiveQuery: liveQueryStore.execute,
+  getParameter: () => ({
+    execute: liveQueryStore.execute,
     graphQLExecutionParameter: {
       schema,
       rootValue,

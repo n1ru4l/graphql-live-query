@@ -66,7 +66,7 @@ setInterval(() => {
 registerSocketIOGraphQLServer({
   socketServer,
   getParameter: () => ({
-    executeLiveQuery: liveQueryStore.execute,
+    execute: liveQueryStore.execute,
     graphQLExecutionParameter: {
       schema: graphqlSchema.schema,
       contextValue: {
