@@ -1,4 +1,4 @@
-export class PushPullAsyncIterableIterator<T> implements AsyncIterator<T> {
+export class PushPullAsyncIterableIterator<T> implements AsyncIterableIterator<T> {
   private pushQueue: T[] = [];
   private pullQueue: ((value: IteratorResult<T>) => void)[] = [];
   private isRunning: boolean = true;
