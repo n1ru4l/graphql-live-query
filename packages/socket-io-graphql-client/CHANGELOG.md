@@ -1,5 +1,17 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.6.0
+
+### Minor Changes
+
+- f1b7a18: Replace `executeLiveQuery` with `execute`.
+
+  Instead of passing two execute functions to the server options, now only a single execute function is passed to the server.
+
+  The `execute` function can now return a `AsyncIterableIterator<ExecutionResult>`.
+
+  `@n1ru4l/socket-io-graphql-server` has no longer a dependency upon `@n1ru4l/graphql-live-query`.
+
 ## 0.5.0
 
 ### Minor Changes
