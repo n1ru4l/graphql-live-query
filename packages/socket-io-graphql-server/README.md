@@ -46,7 +46,7 @@ registerSocketIOGraphQLServer({
   socketServer,
   /* getParameter is invoked for each operation. */
   getParameter: ({ socket }) => ({
-    executeLiveQuery: liveQueryStore.execute,
+    execute: liveQueryStore.execute,
     /* The paramaters used for the operation execution. */
     graphQLExecutionParameter: {
       schema,
@@ -72,7 +72,6 @@ const socketServer = socketIO();
 const graphQLServer = registerSocketIOGraphQLServer({
   socketServer,
   getParameter: () => ({
-    executeLiveQuery: liveQueryStore.execute,
     graphQLExecutionParameter: {
       schema,
       rootValue,
@@ -133,7 +132,6 @@ const graphqlServer  = registerSocketIOGraphQLServer({
 const server = registerSocketIOGraphQLServer({
   socketServer,
   getParameter: ({ socket }) => ({
-    executeLiveQuery: liveQueryStore.execute,
     graphQLExecutionParameter: {
       schema,
       rootValue,

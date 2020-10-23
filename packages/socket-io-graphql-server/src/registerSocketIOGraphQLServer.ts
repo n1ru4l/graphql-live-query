@@ -6,13 +6,9 @@ import {
   DocumentNode,
   ExecutionResult,
   GraphQLError,
+  ExecutionArgs,
 } from "graphql";
-import {
-  ExecuteLiveQueryFunction,
-  extractLiveQueries,
-} from "@n1ru4l/graphql-live-query";
 import { isAsyncIterable } from "./isAsyncIterable";
-import { isSome } from "./isSome";
 
 export type ErrorHandler = (error: GraphQLError) => void;
 
@@ -29,6 +25,10 @@ export type GetParameterFunctionParameter = {
   };
 };
 
+export type ExecuteFunction = (
+  args: ExecutionArgs
+) => PromiseOrPlain<AsyncIterableIterator<ExecutionResult> | ExecutionResult>;
+
 export type GetParameterFunction = (
   parameter: GetParameterFunctionParameter
 ) => PromiseOrPlain<{
@@ -41,9 +41,8 @@ export type GetParameterFunction = (
     source?: string;
     variableValues?: { [key: string]: any } | null;
   };
-  execute?: typeof defaultExecute;
+  execute?: ExecuteFunction;
   subscribe?: typeof defaultSubscribe;
-  executeLiveQuery?: ExecuteLiveQueryFunction;
   onError?: ErrorHandler;
 }>;
 
@@ -181,7 +180,6 @@ export const registerSocketIOGraphQLServer = ({
         onError = defaultErrorHandler,
         subscribe = defaultSubscribe,
         execute = defaultExecute,
-        executeLiveQuery = null,
       } = await getParameter({
         socket,
         graphQLPayload: {
@@ -229,27 +227,17 @@ export const registerSocketIOGraphQLServer = ({
           document: documentAst,
         }).then(asyncIteratorHandler);
         return;
-      } else if (isSome(executeLiveQuery)) {
-        const liveQueries = extractLiveQueries(documentAst);
-
-        if (liveQueries.length > 0) {
-          executeLiveQuery({
-            schema: graphQLExecutionParameter.schema,
-            rootValue: graphQLExecutionParameter.rootValue,
-            contextValue: graphQLExecutionParameter.contextValue,
-            document: documentAst,
-            operationName,
-            variableValues,
-          }).then(asyncIteratorHandler);
-          return;
-        }
       }
 
       Promise.resolve(execute(executionParameter)).then((result) => {
-        result.errors?.forEach((error) => {
-          onError(error);
-        });
-        socket.emit("@graphql/result", { ...result, id, isFinal: true });
+        if (isAsyncIterable(result)) {
+          asyncIteratorHandler(result);
+        } else {
+          result.errors?.forEach((error) => {
+            onError(error);
+          });
+          socket.emit("@graphql/result", { ...result, id, isFinal: true });
+        }
       });
     };
 

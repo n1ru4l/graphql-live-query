@@ -4,12 +4,10 @@ import {
   GraphQLSchema,
   execute as defaultExecute,
   GraphQLError,
+  ExecutionArgs,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
-import {
-  ExecuteLiveQueryParameter,
-  extractLiveQueries,
-} from "@n1ru4l/graphql-live-query";
+import { extractLiveQueries } from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
@@ -100,11 +98,20 @@ export class InMemoryLiveQueryStore {
     contextValue,
     variableValues,
     operationName,
-  }: ExecuteLiveQueryParameter): Promise<
+  }: ExecutionArgs): Promise<
     AsyncIterableIterator<ExecutionResult> | ExecutionResult
   > => {
     const liveQueries = extractLiveQueries(document);
-    if (liveQueries.length !== 1) {
+    if (liveQueries.length === 0) {
+      return this._execute({
+        schema: inputSchema,
+        document,
+        rootValue,
+        contextValue,
+        variableValues,
+        operationName,
+      });
+    } else if (liveQueries.length !== 1) {
       return {
         errors: [
           new GraphQLError(
