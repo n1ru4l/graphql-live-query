@@ -76,7 +76,7 @@ type InMemoryLiveQueryStoreParameter = {
 };
 
 export class InMemoryLiveQueryStore {
-  private _store = new Map<DocumentNode, StoreRecord>();
+  private _store = new Set<StoreRecord>();
   // cache that stores all patched schema objects
   private _cache = new Map<GraphQLSchema, GraphQLSchema>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
@@ -132,12 +132,16 @@ export class InMemoryLiveQueryStore {
       this._cache.set(inputSchema, schema);
     }
 
-    const iterator = new PushPullAsyncIterableIterator<ExecutionResult>();
+    let record: StoreRecord;
+
+    const iterator = new PushPullAsyncIterableIterator<ExecutionResult>(() => {
+      this._store.delete(record);
+    });
 
     // keep track that current execution is the latest in order to prevent race-conditions :)
     let executionCounter = 0;
 
-    const record = {
+    record = {
       iterator,
       identifier: new Set(rootFieldIdentifier),
       run: () => {
@@ -169,7 +173,7 @@ export class InMemoryLiveQueryStore {
       },
     };
 
-    this._store.set(document, record);
+    this._store.add(record);
     // Execute initial query
     record.run();
 
