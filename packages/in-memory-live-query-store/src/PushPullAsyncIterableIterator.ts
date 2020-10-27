@@ -1,7 +1,13 @@
-export class PushPullAsyncIterableIterator<T> implements AsyncIterableIterator<T> {
+export class PushPullAsyncIterableIterator<T>
+  implements AsyncIterableIterator<T> {
   private pushQueue: T[] = [];
   private pullQueue: ((value: IteratorResult<T>) => void)[] = [];
   private isRunning: boolean = true;
+  private onReturn: () => void;
+
+  constructor(onReturn: () => void) {
+    this.onReturn = onReturn;
+  }
 
   public async next(): Promise<IteratorResult<T>> {
     return new Promise((resolve) => {
@@ -25,6 +31,7 @@ export class PushPullAsyncIterableIterator<T> implements AsyncIterableIterator<T
       }
       this.pullQueue.length = 0;
       this.pushQueue.length = 0;
+      this.onReturn();
     }
     return { value: undefined, done: true };
   }
