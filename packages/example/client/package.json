@@ -18,7 +18,7 @@
     "@types/socket.io-client": "1.4.34",
     "babel-plugin-relay": "10.0.1",
     "emotion-theming": "10.0.27",
-    "graphiql": "1.0.5",
+    "graphiql": "1.0.6",
     "graphql": "15.3.0",
     "history": "5.0.0",
     "react": "^16.13.1",

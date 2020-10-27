@@ -4812,10 +4812,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^0.12.2:
-  version "0.12.2"
-  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-0.12.2.tgz#eacd98f2b887eb048f41c76d3906732c8e0650a5"
-  integrity sha512-rzqXM5C0PijOlGGGVcVY+h9HOinb7oBgvUIOXXTXbW209rjYkWfTfj9Wn8zsdNYHjUADlAlir3uavxIYnFfDKQ==
+codemirror-graphql@^0.12.3:
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-0.12.3.tgz#8b76f59ea02ead356ca39c9574827396e4b4b454"
+  integrity sha512-u0TooVA2MWGNV+Bio89RCTRW9P5FqegB1V9rnz9I0QKoGXX/c9z9/Fc+nj18p8jxkWK8ii8d7hkz7vsNsHxdkw==
   dependencies:
     graphql-language-service-interface "^2.4.2"
     graphql-language-service-parser "^1.6.4"
@@ -7371,13 +7371,13 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-graphiql@1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.0.5.tgz#5c1de76a5f39d31880c894480b1ba3cb4d86d044"
-  integrity sha512-jrTmKvFzarM3u1RKXM1FFyvyo6TU4eUTfi3K04c8peGPNhPWA31xl20lE2Y5tP+XoWZZN0bqyCfEMDijSJ62lA==
+graphiql@1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.0.6.tgz#b551c73a23a0cbf5e4f30a8c29367bad44b1a915"
+  integrity sha512-PgKEfWkXxU4Lx92eSEcLF/2en5bjGplxNwwLCKEQ82xU7t8wfj4UL46Zwx40E9LcxJum6KRfGzMjcY+bNwHzpQ==
   dependencies:
     codemirror "^5.54.0"
-    codemirror-graphql "^0.12.2"
+    codemirror-graphql "^0.12.3"
     copy-to-clipboard "^3.2.0"
     entities "^2.0.0"
     markdown-it "^10.0.0"
