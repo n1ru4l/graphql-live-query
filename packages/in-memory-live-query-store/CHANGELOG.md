@@ -1,5 +1,11 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.5.1
+
+### Patch Changes
+
+- c14836a: Fix memory leak cause by not correctly disposing live query records once a live query has finished.
+
 ## 0.5.0
 
 ### Minor Changes
