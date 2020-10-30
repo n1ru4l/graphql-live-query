@@ -12,7 +12,7 @@
     "react-dom": "^16.14.0",
     "@types/react-dom": "16.9.8",
     "@types/react-relay": "7.0.15",
-    "@types/relay-runtime": "10.0.3",
+    "@types/relay-runtime": "10.0.10",
     "@types/socket.io-client": "1.4.34",
     "babel-plugin-relay": "10.0.1",
     "relay-compiler": "10.0.1",
