@@ -132,16 +132,12 @@ export class InMemoryLiveQueryStore {
       this._cache.set(inputSchema, schema);
     }
 
-    let record: StoreRecord;
-
-    const iterator = new PushPullAsyncIterableIterator<ExecutionResult>(() => {
-      this._store.delete(record);
-    });
+    const iterator = new PushPullAsyncIterableIterator<ExecutionResult>();
 
     // keep track that current execution is the latest in order to prevent race-conditions :)
     let executionCounter = 0;
 
-    record = {
+    const record: StoreRecord = {
       iterator,
       identifier: new Set(rootFieldIdentifier),
       run: () => {
@@ -177,7 +173,16 @@ export class InMemoryLiveQueryStore {
     // Execute initial query
     record.run();
 
-    return iterator;
+    const returnIterator: AsyncIterableIterator<ExecutionResult> = {
+      next: async () => iterator.next(),
+      return: async () => {
+        this._store.delete(record);
+        return iterator.return();
+      },
+      [Symbol.asyncIterator]: () => returnIterator,
+    };
+
+    return returnIterator;
   };
 
   /**
