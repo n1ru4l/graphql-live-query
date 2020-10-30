@@ -4,6 +4,7 @@ import type {
   FieldNode,
   OperationDefinitionNode,
 } from "graphql";
+import { isNone } from "./Maybe";
 
 type MaybeOperationDefinitionNode = OperationDefinitionNode | null;
 
@@ -28,8 +29,9 @@ const gatherFields = (
             definition.kind === "FragmentDefinition" &&
             definition.name.value === selection.name.value
         ) ?? null) as MaybeOperationDefinitionNode;
-        if (!fragment) {
-          throw new Error(`Could not find fragment '${selection.name.value}'.`);
+        if (isNone(fragment)) {
+          // We can abort collecting the identifiers as GraphQL execution will complain.
+          break;
         }
         fields.push(...gatherFields(fragment.selectionSet, documentNode));
         continue;
@@ -44,32 +46,12 @@ const gatherFields = (
  */
 export const extractLiveQueryRootFieldCoordinates = (
   documentNode: DocumentNode,
-  operationName?: string
-) => {
-  let operation: OperationDefinitionNode | null = null;
-  if (!operationName) {
-    operation = (documentNode.definitions.find(
-      (definition) =>
-        definition.kind === "OperationDefinition" &&
-        definition.operation === "query"
-    ) ?? null) as MaybeOperationDefinitionNode;
-  } else {
-    operation = (documentNode.definitions.find(
-      (definition) =>
-        definition.kind === "OperationDefinition" &&
-        definition.name?.value === operationName
-    ) ?? null) as MaybeOperationDefinitionNode;
-  }
-
-  if (!operation) {
-    throw new Error("Could not identify the live query operation.");
-  }
-
-  return Array.from(
+  operationNode: OperationDefinitionNode
+) =>
+  Array.from(
     new Set(
-      gatherFields(operation.selectionSet, documentNode).map(
+      gatherFields(operationNode.selectionSet, documentNode).map(
         (field) => `Query.${field.name.value}`
       )
     )
   );
-};
