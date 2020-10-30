@@ -1,28 +1,33 @@
 import {
   execute as defaultExecute,
   subscribe as defaultSubscribe,
-  parse,
+  validateSchema as defaultValidateSchema,
+  validate as defaultValidate,
+  parse as defaultParse,
   GraphQLSchema,
-  DocumentNode,
   ExecutionResult,
-  GraphQLError,
   ExecutionArgs,
+  DocumentNode,
+  GraphQLError,
 } from "graphql";
 import { isAsyncIterable } from "./isAsyncIterable";
 
-export type ErrorHandler = (error: GraphQLError) => void;
-
-export const defaultErrorHandler: ErrorHandler = console.error;
-
 export type PromiseOrPlain<T> = T | Promise<T>;
+
+type DocumentSourceString = string;
+type MaybeDocumentNode = Record<string, unknown> | DocumentNode;
 
 export type GetParameterFunctionParameter = {
   socket: SocketIO.Socket;
   graphQLPayload: {
-    source: string;
+    source: DocumentSourceString | MaybeDocumentNode;
     variableValues: { [key: string]: any } | null;
     operationName: string | null;
   };
+};
+
+const isDocumentNode = (input: MaybeDocumentNode): input is DocumentNode => {
+  return input["kind"] === "Document" && Array.isArray(input["definitions"]);
 };
 
 export type ExecuteFunction = (
@@ -38,12 +43,15 @@ export type GetParameterFunction = (
     rootValue?: unknown;
     // These will be overwritten if provided; Useful for persisted queries etc.
     operationName?: string;
-    source?: string;
+    source?: string | DocumentNode;
     variableValues?: { [key: string]: any } | null;
   };
   execute?: ExecuteFunction;
   subscribe?: typeof defaultSubscribe;
-  onError?: ErrorHandler;
+
+  parse?: typeof defaultParse;
+  validateSchema?: typeof defaultValidateSchema;
+  validate?: typeof defaultValidate;
 }>;
 
 const isSubscriptionOperation = (ast: DocumentNode) =>
@@ -54,14 +62,14 @@ const isSubscriptionOperation = (ast: DocumentNode) =>
 
 type MessagePayload = {
   id: number;
-  operation: string;
+  operation: DocumentSourceString | MaybeDocumentNode;
   variables: { [key: string]: any } | null;
   operationName: string | null;
 };
 
 const decodeMessage = (message: unknown): MessagePayload | Error => {
   let id: number;
-  let operation: string | null = null;
+  let operation: DocumentSourceString | MaybeDocumentNode | null = null;
   let variables: { [key: string]: any } | null = null;
   let operationName: string | null = null;
 
@@ -73,10 +81,15 @@ const decodeMessage = (message: unknown): MessagePayload | Error => {
       return new Error("Invalid message format. Field 'id' is invalid.");
     }
     const maybeOperation: unknown = (message as any).operation;
-    if (typeof maybeOperation === "string") {
-      operation = maybeOperation;
+    if (
+      typeof maybeOperation === "string" ||
+      (typeof maybeOperation === "object" && maybeOperation !== null)
+    ) {
+      operation = maybeOperation as DocumentSourceString | MaybeDocumentNode;
     } else {
-      return new Error("Invalid message format. Field 'operation' is invalid.");
+      return new Error(
+        "Invalid message format. Field 'operation' is invalid. Must be DocumentSourceString or DocumentNode."
+      );
     }
     const maybeVariables: unknown = (message as any).variables ?? null;
     if (typeof maybeVariables === "object") {
@@ -177,9 +190,11 @@ export const registerSocketIOGraphQLServer = ({
 
       const {
         graphQLExecutionParameter,
-        onError = defaultErrorHandler,
         subscribe = defaultSubscribe,
         execute = defaultExecute,
+        parse = defaultParse,
+        validateSchema = defaultValidateSchema,
+        validate = defaultValidate,
       } = await getParameter({
         socket,
         graphQLPayload: {
@@ -189,7 +204,43 @@ export const registerSocketIOGraphQLServer = ({
         },
       });
 
-      const documentAst = parse(source);
+      // Validate Schema
+      const schemaValidationErrors = validateSchema(
+        graphQLExecutionParameter.schema
+      );
+      if (schemaValidationErrors.length > 0) {
+        return { errors: schemaValidationErrors };
+      }
+
+      let documentAst: DocumentNode;
+
+      if (typeof source === "string") {
+        // Parse
+        try {
+          documentAst = parse(source);
+        } catch (syntaxError: unknown) {
+          return { errors: [syntaxError as GraphQLError] };
+        }
+      } else if (isDocumentNode(source)) {
+        documentAst = source;
+      } else {
+        return {
+          errors: [
+            new GraphQLError(
+              "Invalid DocumentNode. The provided document AST node is invalid."
+            ),
+          ],
+        };
+      }
+
+      // Validate
+      const validationErrors = validate(
+        graphQLExecutionParameter.schema,
+        documentAst
+      );
+      if (validationErrors.length > 0) {
+        return { errors: validationErrors };
+      }
 
       const executionParameter = {
         document: documentAst,
@@ -199,46 +250,58 @@ export const registerSocketIOGraphQLServer = ({
         ...graphQLExecutionParameter,
       };
 
-      const asyncIteratorHandler = (
+      const emitFinalResult = (executionResult: ExecutionResult) =>
+        socket.emit("@graphql/result", {
+          ...executionResult,
+          id,
+          isFinal: true,
+        });
+
+      const asyncIteratorHandler = async (
         result: AsyncIterableIterator<ExecutionResult> | ExecutionResult
       ) => {
         if (isAsyncIterable(result)) {
           subscriptions.set(id, () => result.return?.(null));
-          const run = async () => {
-            for await (const subscriptionResult of result) {
-              subscriptionResult.errors?.forEach((error) => {
-                onError(error);
-              });
-              socket.emit("@graphql/result", { ...subscriptionResult, id });
-            }
-          };
-          run();
+          for await (const subscriptionResult of result) {
+            socket.emit("@graphql/result", { ...subscriptionResult, id });
+          }
         } else {
-          result.errors?.forEach((error) => {
-            onError(error);
-          });
-          socket.emit("@graphql/result", { ...result, id, isFinal: true });
+          emitFinalResult(result);
         }
       };
 
-      if (isSubscriptionOperation(documentAst)) {
-        subscribe({
-          ...executionParameter,
-          document: documentAst,
-        }).then(asyncIteratorHandler);
-        return;
+      let executionResult: PromiseOrPlain<
+        ExecutionResult | AsyncIterableIterator<ExecutionResult>
+      >;
+
+      try {
+        if (isSubscriptionOperation(documentAst)) {
+          executionResult = await subscribe({
+            ...executionParameter,
+            document: documentAst,
+          });
+        } else {
+          executionResult = execute(executionParameter);
+        }
+      } catch (contextError) {
+        executionResult = {
+          errors: [contextError],
+        };
       }
 
-      Promise.resolve(execute(executionParameter)).then((result) => {
-        if (isAsyncIterable(result)) {
-          asyncIteratorHandler(result);
-        } else {
-          result.errors?.forEach((error) => {
-            onError(error);
+      Promise.resolve(executionResult)
+        .then((result) => {
+          if (isAsyncIterable(result)) {
+            return asyncIteratorHandler(result);
+          } else {
+            emitFinalResult(result);
+          }
+        })
+        .catch((err) => {
+          emitFinalResult({
+            errors: [err],
           });
-          socket.emit("@graphql/result", { ...result, id, isFinal: true });
-        }
-      });
+        });
     };
 
     socket.on("@graphql/execute", executeHandler);
