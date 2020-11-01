@@ -17,6 +17,14 @@ export type PromiseOrPlain<T> = T | Promise<T>;
 type DocumentSourceString = string;
 type MaybeDocumentNode = Record<string, unknown> | DocumentNode;
 
+const isDocumentNode = (input: MaybeDocumentNode): input is DocumentNode => {
+  return input["kind"] === "Document" && Array.isArray(input["definitions"]);
+};
+
+export type ExecuteFunction = (
+  args: ExecutionArgs
+) => PromiseOrPlain<AsyncIterableIterator<ExecutionResult> | ExecutionResult>;
+
 export type GetParameterFunctionParameter = {
   socket: SocketIO.Socket;
   graphQLPayload: {
@@ -25,14 +33,6 @@ export type GetParameterFunctionParameter = {
     operationName: string | null;
   };
 };
-
-const isDocumentNode = (input: MaybeDocumentNode): input is DocumentNode => {
-  return input["kind"] === "Document" && Array.isArray(input["definitions"]);
-};
-
-export type ExecuteFunction = (
-  args: ExecutionArgs
-) => PromiseOrPlain<AsyncIterableIterator<ExecutionResult> | ExecutionResult>;
 
 export type GetParameterFunction = (
   parameter: GetParameterFunctionParameter
@@ -181,6 +181,13 @@ export const registerSocketIOGraphQLServer = ({
         return;
       }
 
+      const emitFinalResult = (executionResult: ExecutionResult) =>
+        socket.emit("@graphql/result", {
+          ...executionResult,
+          id,
+          isFinal: true,
+        });
+
       const {
         id,
         operation: source,
@@ -209,7 +216,8 @@ export const registerSocketIOGraphQLServer = ({
         graphQLExecutionParameter.schema
       );
       if (schemaValidationErrors.length > 0) {
-        return { errors: schemaValidationErrors };
+        emitFinalResult({ errors: schemaValidationErrors });
+        return;
       }
 
       let documentAst: DocumentNode;
@@ -219,18 +227,20 @@ export const registerSocketIOGraphQLServer = ({
         try {
           documentAst = parse(source);
         } catch (syntaxError: unknown) {
-          return { errors: [syntaxError as GraphQLError] };
+          emitFinalResult({ errors: [syntaxError as GraphQLError] });
+          return;
         }
       } else if (isDocumentNode(source)) {
         documentAst = source;
       } else {
-        return {
+        emitFinalResult({
           errors: [
             new GraphQLError(
               "Invalid DocumentNode. The provided document AST node is invalid."
             ),
           ],
-        };
+        });
+        return;
       }
 
       // Validate
@@ -239,7 +249,10 @@ export const registerSocketIOGraphQLServer = ({
         documentAst
       );
       if (validationErrors.length > 0) {
-        return { errors: validationErrors };
+        emitFinalResult({
+          errors: validationErrors,
+        });
+        return;
       }
 
       const executionParameter = {
@@ -249,13 +262,6 @@ export const registerSocketIOGraphQLServer = ({
         variableValues,
         ...graphQLExecutionParameter,
       };
-
-      const emitFinalResult = (executionResult: ExecutionResult) =>
-        socket.emit("@graphql/result", {
-          ...executionResult,
-          id,
-          isFinal: true,
-        });
 
       const asyncIteratorHandler = async (
         result: AsyncIterableIterator<ExecutionResult> | ExecutionResult
