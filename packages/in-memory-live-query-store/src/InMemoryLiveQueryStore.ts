@@ -1,23 +1,24 @@
 import {
-  DocumentNode,
   ExecutionResult,
   GraphQLSchema,
   execute as defaultExecute,
-  GraphQLError,
   ExecutionArgs,
+  DefinitionNode,
+  OperationDefinitionNode,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
-import { extractLiveQueries } from "@n1ru4l/graphql-live-query";
+import { isLiveOperationDefinition } from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
 import { PushPullAsyncIterableIterator } from "./PushPullAsyncIterableIterator";
+import { isNone } from "./Maybe";
 
-type PromiseOrValue<T> = T | Promise<T>;
+type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
   iterator: PushPullAsyncIterableIterator<ExecutionResult>;
   identifier: Set<string>;
-  run: () => PromiseOrValue<void>;
+  run: () => MaybePromise<void>;
 };
 
 type ResourceIdentifierCollectorFunction = (
@@ -37,7 +38,7 @@ const addResourceIdentifierCollectorToSchema = (
       let isIDField =
         fieldName === "id" && isNonNullIDScalarType(fieldConfig.type);
 
-      let resolve = fieldConfig.resolve;
+      let resolve = fieldConfig.resolve!;
       fieldConfig.resolve = (src, args, context, info) => {
         if (!context || !context[ORIGINAL_CONTEXT_SYMBOL]) {
           return resolve(src, args, context, info);
@@ -75,6 +76,10 @@ type InMemoryLiveQueryStoreParameter = {
   execute?: typeof defaultExecute;
 };
 
+const isOperationDefinitionNode = (
+  input: DefinitionNode
+): input is OperationDefinitionNode => input.kind === "OperationDefinition";
+
 export class InMemoryLiveQueryStore {
   private _store = new Set<StoreRecord>();
   // cache that stores all patched schema objects
@@ -91,46 +96,68 @@ export class InMemoryLiveQueryStore {
     }
   }
 
-  execute = async ({
+  private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
+    let schema = this._cache.get(inputSchema);
+    if (isNone(schema)) {
+      schema = addResourceIdentifierCollectorToSchema(inputSchema);
+      this._cache.set(inputSchema, schema);
+    }
+    return schema;
+  }
+
+  execute = ({
     schema: inputSchema,
     document,
     rootValue,
     contextValue,
     variableValues,
     operationName,
-  }: ExecutionArgs): Promise<
+    ...additionalArguments
+  }: ExecutionArgs): MaybePromise<
     AsyncIterableIterator<ExecutionResult> | ExecutionResult
   > => {
-    const liveQueries = extractLiveQueries(document);
-    if (liveQueries.length === 0) {
-      return this._execute({
+    const operationDefinitions = document.definitions.filter(
+      isOperationDefinitionNode
+    );
+
+    const fallbackToDefaultExecute = () =>
+      this._execute({
         schema: inputSchema,
         document,
         rootValue,
         contextValue,
         variableValues,
         operationName,
+        ...additionalArguments,
       });
-    } else if (liveQueries.length !== 1) {
-      return {
-        errors: [
-          new GraphQLError(
-            "Query document is only allowed to contain one query annotated with @live."
-          ),
-        ],
-      };
+
+    if (
+      (isNone(operationName) && operationDefinitions.length > 1) ||
+      operationDefinitions.length === 0
+    ) {
+      return fallbackToDefaultExecute();
+    }
+
+    const operationNode =
+      operationDefinitions.length === 1
+        ? operationDefinitions[0]
+        : operationDefinitions.find(
+            (operation) => operation.name?.value === operationName
+          );
+
+    if (
+      isNone(operationNode) ||
+      isLiveOperationDefinition(operationNode) === false
+    ) {
+      return fallbackToDefaultExecute();
     }
 
     const rootFieldIdentifier = extractLiveQueryRootFieldCoordinates(
       document,
-      operationName
+      operationNode
     );
 
-    let schema = this._cache.get(inputSchema);
-    if (!schema) {
-      schema = addResourceIdentifierCollectorToSchema(inputSchema);
-      this._cache.set(inputSchema, schema);
-    }
+    const schema = this.getPatchedSchema(inputSchema);
 
     const iterator = new PushPullAsyncIterableIterator<ExecutionResult>();
 
@@ -158,6 +185,7 @@ export class InMemoryLiveQueryStore {
             collectResourceIdentifier,
           },
           variableValues,
+          ...additionalArguments,
         });
 
         runWith(result, (result) => {

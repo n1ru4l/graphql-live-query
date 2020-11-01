@@ -12,13 +12,11 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "importHelpers": true,
-    "resolveJsonModule": true,
     "sourceMap": true,
     "declaration": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noImplicitAny": true,
-    "alwaysStrict": true,
     "skipLibCheck": true,
+    "strict": true,
     "paths": {
       "@n1ru4l/*": ["packages/*/src/index.ts"]
     }

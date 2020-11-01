@@ -9,7 +9,7 @@ export class PushPullAsyncIterableIterator<T>
       if (this.pushQueue.length !== 0) {
         resolve(
           this.isRunning
-            ? { value: this.pushQueue.shift(), done: false }
+            ? { value: this.pushQueue.shift()!, done: false }
             : { value: undefined, done: true }
         );
       } else {
@@ -36,7 +36,7 @@ export class PushPullAsyncIterableIterator<T>
 
   public push(value: T) {
     if (this.pullQueue.length > 0) {
-      const resolve = this.pullQueue.shift();
+      const resolve = this.pullQueue.shift()!;
       resolve(
         this.isRunning
           ? { value, done: false }
