@@ -176,7 +176,7 @@ export class InMemoryLiveQueryStore {
         ) => newIdentifier.add(this._buildResourceIdentifier(parameter));
 
         const result = this._execute({
-          schema: schema!,
+          schema,
           document,
           operationName,
           rootValue,
