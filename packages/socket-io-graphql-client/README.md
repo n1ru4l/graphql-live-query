@@ -1,18 +1,24 @@
 # @n1ru4l/socket-io-graphql-client
 
+[![npm version](https://img.shields.io/npm/v/@n1ru4l/socket-io-graphql-client.svg)](https://www.npmjs.com/package/@n1ru4l/socket-io-graphql-client) [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/socket-io-graphql-client.svg)](https://www.npmjs.com/package/@n1ru4l/socket-io-graphql-client)
+
 Execute GraphQL operations against a [`@n1ru4l/socket-io-graphql-server`](https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/socket-io-graphql-server) instance.
 
 If you want to see usage we recommend checking out [the example clients for relay, apollo and urql](https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/todo-example)!
 
-## Install
+## Install Instructions
 
 ```bash
 yarn add -E @n1ru4l/socket-io-graphql-client
 ```
 
-## Usage
+## API
+
+### `createSocketIOGraphQLClient`
 
 ```ts
+import io from "socket.io-client";
+import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 const socket = io();
 const socketIOGraphQLClient = createSocketIOGraphQLClient(socket);
 

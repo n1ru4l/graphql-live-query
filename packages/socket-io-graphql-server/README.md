@@ -1,22 +1,27 @@
 # @n1ru4l/socket-io-graphql-server
 
+[![npm version](https://img.shields.io/npm/v/@n1ru4l/socket-io-graphql-server.svg)](https://www.npmjs.com/package/@n1ru4l/socket-io-graphql-server) [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/socket-io-graphql-server.svg)](https://www.npmjs.com/package/@n1ru4l/socket-io-graphql-server)
+
 A layer for serving a GraphQL schema via a socket.io server. Supports Queries, Mutations, Subscriptions and Live Queries.
 
 **Note:** Use [`@n1ru4l/socket-io-graphql-client`](https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/socket-io-graphql-client) for executing operations against the server.
 
 For a full setup check out the [todo-example-server](https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/todo-example/server).
 
-## Install
+## Install Instructions
 
 ```bash
 yarn add -E @n1ru4l/socket-io-graphql-server
 ```
 
-## Recipies
+## API
 
-### Setting up a server
+### `registerSocketIOGraphQLServer`
+
+Registers the Socket.io GraphQL layer.
 
 ```ts
+import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import socketIO from "socket.io";
 
 const socketServer = socketIO();
@@ -25,6 +30,8 @@ registerSocketIOGraphQLServer({
   socketServer,
 });
 ```
+
+## Recipies
 
 ### Setting up live queries
 
@@ -47,7 +54,7 @@ registerSocketIOGraphQLServer({
   /* getParameter is invoked for each operation. */
   getParameter: ({ socket }) => ({
     execute: liveQueryStore.execute,
-    /* The paramaters used for the operation execution. */
+    /* The parameters used for the operation execution. */
     graphQLExecutionParameter: {
       schema,
       rootValue:,
