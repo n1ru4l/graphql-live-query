@@ -22,38 +22,40 @@ import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 const socket = io();
 const socketIOGraphQLClient = createSocketIOGraphQLClient(socket);
 
-socketIOGraphQLClient
-  .execute({
+socketIOGraphQLClient.execute(
+  {
     operation: /* GraphQL */ `
       query messages {
         id
         content
       }
     `,
-  })
-  .subscribe({
+  },
+  {
     next: console.log,
-    error: console.log,
-    complete: console.log,
-  });
+    error: console.error,
+    complete: () => console.log("complete"),
+  }
+);
 
-socketIOGraphQLClient
-  .execute({
+socketIOGraphQLClient.execute(
+  {
     operation: /* GraphQL */ `
       query messages @live {
         id
         content
       }
     `,
-  })
-  .subscribe({
+  },
+  {
     next: console.log,
-    error: console.log,
-    complete: console.log,
-  });
+    error: console.error,
+    complete: () => console.log("complete"),
+  }
+);
 
-socketIOGraphQLClient
-  .execute({
+const dispose = socketIOGraphQLClient.execute(
+  {
     operation: /* GraphQL */ `
       subscription onNewMessage {
         onNewMessage {
@@ -62,12 +64,15 @@ socketIOGraphQLClient
         }
       }
     `,
-  })
-  .subscribe({
+  },
+  {
     next: console.log,
-    error: console.log,
-    complete: console.log,
-  });
+    error: console.error,
+    complete: () => console.log("complete"),
+  }
+);
+
+setTimeout(dispose, 5000);
 ```
 
 ## Recipes
@@ -83,8 +88,30 @@ import GraphiQL from "graphiql";
 const socket = io();
 const socketIOGraphQLClient = createSocketIOGraphQLClient(socket);
 
-const fetcher = ({ query: operation, ...execRest }: any) =>
-  socketIOGraphQLClient.execute({ operation, ...execRest });
+const fetcher: Fetcher = ({ query: operation, ...restGraphQLParams }) =>
+  ({
+    subscribe: (
+      sinkOrNext: Sink["next"] | Sink,
+      ...args: [Sink["error"], Sink["complete"]]
+    ) => {
+      const sink: Sink =
+        typeof sinkOrNext === "function"
+          ? { next: sinkOrNext, error: args[0], complete: args[1] }
+          : sinkOrNext;
+
+      const unsubscribe = (socketIOGraphQLClient as SocketIOGraphQLClient<
+        FetcherResult
+      >).execute(
+        {
+          operation,
+          ...restGraphQLParams,
+        },
+        sink
+      );
+
+      return { unsubscribe };
+    },
+  } as any);
 
 export const LiveGraphiQL = (): React.ReactElement => (
   <GraphiQL fetcher={fetcher} />
@@ -102,62 +129,44 @@ import {
   Network,
   RecordSource,
   Store,
-  FetchFunction,
-  SubscribeFunction,
   Observable,
+  GraphQLResponse,
+  RequestParameters,
+  Variables,
 } from "relay-runtime";
 
 export const createRelayEnvironment = (
-  networkInterface: SocketIOGraphQLClient
+  networkInterface: SocketIOGraphQLClient<GraphQLResponse, Error>
 ) => {
-  const fetchQuery: FetchFunction = (request, variables) => {
+  const execute = (request: RequestParameters, variables: Variables) => {
     if (!request.text) throw new Error("Missing document.");
     const { text: operation, name } = request;
 
-    return Observable.create((sink) => {
-      const observable = networkInterface.execute({
-        query: operation,
-        variables: variables,
-        operationName: name,
-      });
-
-      const subscription = observable.subscribe(sink);
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    });
+    return Observable.create<GraphQLResponse>((sink) =>
+      networkInterface.execute(
+        {
+          operation,
+          variables,
+          operationName: name,
+        },
+        sink
+      )
+    );
   };
 
-  const setupSubscription: SubscribeFunction = (request, variables) => {
-    if (!request.text) throw new Error("Missing document.");
-    const { text: operation, name } = request;
+  const network = Network.create(execute, execute);
+  const store = attachNotifyGarbageCollectionBehaviourToStore(
+    new Store(new RecordSource())
+  );
 
-    return Observable.create((sink) => {
-      const observable = networkInterface.execute({
-        query: operation,
-        variables: variables,
-        operationName: name,
-      });
-
-      const subscription = observable.subscribe(sink);
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    });
-  };
-
-  const environment = new Environment({
-    network: Network.create(fetchQuery, setupSubscription),
-    store: new Store(new RecordSource()),
+  return new Environment({
+    network,
+    store,
   });
-
-  return environment;
 };
 ```
 
-### Apollo CLient
+### Apollo Client
 
 As used in the `apollo client todo example app`(https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/todo-example/client-apollo).
 
@@ -170,6 +179,7 @@ import {
   Operation,
   Observable,
   FetchResult,
+  Observable,
 } from "@apollo/client";
 import { print } from "graphql";
 
@@ -181,13 +191,13 @@ class SocketIOGraphQLApolloLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    const sink = this.networkLayer.execute({
-      operationName: operation.operationName,
-      operation: print(operation.query),
-      variables: operation.variables,
-    });
-
-    return sink as Observable<FetchResult>;
+    return new Observable((sink) =>
+      this.networkLayer.execute({
+        operationName: operation.operationName,
+        operation: print(operation.query),
+        variables: operation.variables,
+      })
+    );
   }
 }
 
@@ -210,21 +220,29 @@ import {
   dedupExchange,
   cacheExchange,
   subscriptionExchange,
+  ExecutionResult,
 } from "urql";
 
-export const createUrqlClient = (networkInterface: SocketIOGraphQLClient) => {
+export const createUrqlClient = (
+  networkInterface: SocketIOGraphQLClient<ExecutionResult>
+) => {
   return new Client({
     url: "noop",
     exchanges: [
       dedupExchange,
       cacheExchange,
       subscriptionExchange({
-        forwardSubscription: (operation) => {
-          return networkInterface.execute({
-            operation: operation.query,
-            variables: operation.variables,
-          });
-        },
+        forwardSubscription: (operation) => ({
+          subscribe: (sink) => ({
+            unsubscribe: networkInterface.execute(
+              {
+                operation: operation.query,
+                variables: operation.variables,
+              },
+              sink
+            ),
+          }),
+        }),
         enableAllOperations: true,
       }),
     ],

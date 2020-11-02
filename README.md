@@ -54,7 +54,7 @@ For the following type:
 ```graphql
 type User {
   id: ID!
-  name
+  name: String!
 }
 ```
 

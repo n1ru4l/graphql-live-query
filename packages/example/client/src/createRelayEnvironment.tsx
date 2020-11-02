@@ -4,11 +4,28 @@ import {
   Network,
   RecordSource,
   Store,
-  FetchFunction,
-  SubscribeFunction,
   Observable,
+  GraphQLResponse,
+  RequestParameters,
+  Variables,
 } from "relay-runtime";
-import { throttle } from "./throttle";
+
+const throttle = <T extends Array<any>>(
+  fn: (...args: T) => unknown,
+  wait: number
+) => {
+  let isCalled = false;
+
+  return (...args: T) => {
+    if (!isCalled) {
+      fn(...args);
+      isCalled = true;
+      setTimeout(function () {
+        isCalled = false;
+      }, wait);
+    }
+  };
+};
 
 // by default relay is only scheduling cache garbage collection once a query is retained
 // as our queries are long living and update more often, garbage collection should be scheduled more often.
@@ -34,47 +51,25 @@ const attachNotifyGarbageCollectionBehaviourToStore = (store: Store): Store => {
 };
 
 export const createRelayEnvironment = (
-  networkInterface: SocketIOGraphQLClient
+  networkInterface: SocketIOGraphQLClient<GraphQLResponse, Error>
 ) => {
-  const fetchQuery: FetchFunction = (request, variables) => {
+  const execute = (request: RequestParameters, variables: Variables) => {
     if (!request.text) throw new Error("Missing document.");
     const { text: operation, name } = request;
 
-    return Observable.create((sink) => {
-      const observable = networkInterface.execute({
-        operation,
-        variables,
-        operationName: name,
-      });
-
-      const subscription = observable.subscribe(sink);
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    });
+    return Observable.create<GraphQLResponse>((sink) =>
+      networkInterface.execute(
+        {
+          operation,
+          variables,
+          operationName: name,
+        },
+        sink
+      )
+    );
   };
 
-  const setupSubscription: SubscribeFunction = (request, variables) => {
-    if (!request.text) throw new Error("Missing document.");
-    const { text: operation, name } = request;
-
-    return Observable.create((sink) => {
-      const observable = networkInterface.execute({
-        operation,
-        variables: variables,
-        operationName: name,
-      });
-
-      const subscription = observable.subscribe(sink);
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    });
-  };
-
-  const network = Network.create(fetchQuery, setupSubscription);
+  const network = Network.create(execute, execute);
   const store = attachNotifyGarbageCollectionBehaviourToStore(
     new Store(new RecordSource())
   );
