@@ -7,7 +7,7 @@ import {
   OperationDefinitionNode,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
-import { isLiveOperationDefinition } from "@n1ru4l/graphql-live-query";
+import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
@@ -147,7 +147,7 @@ export class InMemoryLiveQueryStore {
 
     if (
       isNone(operationNode) ||
-      isLiveOperationDefinition(operationNode) === false
+      isLiveQueryOperationDefinitionNode(operationNode) === false
     ) {
       return fallbackToDefaultExecute();
     }
