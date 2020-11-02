@@ -1,47 +1,44 @@
-type Sink<T> = {
-  next: (value: T) => void;
-  error: (error: any) => void;
+type DisposeFunction = () => void;
+
+export type Sink<TValue = unknown, TError = unknown> = {
+  next: (value: TValue) => void;
+  error: (error: TError) => void;
   complete: () => void;
 };
 
-type Unsubscribable = {
-  unsubscribe: () => void;
-};
-
-type Observable<T> = {
-  subscribe(opts: {
-    next: (value: T) => void;
-    error: (error: any) => void;
-    complete: () => void;
-  }): Unsubscribable;
-  subscribe(
-    next: (value: T) => void,
-    error: null | undefined,
-    complete: () => void
-  ): Unsubscribable;
-};
-
-type Parameter = {
+export type ExecutionParameter = {
   operation: string;
   operationName?: string | null;
   variables?: { [key: string]: any };
 };
 
-export type SocketIOGraphQLClient = {
-  execute: (opts: Parameter) => Observable<any>;
+export type SocketIOGraphQLClient<
+  TExecutionResult = unknown,
+  TError = unknown
+> = {
+  execute: (
+    opts: ExecutionParameter,
+    sink: Sink<TExecutionResult, TError>
+  ) => DisposeFunction;
   destroy: () => void;
 };
 
-type OperationRecord = {
-  sink: Sink<unknown>;
+type OperationRecord<TExecutionResult = unknown, TError = unknown> = {
+  sink: Sink<TExecutionResult, TError>;
   execute: () => void;
 };
 
-export const createSocketIOGraphQLClient = (
+export const createSocketIOGraphQLClient = <
+  TExecutionResult = unknown,
+  TError = unknown
+>(
   socket: SocketIOClient.Socket
-): SocketIOGraphQLClient => {
+): SocketIOGraphQLClient<TExecutionResult, TError> => {
   let currentOperationId = 0;
-  const operations = new Map<number, OperationRecord>();
+  const operations = new Map<
+    number,
+    OperationRecord<TExecutionResult, TError>
+  >();
   const onExecutionResult = ({ id, isFinal, ...result }: any) => {
     const record = operations.get(id);
     if (!record) {
@@ -49,7 +46,6 @@ export const createSocketIOGraphQLClient = (
     }
     record.sink.next(result);
 
-    // For non live queries we only get one result.
     if (isFinal) {
       record.sink.complete();
       operations.delete(id);
@@ -70,45 +66,34 @@ export const createSocketIOGraphQLClient = (
     socket.off("reconnect", onReconnect);
   };
 
-  const execute = ({ operation, variables, operationName }: Parameter) => {
+  const execute = (
+    { operation, variables, operationName }: ExecutionParameter,
+    sink: Sink<TExecutionResult, TError>
+  ) => {
     const operationId = currentOperationId;
     currentOperationId = currentOperationId + 1;
 
-    return {
-      subscribe: (
-        sinkOrNext: Sink<any>["next"] | Sink<any>,
-        ...args: [Sink<any>["error"], Sink<any>["complete"]]
-      ) => {
-        const sink: Sink<any> =
-          typeof sinkOrNext === "function"
-            ? { next: sinkOrNext, error: args[0], complete: args[1] }
-            : sinkOrNext;
-
-        const record: OperationRecord = {
-          execute: () => {
-            socket.emit("@graphql/execute", {
-              id: operationId,
-              operationName,
-              operation,
-              variables,
-            });
-          },
-          sink,
-        };
-
-        operations.set(operationId, record);
-        record.execute();
-
-        return {
-          unsubscribe: () => {
-            operations.delete(operationId);
-            socket.emit("@graphql/unsubscribe", {
-              id: operationId,
-            });
-          },
-        };
+    const record: OperationRecord<TExecutionResult, TError> = {
+      execute: () => {
+        socket.emit("@graphql/execute", {
+          id: operationId,
+          operationName,
+          operation,
+          variables,
+        });
       },
-    } as Observable<any>;
+      sink,
+    };
+
+    operations.set(operationId, record);
+    record.execute();
+
+    return () => {
+      operations.delete(operationId);
+      socket.emit("@graphql/unsubscribe", {
+        id: operationId,
+      });
+    };
   };
 
   return {

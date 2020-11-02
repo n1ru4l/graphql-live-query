@@ -6,18 +6,18 @@ import { TodoApplication } from "./TodoApplication";
 import socketIO from "socket.io-client";
 import { createApolloClient } from "./createApolloClient";
 import "todomvc-app-css/index.css";
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider, FetchResult } from "@apollo/client";
 
 const socket = socketIO();
-const networkInterface = createSocketIOGraphQLClient(socket);
+const networkInterface = createSocketIOGraphQLClient<FetchResult>(socket);
 const apolloClient = createApolloClient(networkInterface);
 
 ReactDOM.render(
   <React.StrictMode>
-    <ApolloProvider client={apolloClient} >
+    <ApolloProvider client={apolloClient}>
       <TodoApplication />
     </ApolloProvider>
-  </React.StrictMode >,
+  </React.StrictMode>,
   document.getElementById("root")
 );
 

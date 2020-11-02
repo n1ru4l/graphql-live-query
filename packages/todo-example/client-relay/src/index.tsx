@@ -6,9 +6,12 @@ import { TodoApplication } from "./TodoApplication";
 import socketIO from "socket.io-client";
 import { createRelayEnvironment } from "./createRelayEnvironment";
 import "todomvc-app-css/index.css";
+import { GraphQLResponse } from "relay-runtime";
 
 const socket = socketIO();
-const networkInterface = createSocketIOGraphQLClient(socket);
+const networkInterface = createSocketIOGraphQLClient<GraphQLResponse, Error>(
+  socket
+);
 const environment = createRelayEnvironment(networkInterface);
 
 ReactDOM.render(

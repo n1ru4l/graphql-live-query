@@ -4,21 +4,29 @@ import {
   dedupExchange,
   cacheExchange,
   subscriptionExchange,
+  ExecutionResult,
 } from "urql";
 
-export const createUrqlClient = (networkInterface: SocketIOGraphQLClient) => {
+export const createUrqlClient = (
+  networkInterface: SocketIOGraphQLClient<ExecutionResult>
+) => {
   return new Client({
     url: "noop",
     exchanges: [
       dedupExchange,
       cacheExchange,
       subscriptionExchange({
-        forwardSubscription: (operation) => {
-          return networkInterface.execute({
-            operation: operation.query,
-            variables: operation.variables,
-          });
-        },
+        forwardSubscription: (operation) => ({
+          subscribe: (sink) => ({
+            unsubscribe: networkInterface.execute(
+              {
+                operation: operation.query,
+                variables: operation.variables,
+              },
+              sink
+            ),
+          }),
+        }),
         enableAllOperations: true,
       }),
     ],
