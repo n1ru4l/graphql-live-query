@@ -7,7 +7,7 @@
     "@n1ru4l/socket-io-graphql-server": "*",
     "@tinyhttp/app": "0.5.3",
     "@tinyhttp/logger": "0.5.8",
-    "graphql": "15.3.0",
+    "graphql": "15.4.0",
     "socket.io": "2.3.0"
   },
   "devDependencies": {

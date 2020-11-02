@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "urql": "1.10.1",
-    "graphql": "15.3.0"
+    "graphql": "15.4.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.18.0",
