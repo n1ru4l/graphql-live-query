@@ -33,32 +33,35 @@ const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
 const addResourceIdentifierCollectorToSchema = (
   schema: GraphQLSchema
 ): GraphQLSchema =>
-  wrapSchema(schema, [
-    new TransformObjectFields((typename, fieldName, fieldConfig) => {
-      let isIDField =
-        fieldName === "id" && isNonNullIDScalarType(fieldConfig.type);
+  wrapSchema({
+    schema,
+    transforms: [
+      new TransformObjectFields((typename, fieldName, fieldConfig) => {
+        let isIDField =
+          fieldName === "id" && isNonNullIDScalarType(fieldConfig.type);
 
-      let resolve = fieldConfig.resolve!;
-      fieldConfig.resolve = (src, args, context, info) => {
-        if (!context || !context[ORIGINAL_CONTEXT_SYMBOL]) {
-          return resolve(src, args, context, info);
-        }
+        let resolve = fieldConfig.resolve!;
+        fieldConfig.resolve = (src, args, context, info) => {
+          if (!context || !context[ORIGINAL_CONTEXT_SYMBOL]) {
+            return resolve(src, args, context, info);
+          }
 
-        const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
-          context.collectResourceIdentifier;
-        context = context[ORIGINAL_CONTEXT_SYMBOL];
-        const result = resolve(src, args, context, info);
-        if (isIDField) {
-          runWith(result, (id: string) =>
-            collectResourceIdentifier({ typename, id })
-          );
-        }
-        return result;
-      };
+          const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
+            context.collectResourceIdentifier;
+          context = context[ORIGINAL_CONTEXT_SYMBOL];
+          const result = resolve(src, args, context, info);
+          if (isIDField) {
+            runWith(result, (id: string) =>
+              collectResourceIdentifier({ typename, id })
+            );
+          }
+          return result;
+        };
 
-      return fieldConfig;
-    }),
-  ]);
+        return fieldConfig;
+      }),
+    ],
+  });
 
 export type BuildResourceIdentifierFunction = (
   parameter: Readonly<{
