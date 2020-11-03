@@ -28,6 +28,20 @@ const socketServer = socketIO();
 
 registerSocketIOGraphQLServer({
   socketServer,
+  /* getParameter is invoked for each incoming operation and provides all values required for execution. */
+  getParameter: ({ /* Socket.io instance of the client that executes the operation */ socket }) => ({
+    /* The parameters used for the operation execution. */
+    graphQLExecutionParameter: {
+      /* GraphQL schema used for exection (required) */
+      schema,
+      /* root value for execution (optional) */
+      rootValue: {},
+      /* context value for execution (optional) */
+      contextValue: {
+        socket,
+      },
+    },
+  }),
 });
 ```
 
