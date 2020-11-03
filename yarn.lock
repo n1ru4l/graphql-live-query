@@ -2867,10 +2867,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-relay@7.0.16":
-  version "7.0.16"
-  resolved "https://registry.yarnpkg.com/@types/react-relay/-/react-relay-7.0.16.tgz#ee6bb834c3fa0c0ef73cca61245c522f043d02ab"
-  integrity sha512-oKXcJIHQrEuijmGXE7CkwIzNCauczfO8ts3gVy/2J2wbRLNO4TbAcIsC3WVCKkQUuWIg5ycUNPNwTl1/OkGHHg==
+"@types/react-relay@7.0.17":
+  version "7.0.17"
+  resolved "https://registry.yarnpkg.com/@types/react-relay/-/react-relay-7.0.17.tgz#83f6b85c41b5fd3bb27d04d759fa4c0e4dd6a8d4"
+  integrity sha512-cJqOFIbp3M3/QkRpxlL4pwWRWB0lPGHevJFW8unuebkkITre8ptgknkGhAKe5IlA6ENTRJqVQXMuNdyLxl+0cQ==
   dependencies:
     "@types/react" "*"
     "@types/relay-runtime" "*"
