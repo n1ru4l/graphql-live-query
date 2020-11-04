@@ -1,24 +1,32 @@
-# GraphQL Live Query
+<p align="center">
+  <img src="assets/logo.svg" width="450" alt="GraphQL Live Query" />
+   <br />
+  <p align="center">
+  Real-Time with GraphQL for any GraphQL schema or transport.
+  </p>
+  <p align="center">
+    <a href="https://dev.to/n1ru4l/graphql-live-queries-with-socket-io-4mh6">Read the blog post</a>
+    - <a href="https://dev.to/n1ru4l/collecting-graphql-live-query-resource-identifier-with-graphql-tools-5fm5">Learn how operations are tracked</a>
+  </p>
+  <br />
+  <br />
+</p>
 
-Implementation of GraphQL Live Queries for any GraphQL schema.
+## Packages in this Repository
 
-[Read the blog post](https://dev.to/n1ru4l/graphql-live-queries-with-socket-io-4mh6)
-
-[Learn how `InMemoryLiveQueryStore` keeps track of the resources consumed by clients](https://dev.to/n1ru4l/collecting-graphql-live-query-resource-identifier-with-graphql-tools-5fm5)
-
-## Implementation
-
-- [`@n1ru4l/in-memory-live-query-store`](packages/in-memory-live-query-store) - A simple query store that holds the queries in memory.
-- [`@n1ru4l/graphql-live-query`](packages/graphql-live-query) - Basic utilities for determining live queries.
-- [`@n1ru4l/socket-io-graphql-server`](packages/socket-io-graphql-server) - A layer for serving a GraphQL schema via a socket.io server. Supports Queries, Mutations, Subscriptions and Live Queries.
-- [`@n1ru4l/socket-io-graphql-client`](packages/socket-io-graphql-client) - A network interface for consuming a GraphQL schema that is served via `@n1ru4l/socket-io-graphql-server`.
-- [todo-example-app](packages/todo-example) - The classic Todo App - but with state that sync across clients
+| Package                                                                     | Description                                | Stats                                                                                                                                                                                                                                                                                                              |
+| --------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`@n1ru4l/in-memory-live-query-store`](packages/in-memory-live-query-store) | Live query implementation.                 | [![npm version](https://img.shields.io/npm/v/@n1ru4l/in-memory-live-query-store.svg)](https://www.npmjs.com/package/@n1ru4l/in-memory-live-query-store) [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/in-memory-live-query-store.svg)](https://www.npmjs.com/package/@n1ru4l/in-memory-live-query-store) |
+| [`@n1ru4l/graphql-live-query`](packages/graphql-live-query)                 | Utilities for live query implementations.  | [![npm version](https://img.shields.io/npm/v/@n1ru4l/graphql-live-query.svg)](https://www.npmjs.com/package/@n1ru4l/graphql-live-query) [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/graphql-live-query.svg)](https://www.npmjs.com/package/@n1ru4l/graphql-live-query)                                 |
+| [`@n1ru4l/socket-io-graphql-server`](packages/socket-io-graphql-server)     | GraphQL over Socket.io - Server Middleware | [![npm version](https://img.shields.io/npm/v/@n1ru4l/socket-io-graphql-server.svg)](https://www.npmjs.com/package/@n1ru4l/socket-io-graphql-server) [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/socket-io-graphql-server.svg)](https://www.npmjs.com/package/@n1ru4l/socket-io-graphql-server)         |
+| [`@n1ru4l/socket-io-graphql-client`](packages/socket-io-graphql-client)     | GraphQL over Socket.io - Client            | [![npm version](https://img.shields.io/npm/v/@n1ru4l/socket-io-graphql-client.svg)](https://www.npmjs.com/package/@n1ru4l/socket-io-graphql-client) [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/socket-io-graphql-client.svg)](https://www.npmjs.com/package/@n1ru4l/socket-io-graphql-client)         |
+| [`todo-example-app`](packages/todo-example)                                 | Todo App with state sync across clients.   | -                                                                                                                                                                                                                                                                                                                  |
 
 ## Motivation
 
-There was no live query implementation not tied to any specific database. This implementation should serve as an example how live queries can be added to any schema.
+There are no mature live query implementation not tied to any specific database. This implementation should serve as an example how live queries can be added to any schema with (almost) and GraphQL transport.
 
-GraphQL already has a solution for real-time: Subscriptions. Thos are the right tool for responding to events. An example for this would be triggering a sound or showing a toast message once a new message has been received. Subscriptions are also often used for updating existing query results on the client. Depending on the complexity cache update code can eventually become pretty bloated. Often it is more straight-forward to simply refetch the query once a subscription event is received.
+GraphQL already has a solution for real-time: Subscriptions. Subscriptions are the right tool for responding to events. E.g. triggering a sound or showing a toast message once a new message has been received. Subscriptions are also often used for updating existing query results on the client. Depending on the complexity cache update code can eventually become pretty bloated. Often it is more straight-forward to simply refetch the query once a subscription event is received.
 
 In contrast live queries should feel magically and update the UI with the latest data from the server without having to write any cache update wizardry code on the client.
 
@@ -36,11 +44,11 @@ query users @live {
 ```
 
 A live query is sent to the server (via a transport that supports delivering partial execution results) and registered.
-The client receives a immediate execution result and furthermore receives additional execution results once the live query operation was invalidated and therefore the client data became stale.
+The client receives a immediate execution result and furthermore receives additional (partial) execution results once the live query operation was invalidated and therefore the client data became stale.
 
 The client can inform the server that it is no longer interested in the query (unsubscribe the live query operation).
 
-On the server we have a live query invalidation mechanism that is used for determining which queries have become stale, and thus need to be rescheduled for execution.
+On the server we have a live query invalidation mechanism that is used for determining which queries have become stale, and thus need to be rescheduled for execution. In the future we might event be able to only re-execute partial subtrees of a query operation.
 
 ### How does the server know the underlying data has changed?
 
