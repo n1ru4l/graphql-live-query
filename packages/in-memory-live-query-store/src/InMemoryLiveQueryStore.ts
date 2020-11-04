@@ -75,13 +75,46 @@ export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunctio
 ) => `${params.typename}:${params.id}`;
 
 type InMemoryLiveQueryStoreParameter = {
+  /* Custom function for building resource identifiers. By default resource identifiers are built by concatenating the Typename with the id separated by a color (`User:1`). See `defaultResourceIdentifierNormalizer` */
   buildResourceIdentifier?: BuildResourceIdentifierFunction;
+  /* Function which is used for executing the operations. Uses the `execute` exported from graphql be default. */
   execute?: typeof defaultExecute;
 };
 
 const isOperationDefinitionNode = (
   input: DefinitionNode
 ): input is OperationDefinitionNode => input.kind === "OperationDefinition";
+
+// TODO: Investigate why parameters does not return a union...
+type ExecutionParameter = Parameters<typeof defaultExecute> | [ExecutionArgs];
+
+/* Utility for getting the parameters for the union parameter input type as a object. */
+const getExecutionParameters = (params: ExecutionParameter): ExecutionArgs => {
+  if (params.length === 1) {
+    return params[0];
+  }
+  const [
+    schema,
+    document,
+    rootValue,
+    contextValue,
+    variableValues,
+    operationName,
+    fieldResolver,
+    typeResolver,
+  ] = params;
+
+  return {
+    schema,
+    document,
+    rootValue,
+    contextValue,
+    variableValues,
+    operationName,
+    fieldResolver,
+    typeResolver,
+  };
+};
 
 export class InMemoryLiveQueryStore {
   private _store = new Set<StoreRecord>();
@@ -108,17 +141,19 @@ export class InMemoryLiveQueryStore {
     return schema;
   }
 
-  execute = ({
-    schema: inputSchema,
-    document,
-    rootValue,
-    contextValue,
-    variableValues,
-    operationName,
-    ...additionalArguments
-  }: ExecutionArgs): MaybePromise<
-    AsyncIterableIterator<ExecutionResult> | ExecutionResult
-  > => {
+  execute = (
+    ...args: ExecutionParameter
+  ): MaybePromise<AsyncIterableIterator<ExecutionResult> | ExecutionResult> => {
+    const {
+      schema: inputSchema,
+      document,
+      rootValue,
+      contextValue,
+      variableValues,
+      operationName,
+      ...additionalArguments
+    } = getExecutionParameters(args);
+
     const operationDefinitions = document.definitions.filter(
       isOperationDefinitionNode
     );
