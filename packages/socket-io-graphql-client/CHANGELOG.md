@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.7.0
+
+### Minor Changes
+
+- 3864577: Instead of returning an Observable a Sink must now be passed as the second parameter for the execute function.
+
 ## 0.6.0
 
 ### Minor Changes

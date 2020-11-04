@@ -1,5 +1,15 @@
 # @n1ru4l/graphql-live-query
 
+## 0.6.0
+
+### Minor Changes
+
+- 7b37628: Remove exported `extractLiveQueries` function.
+
+### Patch Changes
+
+- 37f0b6d: rename `isLiveOperationDefinition` to `isLiveQueryOperationDefinitionNode`
+
 ## 0.5.0
 
 ### Minor Changes
