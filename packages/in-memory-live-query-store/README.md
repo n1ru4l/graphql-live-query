@@ -4,8 +4,6 @@
 
 A live query store for GraphQL servers that holds the information about the live queries in memory.
 
-**Note:** If you only want a complete GraphQL transport layer (that is compatible with this package) check out [`@n1ru4l/socket-io-graphql-server`](https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/socket-io-graphql-server).
-
 Wanna see how you can add it to your existing GraphQL schema? Check out the [todo example server](https://github.com/n1ru4l/graphql-live-queries/blob/main/packages/todo-example/server/src/schema.ts).
 
 With InMemoryLiveQueryStore you can easily add live query capabilities to your existing schema!
