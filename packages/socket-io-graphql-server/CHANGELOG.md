@@ -1,5 +1,17 @@
 # @n1ru4l/socket-io-graphql-server
 
+## 0.7.0
+
+### Minor Changes
+
+- 7b37628: Remove support for the `onError` handler.
+- 7b37628: Accept `DocumentNode` objects as the execution input.
+
+### Patch Changes
+
+- 8d416b8: make graphql a peer dependency
+- 7b37628: Make implementation more conform with how `graphql-express` behaves.
+
 ## 0.6.0
 
 ### Minor Changes

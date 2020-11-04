@@ -1,5 +1,16 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.5.2
+
+### Patch Changes
+
+- 8d416b8: make graphql a peer dependency
+- 7b37628: Make implementation more compatible with how `graphql-js` behaves.
+- c550c40: fix: Don't leak implementation details on the returned AsyncIterableIterator. `InMemoryLiveQueryStore.execute` noe resolves with a generic AsyncIterableIterator.
+- Updated dependencies [37f0b6d]
+- Updated dependencies [7b37628]
+  - @n1ru4l/graphql-live-query@0.6.0
+
 ## 0.5.1
 
 ### Patch Changes
