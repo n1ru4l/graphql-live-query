@@ -1,13 +1,9 @@
-import { App, Response, Request } from "@tinyhttp/app";
-import { logger } from "@tinyhttp/logger";
-// import { staticHandler } from "@tinyhttp/static";
 import socketIO from "socket.io";
+import http from "http";
 import type { Socket } from "net";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import { schema } from "./schema";
-
-const app = new App();
 
 const parsePortSafe = (port: string) => {
   const parsedPort = parseInt(port, 10);
@@ -17,8 +13,11 @@ const parsePortSafe = (port: string) => {
   return parsedPort;
 };
 
-const server = app
-  .use(logger())
+const server = http
+  .createServer((_, res) => {
+    res.writeHead(404);
+    res.end();
+  })
   .listen(parsePortSafe(process.env.PORT || "3001"));
 
 const socketServer = socketIO(server);

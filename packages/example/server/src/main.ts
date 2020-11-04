@@ -1,5 +1,4 @@
-import * as tinyhttpApp from "@tinyhttp/app";
-import * as tinyhttpLogger from "@tinyhttp/logger";
+import http from "http";
 import socketIO from "socket.io";
 import * as net from "net";
 import * as graphqlSchema from "./graphql/schema";
@@ -11,8 +10,6 @@ import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server"
 import { MessageStore } from "./message-store";
 import { PubSub } from "graphql-subscriptions";
 
-const app = new tinyhttpApp.App();
-
 const parsePortSafe = (port: string) => {
   const parsedPort = parseInt(port, 10);
   if (Number.isNaN(parsedPort)) {
@@ -21,9 +18,11 @@ const parsePortSafe = (port: string) => {
   return parsedPort;
 };
 
-const server = app
-  .use(tinyhttpLogger.logger())
-  .use("/", (req, res) => res.send("Hello World."))
+const server = http
+  .createServer((_, res) => {
+    res.writeHead(404);
+    res.end();
+  })
   .listen(parsePortSafe(process.env.PORT || "3001"));
 
 const socketServer = socketIO(server);

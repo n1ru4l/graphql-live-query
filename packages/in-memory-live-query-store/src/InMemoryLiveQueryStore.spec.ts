@@ -211,3 +211,21 @@ it("returns a AsyncIterable that publishes a query result after the schema coord
 
   executionResult.return?.();
 });
+
+it("can be executed with polymorphic parameter type", () => {
+  const mutableSource = { query: "queried", mutation: "mutated" };
+  const schema = createTestSchema(mutableSource);
+  const store = new InMemoryLiveQueryStore();
+  const document = parse(/* GraphQL */ `
+    query {
+      foo
+    }
+  `);
+
+  const executionResult = store.execute(schema, document);
+  expect(executionResult).toEqual({
+    data: {
+      foo: "queried",
+    },
+  });
+});

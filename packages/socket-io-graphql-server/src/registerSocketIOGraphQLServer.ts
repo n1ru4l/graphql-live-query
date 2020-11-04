@@ -26,31 +26,48 @@ export type ExecuteFunction = (
 ) => PromiseOrPlain<AsyncIterableIterator<ExecutionResult> | ExecutionResult>;
 
 export type GetParameterFunctionParameter = {
+  /* The socket that sends the operation */
   socket: SocketIO.Socket;
+  /* The GraphQL payload that is sent by the socket. */
   graphQLPayload: {
+    /* The source document. Can be a string or object. */
     source: DocumentSourceString | MaybeDocumentNode;
+    /* The variables for the source document. */
     variableValues: { [key: string]: any } | null;
+    /* The name of the operation that should be executed. */
     operationName: string | null;
   };
 };
 
+/* Function which is invoked for each incoming operation */
 export type GetParameterFunction = (
   parameter: GetParameterFunctionParameter
 ) => PromiseOrPlain<{
+  /* The parameters that will be used for executing/subscribing to the operation. */
   graphQLExecutionParameter: {
+    /* Executable GraphQL schema (required)*/
     schema: GraphQLSchema;
+    /* Execution context that is injected into each resolver. */
     contextValue?: unknown;
+    /* Root value that is injected into the root object types. */
     rootValue?: unknown;
-    // These will be overwritten if provided; Useful for persisted queries etc.
-    operationName?: string;
-    source?: string | DocumentNode;
+    /* Source document. Will overwrite the value sent from the client. */
+    source?: DocumentSourceString | DocumentNode;
+    /* Variables for the source document. Will overwrite the value sent from the client. */
     variableValues?: { [key: string]: any } | null;
+    /* Name of the operation that should be executed. Will overwrite the value sent from the client. */
+    operationName?: string;
   };
+  /* Function for executing mutation and query operations. Uses `execute` exported from graphql by default. */
   execute?: ExecuteFunction;
+  /* Function for executing subscription operations. Uses `subscribe` exported from graphql by default. */
   subscribe?: typeof defaultSubscribe;
 
+  /* Function for parsing GraphQL source documents. Uses `parse` exported from graphql by default. */
   parse?: typeof defaultParse;
+  /* Function for validating the GraphQL schema. Uses `validateSchema` exported from graphql by default. */
   validateSchema?: typeof defaultValidateSchema;
+  /* Function for validating the GraphQL documents. Uses `validate` exported from graphql by default. */
   validate?: typeof defaultValidate;
 }>;
 
