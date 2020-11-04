@@ -22,7 +22,7 @@
     "prepack": "bob prepack"
   },
   "peerDependencies": {
-    "graphql": "^15.3.0"
+    "graphql": "15.4.0"
   },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
