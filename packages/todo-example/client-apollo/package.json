@@ -9,7 +9,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "1.19.1",
     "@testing-library/jest-dom": "^5.11.5",
-    "@testing-library/react": "^9.3.2",
+    "@testing-library/react": "^11.1.1",
     "@testing-library/user-event": "^12.2.0",
     "@types/classnames": "2.2.11",
     "@types/react-dom": "16.9.9",
