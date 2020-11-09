@@ -16,7 +16,7 @@
     "faker": "5.1.0",
     "graphql": "15.4.0",
     "graphql-subscriptions": "1.1.0",
-    "socket.io": "2.3.0"
+    "socket.io": "3.0.0"
   },
   "devDependencies": {
     "@types/faker": "5.1.2",
