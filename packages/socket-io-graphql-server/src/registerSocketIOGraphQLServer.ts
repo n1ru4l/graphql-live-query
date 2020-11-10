@@ -11,6 +11,7 @@ import {
   GraphQLError,
 } from "graphql";
 import { isAsyncIterable } from "./isAsyncIterable";
+import type { Server as IOServer, Socket as IOSocket } from "socket.io";
 
 export type PromiseOrPlain<T> = T | Promise<T>;
 
@@ -27,7 +28,7 @@ export type ExecuteFunction = (
 
 export type GetParameterFunctionParameter = {
   /* The socket that sends the operation */
-  socket: SocketIO.Socket;
+  socket: IOSocket;
   /* The GraphQL payload that is sent by the socket. */
   graphQLPayload: {
     /* The source document. Can be a string or object. */
@@ -152,7 +153,7 @@ const decodeUnsubscribeMessage = (message: unknown): { id: number } | Error => {
 export type DecodeErrorHandler = (error: Error) => void;
 
 export type RegisterSocketIOGraphQLServerParameter = {
-  socketServer: SocketIO.Server;
+  socketServer: IOServer;
   /* get the parameters for a incoming GraphQL operation */
   getParameter: GetParameterFunction;
   /* error handler for failed message decoding attempts */
@@ -165,9 +166,9 @@ export type UnsubscribeHandler = () => void;
 
 export type SocketIOGraphQLServer = {
   /* register a single socket */
-  registerSocket: (socket: SocketIO.Socket) => UnsubscribeHandler;
+  registerSocket: (socket: IOSocket) => UnsubscribeHandler;
   /* dispose a single socket */
-  disposeSocket: (socket: SocketIO.Socket) => void;
+  disposeSocket: (socket: IOSocket) => void;
   /* dispose all connections and remove all listeners on the socketServer. */
   destroy: () => void;
 };
@@ -179,8 +180,8 @@ export const registerSocketIOGraphQLServer = ({
   isLazy = false,
 }: RegisterSocketIOGraphQLServerParameter): SocketIOGraphQLServer => {
   let acceptNewConnections = true;
-  const disposeHandlers = new Map<SocketIO.Socket, UnsubscribeHandler>();
-  const registerSocket = (socket: SocketIO.Socket) => {
+  const disposeHandlers = new Map<IOSocket, UnsubscribeHandler>();
+  const registerSocket = (socket: IOSocket) => {
     // In case the socket is already registered :)
     const dispose = disposeHandlers.get(socket);
     if (dispose) {
@@ -368,9 +369,9 @@ export const registerSocketIOGraphQLServer = ({
   }
 
   return {
-    registerSocket: (socket: SocketIO.Socket) =>
+    registerSocket: (socket: IOSocket) =>
       disposeHandlers.get(socket) ?? registerSocket(socket),
-    disposeSocket: (socket: SocketIO.Socket) => disposeHandlers.get(socket)?.(),
+    disposeSocket: (socket: IOSocket) => disposeHandlers.get(socket)?.(),
     destroy: () => {
       socketServer.off("connection", registerSocket);
       for (const dispose of disposeHandlers.values()) {

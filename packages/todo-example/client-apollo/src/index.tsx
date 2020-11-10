@@ -3,12 +3,12 @@ import ReactDOM from "react-dom";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 import { TodoApplication } from "./TodoApplication";
 
-import socketIO from "socket.io-client";
+import { io } from "socket.io-client";
 import { createApolloClient } from "./createApolloClient";
 import "todomvc-app-css/index.css";
 import { ApolloProvider, FetchResult } from "@apollo/client";
 
-const socket = socketIO();
+const socket = io();
 const networkInterface = createSocketIOGraphQLClient<FetchResult>(socket);
 const apolloClient = createApolloClient(networkInterface);
 

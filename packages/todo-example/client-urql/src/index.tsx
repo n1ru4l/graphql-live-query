@@ -3,12 +3,12 @@ import ReactDOM from "react-dom";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 import { TodoApplication } from "./TodoApplication";
 
-import socketIO from "socket.io-client";
+import { io } from "socket.io-client";
 import { createUrqlClient } from "./createUrgqlClient";
 import "todomvc-app-css/index.css";
 import { Provider, ExecutionResult } from "urql";
 
-const socket = socketIO();
+const socket = io();
 const networkInterface = createSocketIOGraphQLClient<ExecutionResult>(socket);
 const urqlClient = createUrqlClient(networkInterface);
 

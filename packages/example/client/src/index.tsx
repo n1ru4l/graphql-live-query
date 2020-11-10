@@ -6,7 +6,7 @@ import { GraphQLResponse } from "relay-runtime";
 import { GraphiQLRoute } from "./GraphiQLRoute";
 import { BrowserRouter } from "react-router-dom";
 import { Global, css } from "@emotion/core";
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import {
   createSocketIOGraphQLClient,
   Sink,

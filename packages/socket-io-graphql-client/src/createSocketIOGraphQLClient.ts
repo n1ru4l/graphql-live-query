@@ -1,3 +1,5 @@
+import type { Socket as IOSocket } from "socket.io-client";
+
 type DisposeFunction = () => void;
 
 export type Sink<TValue = unknown, TError = unknown> = {
@@ -32,7 +34,7 @@ export const createSocketIOGraphQLClient = <
   TExecutionResult = unknown,
   TError = unknown
 >(
-  socket: SocketIOClient.Socket
+  socket: IOSocket
 ): SocketIOGraphQLClient<TExecutionResult, TError> => {
   let currentOperationId = 0;
   const operations = new Map<
