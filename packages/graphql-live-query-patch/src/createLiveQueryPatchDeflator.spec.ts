@@ -76,14 +76,12 @@ it("publishes patches for live query results", async () => {
   let value = await stream.next();
   expect(value).toEqual({
     value: {
-      initialValue: {
-        data: {
-          foo: {
-            bar: "kek",
-          },
+      data: {
+        foo: {
+          bar: "kek",
         },
       },
-      isLiveJSONPatch: true,
+      isLivePatch: true,
       revision: 1,
     },
     done: false,
@@ -94,11 +92,11 @@ it("publishes patches for live query results", async () => {
       patch: [
         {
           op: "replace",
-          path: "/data/foo/bar",
+          path: "/foo/bar",
           value: "speck",
         },
       ],
-      isLiveJSONPatch: true,
+      isLivePatch: true,
       revision: 2,
     },
     done: false,

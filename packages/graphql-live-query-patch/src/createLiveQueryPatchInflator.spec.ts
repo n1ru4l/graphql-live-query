@@ -53,25 +53,23 @@ test("pass through non live query patch result", async () => {
 it("applies patch results", async () => {
   async function* source() {
     yield {
-      initialValue: {
-        data: {
-          foo: {
-            bar: "kek",
-          },
+      data: {
+        foo: {
+          bar: "kek",
         },
       },
-      isLiveJSONPatch: true,
+      isLivePatch: true,
       revision: 1,
     } as LiveExecutionResult;
     yield {
       patch: [
         {
           op: "replace",
-          path: "/data/foo/bar",
+          path: "/foo/bar",
           value: "speck",
         },
       ],
-      isLiveJSONPatch: true,
+      isLivePatch: true,
       revision: 2,
     } as LiveExecutionResult;
   }

@@ -1,12 +1,12 @@
 import type { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
 import { compare } from "fast-json-patch";
 import { ExecutionResult } from "graphql";
-import { JSONPatchLiveExecutionResult } from "./JSONPatchLiveExecutionResult";
+import { LiveExecutionPatch } from "./LiveExecutionPatch";
 
 export async function* createLiveQueryPatchDeflator(
   asyncIterator: AsyncIterableIterator<LiveExecutionResult>
-): AsyncIterableIterator<JSONPatchLiveExecutionResult & ExecutionResult> {
-  let previousValue: LiveExecutionResult | null = null;
+): AsyncIterableIterator<LiveExecutionPatch & ExecutionResult> {
+  let previousValue: LiveExecutionResult["data"] | null = null;
   let revision = 0;
   for await (const value of asyncIterator) {
     // no live query? reset state.
@@ -18,13 +18,7 @@ export async function* createLiveQueryPatchDeflator(
       revision = revision + 1;
 
       if (previousValue) {
-        const currentValue: JSONPatchLiveExecutionResult["initialValue"] = {};
-        if ("data" in value) {
-          currentValue.data = value.data;
-        }
-        if ("errors" in value) {
-          currentValue.errors = value.errors;
-        }
+        const currentValue = value.data ?? {};
 
         const patch = compare(previousValue, currentValue);
         previousValue = currentValue;
@@ -32,8 +26,12 @@ export async function* createLiveQueryPatchDeflator(
         const valueToPublish = {
           revision,
           patch,
-          isLiveJSONPatch: true,
-        } as JSONPatchLiveExecutionResult;
+          isLivePatch: true,
+        } as LiveExecutionPatch;
+
+        if ("errors" in value) {
+          valueToPublish.errors = value.errors;
+        }
 
         if ("extensions" in value) {
           valueToPublish.extensions = value.extensions;
@@ -41,18 +39,20 @@ export async function* createLiveQueryPatchDeflator(
 
         yield valueToPublish;
       } else {
-        previousValue = {};
-        if ("data" in value) {
-          previousValue.data = value.data;
-        }
-        if ("errors" in value) {
-          previousValue.errors = value.errors;
-        }
+        previousValue = value.data ?? {};
+
         const valueToPublish = {
           revision,
-          initialValue: previousValue,
-          isLiveJSONPatch: true,
-        } as JSONPatchLiveExecutionResult;
+          isLivePatch: true,
+        } as LiveExecutionPatch;
+
+        if ("data" in value) {
+          valueToPublish.data = previousValue;
+        }
+        if ("errors" in value) {
+          valueToPublish.errors = value.errors;
+        }
+
         if ("extensions" in value) {
           valueToPublish.extensions = value.extensions;
         }
