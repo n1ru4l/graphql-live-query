@@ -229,3 +229,33 @@ it("can be executed with polymorphic parameter type", () => {
     },
   });
 });
+
+it("can handle missing NoLiveMixedWithDeferStreamRule", async () => {
+  const schema = createTestSchema();
+  const store = new InMemoryLiveQueryStore();
+  const document = parse(/* GraphQL */ `
+    query @live {
+      ... on Query @defer(label: "kek") {
+        foo
+      }
+    }
+  `);
+
+  const executionResult = await store.execute(schema, document);
+  if (isAsyncIterable(executionResult)) {
+    const result = await executionResult.next();
+    expect(result).toMatchInlineSnapshot(`
+      Object {
+        "done": false,
+        "value": Object {
+          "errors": Array [
+            [GraphQLError: "execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.],
+          ],
+        },
+      }
+    `);
+
+    return;
+  }
+  fail("Should return AsyncIterable");
+});
