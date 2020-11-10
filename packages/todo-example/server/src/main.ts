@@ -1,9 +1,11 @@
 import socketIO from "socket.io";
 import http from "http";
 import type { Socket } from "net";
+import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import { schema } from "./schema";
+import { validate, specifiedRules } from "graphql";
 
 const parsePortSafe = (port: string) => {
   const parsedPort = parseInt(port, 10);
@@ -32,10 +34,15 @@ rootValue.todos.set("1", {
   isCompleted: false,
 });
 
+const validationRules = [...specifiedRules, NoLiveMixedWithDeferStreamRule];
+
 registerSocketIOGraphQLServer({
   socketServer,
   getParameter: () => ({
     execute: liveQueryStore.execute,
+    // Overwrite validate and use our custom validation rules.
+    validate: (schema, documentAST, _, typeInfo, options) =>
+      validate(schema, documentAST, validationRules, typeInfo, options),
     graphQLExecutionParameter: {
       schema,
       rootValue,

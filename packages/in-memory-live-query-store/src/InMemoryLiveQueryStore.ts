@@ -5,6 +5,7 @@ import {
   ExecutionArgs,
   DefinitionNode,
   OperationDefinitionNode,
+  GraphQLError,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
 import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
@@ -13,6 +14,7 @@ import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
 import { PushPullAsyncIterableIterator } from "./PushPullAsyncIterableIterator";
 import { isNone } from "./Maybe";
+import { isAsyncIterable } from "./isAsyncIterable";
 
 type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
@@ -226,7 +228,33 @@ export class InMemoryLiveQueryStore {
           ...additionalArguments,
         });
 
+        // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
+        // in case anyone forgot to add it we just panic and stop the execution :)
+        const handleAsyncIterator = (
+          iterator: AsyncIterableIterator<ExecutionResult>
+        ) => {
+          iterator.return?.();
+          record.iterator.push({
+            errors: [
+              new GraphQLError(
+                `"execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.`
+              ),
+            ],
+          });
+
+          // delay to next tick to ensure the error is delivered to listeners.
+          (process?.nextTick ?? setTimeout)(() => {
+            record.iterator?.return();
+          });
+
+          this._store.delete(record);
+        };
+
         runWith(result, (result) => {
+          if (isAsyncIterable(result)) {
+            handleAsyncIterator(result);
+            return;
+          }
           if (counter === executionCounter) {
             record.identifier = newIdentifier;
             record.iterator.push(result);

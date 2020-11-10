@@ -66,3 +66,29 @@ const queryOperationDefinitionNode = parse(/* GraphQL */ `
 
 isLiveQueryOperationDefinitionNode(queryOperationDefinitionNode.definitions[0]); // false
 ```
+
+### `NoLiveMixedWithDeferStreamRule`
+
+Validation rule for raising a GraphQLError for a operation that use `@live` mixed with `@defer` and `@stream`.
+
+```ts
+import { parse, validate, specifiedRules } from "graphql";
+import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
+import schema from "./schema";
+
+const document = parse(/* GraphQL */ `
+  query @live {
+    users @stream {
+      id
+      login
+    }
+  }
+`);
+
+const [error] = validate(schema, document, [
+  /* default validation rules */ ...specifiedRules,
+  NoLiveMixedWithDeferStreamRule,
+]);
+
+console.log(error); // [GraphQLError: Cannot mix "@stream" with "@live".]
+```

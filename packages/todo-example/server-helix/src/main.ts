@@ -1,22 +1,24 @@
 import express from "express";
+import { specifiedRules } from "graphql";
 import {
   getGraphQLParameters,
   processRequest,
   renderGraphiQL,
-  shouldRenderGraphiQL
+  shouldRenderGraphiQL,
 } from "graphql-helix";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
 import { schema } from "./schema";
 
 const liveQueryStore = new InMemoryLiveQueryStore();
 const rootValue = {
-  todos: new Map()
+  todos: new Map(),
 };
 
 rootValue.todos.set("1", {
   id: "1",
   content: "foo",
-  isCompleted: false
+  isCompleted: false,
 });
 
 const app = express();
@@ -28,7 +30,7 @@ app.use("/", async (req, res) => {
     body: req.body,
     headers: req.headers,
     method: req.method,
-    query: req.query
+    query: req.query,
   };
 
   if (shouldRenderGraphiQL(request)) {
@@ -42,11 +44,12 @@ app.use("/", async (req, res) => {
       variables,
       request,
       schema,
+      validationRules: [...specifiedRules, NoLiveMixedWithDeferStreamRule],
       contextFactory: () => ({
-        liveQueryStore
+        liveQueryStore,
       }),
       rootValueFactory: () => rootValue,
-      execute: liveQueryStore.execute
+      execute: liveQueryStore.execute,
     });
 
     if (result.type === "RESPONSE") {
@@ -57,14 +60,14 @@ app.use("/", async (req, res) => {
       res.writeHead(200, {
         Connection: "keep-alive",
         "Content-Type": 'multipart/mixed; boundary="-"',
-        "Transfer-Encoding": "chunked"
+        "Transfer-Encoding": "chunked",
       });
 
       req.on("close", () => {
         result.unsubscribe();
       });
 
-      await result.subscribe(result => {
+      await result.subscribe((result) => {
         const chunk = Buffer.from(JSON.stringify(result), "utf8");
         const data = [
           "",
@@ -73,7 +76,7 @@ app.use("/", async (req, res) => {
           "Content-Length: " + String(chunk.length),
           "",
           chunk,
-          ""
+          "",
         ].join("\r\n");
         res.write(data);
       });
@@ -84,14 +87,14 @@ app.use("/", async (req, res) => {
       res.writeHead(200, {
         "Content-Type": "text/event-stream",
         Connection: "keep-alive",
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-cache",
       });
 
       req.on("close", () => {
         result.unsubscribe();
       });
 
-      await result.subscribe(result => {
+      await result.subscribe((result) => {
         res.write(`data: ${JSON.stringify(result)}\n\n`);
       });
     }
