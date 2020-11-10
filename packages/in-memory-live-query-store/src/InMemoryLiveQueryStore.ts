@@ -8,7 +8,10 @@ import {
   GraphQLError,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
-import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
+import {
+  isLiveQueryOperationDefinitionNode,
+  LiveExecutionResult,
+} from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
@@ -18,7 +21,7 @@ import { isAsyncIterable } from "./isAsyncIterable";
 
 type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
-  iterator: PushPullAsyncIterableIterator<ExecutionResult>;
+  iterator: PushPullAsyncIterableIterator<LiveExecutionResult>;
   identifier: Set<string>;
   run: () => MaybePromise<void>;
 };
@@ -145,7 +148,10 @@ export class InMemoryLiveQueryStore {
 
   execute = (
     ...args: ExecutionParameter
-  ): MaybePromise<AsyncIterableIterator<ExecutionResult> | ExecutionResult> => {
+  ): MaybePromise<
+    | AsyncIterableIterator<ExecutionResult | LiveExecutionResult>
+    | ExecutionResult
+  > => {
     const {
       schema: inputSchema,
       document,
@@ -199,7 +205,7 @@ export class InMemoryLiveQueryStore {
 
     const schema = this.getPatchedSchema(inputSchema);
 
-    const iterator = new PushPullAsyncIterableIterator<ExecutionResult>();
+    const iterator = new PushPullAsyncIterableIterator<LiveExecutionResult>();
 
     // keep track that current execution is the latest in order to prevent race-conditions :)
     let executionCounter = 0;
@@ -257,7 +263,9 @@ export class InMemoryLiveQueryStore {
           }
           if (counter === executionCounter) {
             record.identifier = newIdentifier;
-            record.iterator.push(result);
+            const liveResult: LiveExecutionResult = result;
+            liveResult.isLive = true;
+            record.iterator.push(liveResult);
           }
         });
       },
