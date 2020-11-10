@@ -8,9 +8,8 @@ import {
   GraphQLString,
   specifiedRules,
   GraphQLID,
-  GraphQLDirective,
-  DirectiveLocation,
   GraphQLList,
+  specifiedDirectives,
 } from "graphql";
 
 const createSchema = () => {
@@ -26,17 +25,6 @@ const createSchema = () => {
     },
   });
 
-  const GraphQLDeferDirective = new GraphQLDirective({
-    name: "defer",
-    locations: [
-      DirectiveLocation.FRAGMENT_SPREAD,
-      DirectiveLocation.INLINE_FRAGMENT,
-    ],
-  });
-  const GraphQLStreamDirective = new GraphQLDirective({
-    name: "stream",
-    locations: [DirectiveLocation.FIELD],
-  });
   const query = new GraphQLObjectType({
     name: "query",
     fields: {
@@ -53,11 +41,7 @@ const createSchema = () => {
 
   return new GraphQLSchema({
     query,
-    directives: [
-      GraphQLLiveDirective,
-      GraphQLDeferDirective,
-      GraphQLStreamDirective,
-    ],
+    directives: [...specifiedDirectives, GraphQLLiveDirective],
   });
 };
 
@@ -97,7 +81,7 @@ test("validation passes with usage of @stream", () => {
   const schema = createSchema();
   const document = parse(/* GraphQL */ `
     query foo {
-      users @stream {
+      users @stream(initialCount: 1) {
         id
       }
     }
@@ -155,7 +139,7 @@ test("validation fails with @live and @stream on the same operation", () => {
   const schema = createSchema();
   const document = parse(/* GraphQL */ `
     query foo @live {
-      users @stream {
+      users @stream(initialCount: 1) {
         id
         name
       }
@@ -182,7 +166,7 @@ test("validation passes with @live and @defer on different operations in the sam
       }
     }
     query bar {
-      users @stream {
+      users @stream(initialCount: 1) {
         id
         name
       }
