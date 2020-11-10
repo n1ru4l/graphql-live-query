@@ -1,4 +1,4 @@
-import socketIO from "socket.io";
+import { Server as IOServer } from "socket.io";
 import http from "http";
 import type { Socket } from "net";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
@@ -22,7 +22,7 @@ const server = http
   })
   .listen(parsePortSafe(process.env.PORT || "3001"));
 
-const socketServer = socketIO(server);
+const socketServer = new IOServer(server);
 const liveQueryStore = new InMemoryLiveQueryStore();
 const rootValue = {
   todos: new Map(),

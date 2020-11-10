@@ -22,14 +22,16 @@ Registers the Socket.io GraphQL layer.
 
 ```ts
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
-import socketIO from "socket.io";
+import { Server as IOServer } from "socket.io";
 
-const socketServer = socketIO();
+const socketServer = new IOServer();
 
 registerSocketIOGraphQLServer({
   socketServer,
   /* getParameter is invoked for each incoming operation and provides all values required for execution. */
-  getParameter: ({ /* Socket.io instance of the client that executes the operation */ socket }) => ({
+  getParameter: ({
+    /* Socket.io instance of the client that executes the operation */ socket,
+  }) => ({
     /* The parameters used for the operation execution. */
     graphQLExecutionParameter: {
       /* GraphQL schema used for exection (required) */
@@ -56,8 +58,10 @@ yarn add -E @n1ru4l/in-memory-live-query-store
 ```
 
 ```ts
-import socketIO from "socket.io";
+import { Server as IOServer } from "socket.io";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+
+const socketServer = new IOServer()
 
 // liveQueryStore is fully optional
 // you can even use your own implementation
@@ -86,9 +90,9 @@ registerSocketIOGraphQLServer({
 Sometimes you only want to permit a socket executing stuff after authentication.
 
 ```ts
-import socketIO from "socket.io";
+import { Server as IOServer } from "socket.io";
 
-const socketServer = socketIO();
+const socketServer = new IOServer();
 
 const graphQLServer = registerSocketIOGraphQLServer({
   socketServer,
@@ -118,7 +122,7 @@ socketServer.on("connect", (socket) => {
 ### Persisted Operations
 
 ```ts
-import socketIO from "socket.io";
+import { Server as IOServer } from "socket.io";
 import { InMemoryLiveQueryStore } from "@n1ru4l/graphql-live-query-store";
 
 const persistedOperations = {
@@ -126,7 +130,7 @@ const persistedOperations = {
     "2": "mutation { ping }"
 }
 
-const socketServer = socketIO();
+const socketServer = new IOServer();
 
 const graphqlServer  = registerSocketIOGraphQLServer({
   socketServer,

@@ -17,7 +17,7 @@ yarn add -E @n1ru4l/socket-io-graphql-client
 ### `createSocketIOGraphQLClient`
 
 ```ts
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 const socket = io();
 const socketIOGraphQLClient = createSocketIOGraphQLClient(socket);
@@ -80,7 +80,7 @@ setTimeout(dispose, 5000);
 ### GraphiQL Fetcher
 
 ```tsx
-import io from "socket.io-client";
+import { io } from "socket.io-client";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 import "graphiql/graphiql.css";
 import GraphiQL from "graphiql";

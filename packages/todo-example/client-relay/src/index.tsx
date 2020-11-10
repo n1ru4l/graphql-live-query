@@ -3,12 +3,12 @@ import ReactDOM from "react-dom";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 import { TodoApplication } from "./TodoApplication";
 
-import socketIO from "socket.io-client";
+import { io } from "socket.io-client";
 import { createRelayEnvironment } from "./createRelayEnvironment";
 import "todomvc-app-css/index.css";
 import { GraphQLResponse } from "relay-runtime";
 
-const socket = socketIO();
+const socket = io();
 const networkInterface = createSocketIOGraphQLClient<GraphQLResponse, Error>(
   socket
 );

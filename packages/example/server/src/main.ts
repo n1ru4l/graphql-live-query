@@ -1,5 +1,5 @@
 import http from "http";
-import socketIO from "socket.io";
+import { Server as IOServer } from "socket.io";
 import * as net from "net";
 import * as graphqlSchema from "./graphql/schema";
 import * as fakeData from "./fakeData";
@@ -25,7 +25,7 @@ const server = http
   })
   .listen(parsePortSafe(process.env.PORT || "3001"));
 
-const socketServer = socketIO(server);
+const socketServer = new IOServer(server);
 
 const subscriptionPubSub = new PubSub();
 const liveQueryStore = new InMemoryLiveQueryStore();
