@@ -160,6 +160,7 @@ it("returns a AsyncIterable that publishes a query result.", async () => {
       data: {
         foo: "queried",
       },
+      isLive: true,
     },
   });
   executionResult.return?.();
@@ -193,6 +194,7 @@ it("returns a AsyncIterable that publishes a query result after the schema coord
       data: {
         foo: "queried",
       },
+      isLive: true,
     },
   });
 
@@ -206,6 +208,7 @@ it("returns a AsyncIterable that publishes a query result after the schema coord
       data: {
         foo: "changed",
       },
+      isLive: true,
     },
   });
 
