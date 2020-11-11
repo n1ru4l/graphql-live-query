@@ -7124,10 +7124,10 @@ graphql-config@^3.0.2:
     string-env-interpolation "1.0.1"
     tslib "^2.0.0"
 
-graphql-helix@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/graphql-helix/-/graphql-helix-0.2.1.tgz#00156d99c7c38ea631e68172f9925ccbeb16a825"
-  integrity sha512-Rl0idFnxXr7HyhPT3qALNcjAzQN3B3pDRKTWZe853wnDZq5FwLPS51PRztwp4XpHMdMkphEpMFJ/Md7d1/H9yw==
+graphql-helix@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/graphql-helix/-/graphql-helix-0.3.0.tgz#75f3292fce9dd666f4af8317de179c512d2d9ab4"
+  integrity sha512-pEBNc+ewdR8zWIR9n5HZDp5cger6KiQbv3wBCE0YJ31IRUdhxSyNP/hOLF5nmrM4/MJtA7ZPnFvjQLOWvduQpw==
 
 graphql-language-service-interface@^2.4.2:
   version "2.4.2"
