@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.8.0
+
+### Minor Changes
+
+- 10a110e: Update Socket.io to version 3
+
 ## 0.7.0
 
 ### Minor Changes
