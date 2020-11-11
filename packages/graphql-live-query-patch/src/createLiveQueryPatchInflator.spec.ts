@@ -58,7 +58,6 @@ it("applies patch results", async () => {
           bar: "kek",
         },
       },
-      isLivePatch: true,
       revision: 1,
     } as LiveExecutionResult;
     yield {
@@ -69,7 +68,6 @@ it("applies patch results", async () => {
           value: "speck",
         },
       ],
-      isLivePatch: true,
       revision: 2,
     } as LiveExecutionResult;
   }

@@ -1,11 +1,11 @@
 import type { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
 import { compare } from "fast-json-patch";
-import { ExecutionResult } from "graphql";
-import { LiveExecutionPatch } from "./LiveExecutionPatch";
+import type { ExecutionResult } from "graphql";
+import type { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
 
 export async function* createLiveQueryPatchDeflator(
   asyncIterator: AsyncIterableIterator<LiveExecutionResult>
-): AsyncIterableIterator<LiveExecutionPatch & ExecutionResult> {
+): AsyncIterableIterator<ExecutionLivePatchResult | ExecutionResult> {
   let previousValue: LiveExecutionResult["data"] | null = null;
   let revision = 0;
   for await (const value of asyncIterator) {
@@ -26,8 +26,7 @@ export async function* createLiveQueryPatchDeflator(
         const valueToPublish = {
           revision,
           patch,
-          isLivePatch: true,
-        } as LiveExecutionPatch;
+        } as ExecutionLivePatchResult;
 
         if ("errors" in value) {
           valueToPublish.errors = value.errors;
@@ -43,8 +42,7 @@ export async function* createLiveQueryPatchDeflator(
 
         const valueToPublish = {
           revision,
-          isLivePatch: true,
-        } as LiveExecutionPatch;
+        } as ExecutionLivePatchResult;
 
         if ("data" in value) {
           valueToPublish.data = previousValue;

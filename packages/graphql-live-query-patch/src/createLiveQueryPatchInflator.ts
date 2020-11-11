@@ -1,18 +1,17 @@
 import { applyPatch } from "fast-json-patch";
 import { ExecutionResult } from "graphql";
-import { LiveExecutionPatch } from "./LiveExecutionPatch";
+import { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
 
 export async function* createLiveQueryPatchInflator(
-  asyncIterator: AsyncIterableIterator<LiveExecutionPatch & ExecutionResult>
+  asyncIterator: AsyncIterableIterator<
+    ExecutionLivePatchResult | ExecutionResult
+  >
 ) {
   let previousValue: ExecutionResult | null = null;
   let previousRevision = 0;
 
   for await (const result of asyncIterator) {
-    if (result.isLivePatch) {
-      if (!result.revision) {
-        throw new Error("Missing revision for patch result.");
-      }
+    if ("revision" in result && result.revision) {
       if (result.data) {
         previousValue = { data: result.data } as ExecutionResult;
         if (result.extensions) {
