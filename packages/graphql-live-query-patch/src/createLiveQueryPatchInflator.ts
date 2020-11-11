@@ -7,50 +7,49 @@ export async function* createLiveQueryPatchInflator(
     ExecutionLivePatchResult | ExecutionResult
   >
 ) {
-  let previousValue: ExecutionResult | null = null;
-  let previousRevision = 0;
+  let mutableData: ExecutionResult | null = null;
+  let lastRevision = 0;
 
   for await (const result of asyncIterator) {
+    // no revision means this is no live query patch.
     if ("revision" in result && result.revision) {
-      if (result.data) {
-        previousValue = { data: result.data } as ExecutionResult;
-        if (result.extensions) {
-          previousValue.extensions = result.extensions;
-        }
-        if (result.errors) {
-          previousValue.errors = result.errors;
-        }
-        previousRevision = result.revision;
+      const valueToPublish: ExecutionLivePatchResult = {};
 
-        yield previousValue as ExecutionResult;
-      } else if (result.patch) {
-        if (!previousValue) {
-          throw new Error("No previousValue available.");
+      if (result.revision === 1) {
+        if (!result.data) {
+          throw new Error("Missing data.");
         }
-        if (previousRevision + 1 !== result.revision) {
+        valueToPublish.data = result.data;
+        mutableData = result.data;
+      } else {
+        if (!mutableData) {
+          throw new Error("No previousData available.");
+        }
+        if (!result.patch) {
+          throw new Error("Missing patch.");
+        }
+        if (lastRevision + 1 !== result.revision) {
           throw new Error("Wrong revision received.");
         }
 
-        applyPatch(previousValue.data, result.patch);
-
-        if (result.errors) {
-          previousValue.errors = result.errors;
-        } else if (previousValue.errors) {
-          previousValue.errors = undefined;
-        }
-
-        if (result.extensions) {
-          previousValue.extensions = result.extensions;
-        } else if (previousValue.extensions) {
-          previousValue.extensions = undefined;
-        }
-
-        yield previousValue as ExecutionResult;
+        applyPatch(mutableData, result.patch);
+        valueToPublish.data = mutableData;
       }
-    } else {
-      previousValue = null;
-      previousRevision = 0;
-      yield result;
+
+      lastRevision++;
+
+      if (result.extensions) {
+        valueToPublish.extensions = result.extensions;
+      }
+      if (result.errors) {
+        valueToPublish.errors = result.errors;
+      }
+
+      yield valueToPublish;
+      continue;
     }
+
+    yield result;
+    yield* asyncIterator;
   }
 }
