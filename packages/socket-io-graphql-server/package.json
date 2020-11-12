@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "typescript": "4.0.3",
-    "graphql": "15.4.0-experimental-stream-defer.1",
+    "graphql": "15.4.0",
     "socket.io": "3.0.1"
   },
   "peerDependencies": {

@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "3.2.5",
-    "graphql": "15.4.0-experimental-stream-defer.1"
+    "graphql": "15.4.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.19.1",
