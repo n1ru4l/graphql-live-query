@@ -9,6 +9,8 @@ import {
   ExecutionArgs,
   DocumentNode,
   GraphQLError,
+  specifiedRules as defaultValidationRules,
+  ValidationRule,
 } from "graphql";
 import { isAsyncIterable } from "./isAsyncIterable";
 import type { Server as IOServer, Socket as IOSocket } from "socket.io";
@@ -70,6 +72,8 @@ export type GetParameterFunction = (
   validateSchema?: typeof defaultValidateSchema;
   /* Function for validating the GraphQL documents. Uses `validate` exported from graphql by default. */
   validate?: typeof defaultValidate;
+  /* Array of validation rules. Uses the `specifiedRules` exported from graphql by default */
+  validationRules?: ValidationRule[];
 }>;
 
 const isSubscriptionOperation = (ast: DocumentNode) =>
@@ -220,6 +224,7 @@ export const registerSocketIOGraphQLServer = ({
         parse = defaultParse,
         validateSchema = defaultValidateSchema,
         validate = defaultValidate,
+        validationRules = defaultValidationRules,
       } = await getParameter({
         socket,
         graphQLPayload: {
@@ -264,7 +269,8 @@ export const registerSocketIOGraphQLServer = ({
       // Validate
       const validationErrors = validate(
         graphQLExecutionParameter.schema,
-        documentAst
+        documentAst,
+        validationRules
       );
       if (validationErrors.length > 0) {
         emitFinalResult({

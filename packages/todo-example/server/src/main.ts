@@ -40,9 +40,7 @@ registerSocketIOGraphQLServer({
   socketServer,
   getParameter: () => ({
     execute: liveQueryStore.execute,
-    // Overwrite validate and use our custom validation rules.
-    validate: (schema, documentAST, _, typeInfo, options) =>
-      validate(schema, documentAST, validationRules, typeInfo, options),
+    validationRules,
     graphQLExecutionParameter: {
       schema,
       rootValue,
