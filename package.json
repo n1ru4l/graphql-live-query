@@ -20,7 +20,7 @@
     "patch-package": "6.2.2",
     "prettier": "2.1.2",
     "ts-jest": "26.4.1",
-    "typescript": "4.0.3"
+    "typescript": "4.0.5"
   },
   "resolutions": {
     "graphql": "15.4.0-experimental-stream-defer.1"
