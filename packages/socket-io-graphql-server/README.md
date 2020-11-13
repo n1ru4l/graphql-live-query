@@ -60,6 +60,8 @@ yarn add -E @n1ru4l/in-memory-live-query-store
 ```ts
 import { Server as IOServer } from "socket.io";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
+import { validate, specifiedRules } from "graphql";
 
 const socketServer = new IOServer()
 
@@ -67,11 +69,16 @@ const socketServer = new IOServer()
 // you can even use your own implementation
 const liveQueryStore = new InMemoryLiveQueryStore();
 
+const validationRules = [...specifiedRules, NoLiveMixedWithDeferStreamRule];
+
 registerSocketIOGraphQLServer({
   socketServer,
   /* getParameter is invoked for each operation. */
   getParameter: ({ socket }) => ({
     execute: liveQueryStore.execute,
+    /* Overwrite validate and use our custom validation rules. */
+    validate: (schema, documentAST, _, typeInfo, options) =>
+      validate(schema, documentAST, validationRules, typeInfo, options),
     /* The parameters used for the operation execution. */
     graphQLExecutionParameter: {
       schema,
