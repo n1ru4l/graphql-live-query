@@ -1,5 +1,14 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.5.3
+
+### Patch Changes
+
+- ca21161: Mark live query execution results via the boolean isLive property published by the AsyncIterator. This makes identifying live queries easier. A possible use-case where this is useful might be a wrapper around InMemoryLiveQueryStore.execute that creates patches from the last and next execution result."
+- Updated dependencies [ca21161]
+- Updated dependencies [f244baa]
+  - @n1ru4l/graphql-live-query@0.7.0
+
 ## 0.5.2
 
 ### Patch Changes
