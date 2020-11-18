@@ -14,7 +14,7 @@
     "@types/react-dom": "16.9.9",
     "@types/react-relay": "7.0.17",
     "@types/relay-runtime": "10.0.10",
-    "babel-plugin-relay": "10.0.1",
+    "babel-plugin-relay": "10.1.0",
     "emotion-theming": "10.0.27",
     "graphiql": "1.0.6",
     "graphql": "15.4.0-experimental-stream-defer.1",
