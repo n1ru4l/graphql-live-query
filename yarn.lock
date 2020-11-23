@@ -2803,10 +2803,10 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/relay-runtime@*", "@types/relay-runtime@10.0.10":
-  version "10.0.10"
-  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-10.0.10.tgz#b7c2ed282c62d7291cfb662b0e940ca4e193be4b"
-  integrity sha512-mVB6a63uzZ0PRu19A4WiGFUFww8u7cjTE6HHoKy94pUzRfQ/l3qsfjgJlzr7fA/HCM0I4spPpaUunDbp83N9uQ==
+"@types/relay-runtime@*", "@types/relay-runtime@10.1.2":
+  version "10.1.2"
+  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-10.1.2.tgz#c6df72d06de5b4040c80e29fd4d0ada1098a911f"
+  integrity sha512-3ulKIQCWxwylm7V8FJ06L9sQ7vCkkmM45l0/9hUdNiSeEYsw6eaVYHRQ8JkM4+RPT+lr7LDVS1pIhVfgwbHGBA==
 
 "@types/resolve@0.0.8":
   version "0.0.8"
