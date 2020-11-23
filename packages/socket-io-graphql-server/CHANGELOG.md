@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-server
 
+## 0.8.1
+
+### Patch Changes
+
+- 24028bf: feat: add validationRules option for overwriting validationRules without overwriting validate.
+
 ## 0.8.0
 
 ### Minor Changes
