@@ -19,7 +19,7 @@
     "react-scripts": "3.4.3",
     "socket.io-client": "3.0.3",
     "todomvc-app-css": "2.3.0",
-    "@graphql-codegen/typescript-operations": "1.17.9",
+    "@graphql-codegen/typescript-operations": "1.17.10",
     "@graphql-codegen/typescript": "1.17.11",
     "@graphql-codegen/typescript-react-apollo": "2.1.1"
   },
