@@ -2,7 +2,7 @@ import { applyPatch } from "fast-json-patch";
 import { ExecutionResult } from "graphql";
 import { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
 
-export async function* createLiveQueryPatchInflator<
+export async function* applyLiveQueryPatchInflator<
   TExecutionResult = Record<string, unknown>
 >(
   asyncIterator: AsyncIterableIterator<TExecutionResult>
@@ -10,14 +10,10 @@ export async function* createLiveQueryPatchInflator<
   let mutableData: ExecutionResult | null = null;
   let lastRevision = 0;
 
-  for await (const result of asyncIterator as AsyncIterableIterator<
-    ExecutionLivePatchResult
-  >) {
+  for await (const result of asyncIterator as AsyncIterableIterator<ExecutionLivePatchResult>) {
     // no revision means this is no live query patch.
     if ("revision" in result && result.revision) {
       const valueToPublish: ExecutionLivePatchResult = {};
-
-      console.log(result.revision);
 
       if (result.revision === 1) {
         if (!result.data) {

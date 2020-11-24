@@ -1,5 +1,5 @@
 import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
-import { createLiveQueryPatchInflator } from "@n1ru4l/graphql-live-query-patch";
+import { applyLiveQueryPatchInflator } from "@n1ru4l/graphql-live-query-patch";
 import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   Client,
@@ -21,7 +21,7 @@ export const createUrqlClient = (
         forwardSubscription: (operation) => ({
           subscribe: (sink) => ({
             unsubscribe: applyAsyncIterableIteratorToSink(
-              createLiveQueryPatchInflator(
+              applyLiveQueryPatchInflator(
                 networkInterface.execute({
                   operation: operation.query,
                   variables: operation.variables,

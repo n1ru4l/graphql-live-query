@@ -1,6 +1,6 @@
 import { ExecutionResult } from "graphql";
 import { LiveExecutionResult } from "packages/graphql-live-query/src";
-import { createLiveQueryPatchInflator } from "./createLiveQueryPatchInflator";
+import { applyLiveQueryPatchInflator } from "./applyLiveQueryPatchInflator";
 
 test("pass through non live query patch result", async () => {
   async function* source() {
@@ -20,7 +20,7 @@ test("pass through non live query patch result", async () => {
     } as ExecutionResult;
   }
 
-  const stream = createLiveQueryPatchInflator(source());
+  const stream = applyLiveQueryPatchInflator(source());
   let value = await stream.next();
   expect(value).toEqual({
     done: false,
@@ -72,7 +72,7 @@ it("applies patch results", async () => {
     } as LiveExecutionResult;
   }
 
-  const stream = createLiveQueryPatchInflator(source());
+  const stream = applyLiveQueryPatchInflator(source());
   let value = await stream.next();
   expect(value).toEqual({
     done: false,

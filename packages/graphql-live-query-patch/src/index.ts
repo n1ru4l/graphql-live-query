@@ -1,4 +1,4 @@
 export * from "./createLiveQueryPatchDeflator";
-export * from "./createLiveQueryPatchInflator";
+export * from "./applyLiveQueryPatchInflator";
 export * from "./applyLiveQueryPatchDeflator";
 export * from "./ExecutionLivePatchResult";

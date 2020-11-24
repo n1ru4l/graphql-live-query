@@ -77,14 +77,14 @@ const result = applyLiveQueryPatchDeflator(
 );
 ```
 
-### `createLiveQueryPatchInflator`
+### `applyLiveQueryPatchInflator`
 
 Inflate the execution result on the client side.
 
 ```ts
-import { createLiveQueryPatchInflator } from "@n1ru4l/graphql-live-query-patch";
+import { applyLiveQueryPatchInflator } from "@n1ru4l/graphql-live-query-patch";
 
-const asyncIterable = createLiveQueryPatchInflator(
+const asyncIterable = applyLiveQueryPatchInflator(
   networkLayer.execute({
     operation: /* GraphQL */ `
       query todosQuery @live {
