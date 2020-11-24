@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-server
 
+## 0.9.0
+
+### Minor Changes
+
+- df4f39b: Return AsyncIterableIterator for the execution result instead of taking a sink as an argument.
+
 ## 0.8.1
 
 ### Patch Changes

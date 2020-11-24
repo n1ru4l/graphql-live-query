@@ -1,5 +1,15 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.9.0
+
+### Minor Changes
+
+- df4f39b: Return AsyncIterableIterator for the execution result instead of taking a sink as an argument.
+
+### Patch Changes
+
+- df4f39b: Correctly re-execute active operations after being offline.
+
 ## 0.8.0
 
 ### Minor Changes
