@@ -1,12 +1,5 @@
 import type { Socket as IOSocket } from "socket.io-client";
-
-type DisposeFunction = () => void;
-
-export type Sink<TValue = unknown, TError = unknown> = {
-  next: (value: TValue) => void;
-  error: (error: TError) => void;
-  complete: () => void;
-};
+import { PushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
 
 export type ExecutionParameter = {
   operation: string;
@@ -14,68 +7,70 @@ export type ExecutionParameter = {
   variables?: { [key: string]: any };
 };
 
-export type SocketIOGraphQLClient<
-  TExecutionResult = unknown,
-  TError = unknown
-> = {
+export type SocketIOGraphQLClient<TExecutionResult = unknown> = {
   execute: (
-    opts: ExecutionParameter,
-    sink: Sink<TExecutionResult, TError>
-  ) => DisposeFunction;
+    opts: ExecutionParameter
+  ) => AsyncIterableIterator<TExecutionResult>;
   destroy: () => void;
 };
 
-type OperationRecord<TExecutionResult = unknown, TError = unknown> = {
-  sink: Sink<TExecutionResult, TError>;
+type OperationRecord<TExecutionResult = unknown> = {
+  iterator: PushPullAsyncIterableIterator<TExecutionResult>;
   execute: () => void;
 };
 
-export const createSocketIOGraphQLClient = <
-  TExecutionResult = unknown,
-  TError = unknown
->(
+export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
   socket: IOSocket
-): SocketIOGraphQLClient<TExecutionResult, TError> => {
+): SocketIOGraphQLClient<TExecutionResult> => {
   let currentOperationId = 0;
-  const operations = new Map<
-    number,
-    OperationRecord<TExecutionResult, TError>
-  >();
+  const operations = new Map<number, OperationRecord<TExecutionResult>>();
   const onExecutionResult = ({ id, isFinal, ...result }: any) => {
     const record = operations.get(id);
     if (!record) {
       return;
     }
-    record.sink.next(result);
+    record.iterator.push(result);
 
     if (isFinal) {
-      record.sink.complete();
+      record.iterator.return?.();
       operations.delete(id);
     }
   };
 
-  const onReconnect = () => {
-    Array.from(operations.values()).forEach((record) => {
-      record.execute();
-    });
+  let isOffline = false;
+
+  const onDisconnect = () => {
+    isOffline = true;
+  };
+  const onConnect = () => {
+    if (isOffline) {
+      isOffline = false;
+      Array.from(operations.values()).forEach((record) => {
+        record.execute();
+      });
+    }
   };
 
   socket.on("@graphql/result", onExecutionResult);
-  socket.on("reconnect", onReconnect);
+  socket.on("connect", onConnect);
+  socket.on("disconnect", onDisconnect);
 
   const destroy = () => {
     socket.off("@graphql/result", onExecutionResult);
-    socket.off("reconnect", onReconnect);
+    socket.off("connect", onConnect);
+    socket.off("disconnect", onDisconnect);
   };
 
-  const execute = (
-    { operation, variables, operationName }: ExecutionParameter,
-    sink: Sink<TExecutionResult, TError>
-  ) => {
+  const execute = ({
+    operation,
+    variables,
+    operationName,
+  }: ExecutionParameter): AsyncIterableIterator<TExecutionResult> => {
     const operationId = currentOperationId;
     currentOperationId = currentOperationId + 1;
+    const iterator = new PushPullAsyncIterableIterator<TExecutionResult>();
 
-    const record: OperationRecord<TExecutionResult, TError> = {
+    const record: OperationRecord<TExecutionResult> = {
       execute: () => {
         socket.emit("@graphql/execute", {
           id: operationId,
@@ -84,18 +79,25 @@ export const createSocketIOGraphQLClient = <
           variables,
         });
       },
-      sink,
+      iterator,
     };
 
     operations.set(operationId, record);
     record.execute();
 
-    return () => {
-      operations.delete(operationId);
-      socket.emit("@graphql/unsubscribe", {
-        id: operationId,
-      });
+    const returnIterator: AsyncIterableIterator<TExecutionResult> = {
+      [Symbol.asyncIterator]: () => iterator,
+      next: () => iterator.next(),
+      return: () => {
+        operations.delete(operationId);
+        socket.emit("@graphql/unsubscribe", {
+          id: operationId,
+        });
+        return iterator.return?.();
+      },
     };
+
+    return returnIterator;
   };
 
   return {

@@ -9,9 +9,7 @@ import "todomvc-app-css/index.css";
 import { GraphQLResponse } from "relay-runtime";
 
 const socket = io();
-const networkInterface = createSocketIOGraphQLClient<GraphQLResponse, Error>(
-  socket
-);
+const networkInterface = createSocketIOGraphQLClient<GraphQLResponse>(socket);
 const environment = createRelayEnvironment(networkInterface);
 
 ReactDOM.render(

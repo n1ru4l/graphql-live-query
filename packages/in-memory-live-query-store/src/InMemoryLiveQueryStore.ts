@@ -8,6 +8,7 @@ import {
   GraphQLError,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
+import { PushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   isLiveQueryOperationDefinitionNode,
   LiveExecutionResult,
@@ -15,7 +16,6 @@ import {
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
-import { PushPullAsyncIterableIterator } from "./PushPullAsyncIterableIterator";
 import { isNone } from "./Maybe";
 import { isAsyncIterable } from "./isAsyncIterable";
 

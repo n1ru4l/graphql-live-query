@@ -1,12 +1,12 @@
 {
-  "name": "@n1ru4l/socket-io-graphql-client",
-  "version": "0.8.0",
+  "name": "@n1ru4l/graphql-live-query-patch",
+  "version": "0.0.1",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/n1ru4l/graphql-live-queries.git",
-    "directory": "packages/socket-io-graphql-client"
+    "directory": "packages/graphql-live-query-patch"
   },
   "bugs": {
     "url": "https://github.com/n1ru4l/graphql-live-queries/issues"
@@ -16,26 +16,21 @@
     "graphql",
     "query",
     "live",
-    "mutation",
-    "subscription",
-    "socket-io",
-    "socket.io",
-    "client",
-    "relay",
-    "apollo",
-    "websocket"
+    "real-time"
   ],
   "scripts": {
     "prepack": "bob prepack"
   },
+  "dependencies": {
+    "fast-json-patch": "3.0.0-1"
+  },
   "devDependencies": {
-    "typescript": "4.0.5"
+    "graphql": "15.4.0-experimental-stream-defer.1",
+    "@n1ru4l/graphql-live-query": "*",
+    "@n1ru4l/in-memory-live-query-store": "*"
   },
   "peerDependencies": {
-    "socket.io-client": "^3.0.1"
-  },
-  "dependencies": {
-    "@n1ru4l/push-pull-async-iterable-iterator": "1.0.0-alpha.2"
+    "graphql": "^15.4.0"
   },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
