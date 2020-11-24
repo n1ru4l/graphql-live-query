@@ -22,57 +22,58 @@ import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 const socket = io();
 const socketIOGraphQLClient = createSocketIOGraphQLClient(socket);
 
-socketIOGraphQLClient.execute(
-  {
+{
+  // execute returns a AsyncIterable that will publish the values for the operation
+  const asyncIterator = socketIOGraphQLClient.execute({
     operation: /* GraphQL */ `
       query messages {
         id
         content
       }
     `,
-  },
-  {
-    next: console.log,
-    error: console.error,
-    complete: () => console.log("complete"),
-  }
-);
+  });
 
-socketIOGraphQLClient.execute(
-  {
+  for await (const value of asyncIterator) {
+    console.log(value);
+  }
+}
+
+{
+  const asyncIterator = socketIOGraphQLClient.execute({
     operation: /* GraphQL */ `
       query messages @live {
         id
         content
       }
     `,
-  },
-  {
-    next: console.log,
-    error: console.error,
-    complete: () => console.log("complete"),
-  }
-);
+  });
 
-const dispose = socketIOGraphQLClient.execute(
-  {
-    operation: /* GraphQL */ `
-      subscription onNewMessage {
-        onNewMessage {
-          id
-          content
+  for await (const value of asyncIterator) {
+    console.log(value);
+  }
+}
+
+{
+  const asyncIterator = socketIOGraphQLClient.execute(
+    {
+      operation: /* GraphQL */ `
+        subscription onNewMessage {
+          onNewMessage {
+            id
+            content
+          }
         }
-      }
-    `,
-  },
-  {
-    next: console.log,
-    error: console.error,
-    complete: () => console.log("complete"),
-  }
-);
+      `,
+    }
+  );
 
-setTimeout(dispose, 5000);
+  // dispose subscription in 5 seconds
+  setTimeout(() => asyncIterator.return.?(), 5000);
+
+  for await (const value of asyncIterator) {
+    console.log(value);
+  }
+}
 ```
 
 ## Recipes
@@ -82,6 +83,7 @@ setTimeout(dispose, 5000);
 ```tsx
 import { io } from "socket.io-client";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import "graphiql/graphiql.css";
 import GraphiQL from "graphiql";
 
@@ -99,13 +101,13 @@ const fetcher: Fetcher = ({ query: operation, ...restGraphQLParams }) =>
           ? { next: sinkOrNext, error: args[0], complete: args[1] }
           : sinkOrNext;
 
-      const unsubscribe = (socketIOGraphQLClient as SocketIOGraphQLClient<
-        FetcherResult
-      >).execute(
-        {
-          operation,
-          ...restGraphQLParams,
-        },
+      const unsubscribe = applyAsyncIterableIteratorToSink(
+        (socketIOGraphQLClient as SocketIOGraphQLClient<FetcherResult>).execute(
+          {
+            operation,
+            ...restGraphQLParams,
+          }
+        ),
         sink
       );
 
@@ -124,6 +126,7 @@ As used in the `relay todo example app`(https://github.com/n1ru4l/graphql-live-q
 
 ```tsx
 import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   Environment,
   Network,
@@ -143,12 +146,12 @@ export const createRelayEnvironment = (
     const { text: operation, name } = request;
 
     return Observable.create<GraphQLResponse>((sink) =>
-      networkInterface.execute(
-        {
+      applyAsyncIterableIteratorToSink(
+        networkInterface.execute({
           operation,
           variables,
           operationName: name,
-        },
+        }),
         sink
       )
     );
@@ -172,6 +175,7 @@ As used in the `apollo client todo example app`(https://github.com/n1ru4l/graphq
 
 ```tsx
 import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   ApolloClient,
   InMemoryCache,
@@ -192,11 +196,14 @@ class SocketIOGraphQLApolloLink extends ApolloLink {
 
   public request(operation: Operation): Observable<FetchResult> | null {
     return new Observable((sink) =>
-      this.networkLayer.execute({
-        operationName: operation.operationName,
-        operation: print(operation.query),
-        variables: operation.variables,
-      })
+      applyAsyncIterableIteratorToSink(
+        this.networkLayer.execute({
+          operationName: operation.operationName,
+          operation: print(operation.query),
+          variables: operation.variables,
+        }),
+        sink
+      )
     );
   }
 }
@@ -215,6 +222,7 @@ As used in the `urql todo example app`(https://github.com/n1ru4l/graphql-live-qu
 
 ```tsx
 import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   Client,
   dedupExchange,
@@ -234,11 +242,11 @@ export const createUrqlClient = (
       subscriptionExchange({
         forwardSubscription: (operation) => ({
           subscribe: (sink) => ({
-            unsubscribe: networkInterface.execute(
-              {
+            unsubscribe: applyAsyncIterableIteratorToSink(
+              networkInterface.execute({
                 operation: operation.query,
                 variables: operation.variables,
-              },
+              }),
               sink
             ),
           }),
