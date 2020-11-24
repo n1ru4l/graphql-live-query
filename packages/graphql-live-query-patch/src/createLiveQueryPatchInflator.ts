@@ -2,18 +2,22 @@ import { applyPatch } from "fast-json-patch";
 import { ExecutionResult } from "graphql";
 import { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
 
-export async function* createLiveQueryPatchInflator(
-  asyncIterator: AsyncIterableIterator<
-    ExecutionLivePatchResult | ExecutionResult
-  >
-) {
+export async function* createLiveQueryPatchInflator<
+  TExecutionResult = Record<string, unknown>
+>(
+  asyncIterator: AsyncIterableIterator<TExecutionResult>
+): AsyncIterableIterator<TExecutionResult> {
   let mutableData: ExecutionResult | null = null;
   let lastRevision = 0;
 
-  for await (const result of asyncIterator) {
+  for await (const result of asyncIterator as AsyncIterableIterator<
+    ExecutionLivePatchResult
+  >) {
     // no revision means this is no live query patch.
     if ("revision" in result && result.revision) {
       const valueToPublish: ExecutionLivePatchResult = {};
+
+      console.log(result.revision);
 
       if (result.revision === 1) {
         if (!result.data) {
@@ -21,6 +25,7 @@ export async function* createLiveQueryPatchInflator(
         }
         valueToPublish.data = result.data;
         mutableData = result.data;
+        lastRevision = 1;
       } else {
         if (!mutableData) {
           throw new Error("No previousData available.");
@@ -34,9 +39,9 @@ export async function* createLiveQueryPatchInflator(
 
         applyPatch(mutableData, result.patch);
         valueToPublish.data = mutableData;
-      }
 
-      lastRevision++;
+        lastRevision++;
+      }
 
       if (result.extensions) {
         valueToPublish.extensions = result.extensions;
@@ -45,11 +50,11 @@ export async function* createLiveQueryPatchInflator(
         valueToPublish.errors = result.errors;
       }
 
-      yield valueToPublish;
+      yield valueToPublish as TExecutionResult;
       continue;
     }
 
-    yield result;
+    yield result as TExecutionResult;
     yield* asyncIterator;
   }
 }

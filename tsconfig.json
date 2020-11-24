@@ -18,6 +18,9 @@
     "skipLibCheck": true,
     "strict": true,
     "paths": {
+      "@n1ru4l/push-pull-async-iterable-iterator": [
+        "node_modules/@n1ru4l/push-pull-async-iterable-iterator"
+      ],
       "@n1ru4l/*": ["packages/*/src/index.ts"]
     }
   },

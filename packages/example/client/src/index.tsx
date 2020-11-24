@@ -9,9 +9,9 @@ import { Global, css } from "@emotion/core";
 import { io } from "socket.io-client";
 import {
   createSocketIOGraphQLClient,
-  Sink,
   SocketIOGraphQLClient,
 } from "@n1ru4l/socket-io-graphql-client";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import { ChatApplication } from "./ChatApplication";
 import { createRelayEnvironment } from "./createRelayEnvironment";
 import { Fetcher, FetcherResult } from "graphiql/dist/components/GraphiQL";
@@ -22,8 +22,14 @@ const socket = io();
 
 const socketIOGraphQLClient = createSocketIOGraphQLClient(socket);
 const relayEnvironment = createRelayEnvironment(
-  socketIOGraphQLClient as SocketIOGraphQLClient<GraphQLResponse, Error>
+  socketIOGraphQLClient as SocketIOGraphQLClient<GraphQLResponse>
 );
+
+export type Sink<TValue = unknown, TError = unknown> = {
+  next: (value: TValue) => void;
+  error: (error: TError) => void;
+  complete: () => void;
+};
 
 const fetcher: Fetcher = ({ query: operation, ...restGraphQLParams }) =>
   ({
@@ -36,13 +42,13 @@ const fetcher: Fetcher = ({ query: operation, ...restGraphQLParams }) =>
           ? { next: sinkOrNext, error: args[0], complete: args[1] }
           : sinkOrNext;
 
-      const unsubscribe = (socketIOGraphQLClient as SocketIOGraphQLClient<
-        FetcherResult
-      >).execute(
-        {
-          operation,
-          ...restGraphQLParams,
-        },
+      const unsubscribe = applyAsyncIterableIteratorToSink(
+        (socketIOGraphQLClient as SocketIOGraphQLClient<FetcherResult>).execute(
+          {
+            operation,
+            ...restGraphQLParams,
+          }
+        ),
         sink
       );
 

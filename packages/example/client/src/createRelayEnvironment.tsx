@@ -1,4 +1,5 @@
 import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   Environment,
   Network,
@@ -51,19 +52,19 @@ const attachNotifyGarbageCollectionBehaviourToStore = (store: Store): Store => {
 };
 
 export const createRelayEnvironment = (
-  networkInterface: SocketIOGraphQLClient<GraphQLResponse, Error>
+  networkInterface: SocketIOGraphQLClient<GraphQLResponse>
 ) => {
   const execute = (request: RequestParameters, variables: Variables) => {
     if (!request.text) throw new Error("Missing document.");
     const { text: operation, name } = request;
 
     return Observable.create<GraphQLResponse>((sink) =>
-      networkInterface.execute(
-        {
+      applyAsyncIterableIteratorToSink(
+        networkInterface.execute({
           operation,
           variables,
           operationName: name,
-        },
+        }),
         sink
       )
     );

@@ -2,25 +2,34 @@ import { Server as IOServer } from "socket.io";
 import http from "http";
 import type { Socket } from "net";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
+import { applyLiveQueryPatchDeflator } from "@n1ru4l/graphql-live-query-patch";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
+import { specifiedRules } from "graphql";
 import { schema } from "./schema";
-import { validate, specifiedRules } from "graphql";
+import { flow } from "./util/flow";
 
-const parsePortSafe = (port: string) => {
+const parsePortSafe = (port: null | undefined | string) => {
+  if (!port) {
+    return null;
+  }
   const parsedPort = parseInt(port, 10);
   if (Number.isNaN(parsedPort)) {
-    return 3000;
+    return null;
   }
   return parsedPort;
 };
+
+const port = parsePortSafe(process.env.PORT) ?? 3001;
 
 const server = http
   .createServer((_, res) => {
     res.writeHead(404);
     res.end();
   })
-  .listen(parsePortSafe(process.env.PORT || "3001"));
+  .listen(port, () => {
+    console.log("Listening on port " + port);
+  });
 
 const socketServer = new IOServer(server);
 const liveQueryStore = new InMemoryLiveQueryStore();
@@ -36,10 +45,13 @@ rootValue.todos.set("1", {
 
 const validationRules = [...specifiedRules, NoLiveMixedWithDeferStreamRule];
 
+const execute = flow(liveQueryStore.execute, applyLiveQueryPatchDeflator);
+
 registerSocketIOGraphQLServer({
   socketServer,
   getParameter: () => ({
-    execute: liveQueryStore.execute,
+    execute,
+    // Overwrite validate and use our custom validation rules.
     validationRules,
     graphQLExecutionParameter: {
       schema,
