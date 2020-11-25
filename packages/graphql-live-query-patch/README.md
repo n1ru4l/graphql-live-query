@@ -17,11 +17,11 @@ yarn add -E @n1ru4l/graphql-live-query-patch
 
 ## API
 
-### `createLiveQueryPatchDeflator`
+### `createLiveQueryPatchGenerator`
 
 ```ts
 import { execute } from "graphql";
-import { createLiveQueryPatchDeflator } from "@n1ru4l/graphql-live-query-patch";
+import { createLiveQueryPatchGenerator } from "@n1ru4l/graphql-live-query-patch";
 import { schema } from "./schema";
 
 execute({
@@ -41,23 +41,26 @@ execute({
   operationName: "todosQuery",
 }).then(async (result) => {
   if (isAsyncIterable(result)) {
-    for (const value of createLiveQueryPatchDeflator(result)) {
+    const makePatches = createLiveQueryPatchGenerator();
+    for (const value of makePatches(result)) {
       console.log(value);
     }
   }
 });
 ```
 
-### `applyLiveQueryPatchDeflator`
+### `createApplyLiveQueryPatchGenerator`
 
-Convenience wrapper for applying `createLiveQueryPatchDeflator` on the `execute` return value.
+Convenience wrapper for applying `createLiveQueryPatchGenerator` on the `execute` return value.
 
 ```ts
 import { execute } from "graphql";
 import { applyLiveQueryPatchDeflator } from "@n1ru4l/graphql-live-query-patch";
 import { schema } from "./schema";
 
-const result = applyLiveQueryPatchDeflator(
+const applyLiveQueryPatchGenerator = createApplyLiveQueryPatchGenerator();
+
+const result = applyLiveQueryPatchGenerator(
   execute({
     schema,
     operationDocument: parse(/* GraphQL */ `
@@ -77,14 +80,16 @@ const result = applyLiveQueryPatchDeflator(
 );
 ```
 
-### `applyLiveQueryPatchInflator`
+### `createApplyLiveQueryPatch`
 
 Inflate the execution result on the client side.
 
 ```ts
-import { applyLiveQueryPatchInflator } from "@n1ru4l/graphql-live-query-patch";
+import { createApplyLiveQueryPatch } from "@n1ru4l/graphql-live-query-patch";
 
-const asyncIterable = applyLiveQueryPatchInflator(
+const applyLiveQueryPatch = createApplyLiveQueryPatch();
+
+const asyncIterable = applyLiveQueryPatch(
   networkLayer.execute({
     operation: /* GraphQL */ `
       query todosQuery @live {

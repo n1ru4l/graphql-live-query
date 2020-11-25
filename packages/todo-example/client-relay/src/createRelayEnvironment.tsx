@@ -1,5 +1,5 @@
 import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
-import { applyLiveQueryPatchInflator } from "@n1ru4l/graphql-live-query-patch";
+import { createApplyLiveQueryPatch } from "@n1ru4l/graphql-live-query-patch";
 import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   Environment,
@@ -58,10 +58,11 @@ export const createRelayEnvironment = (
   const execute = (request: RequestParameters, variables: Variables) => {
     if (!request.text) throw new Error("Missing document.");
     const { text: operation, name } = request;
+    const applyLiveQueryPatch = createApplyLiveQueryPatch();
 
     return Observable.create<GraphQLResponse>((sink) =>
       applyAsyncIterableIteratorToSink(
-        applyLiveQueryPatchInflator(
+        applyLiveQueryPatch(
           networkInterface.execute({
             operation,
             variables,
