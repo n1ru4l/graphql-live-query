@@ -36,8 +36,7 @@ const attachNotifyGarbageCollectionBehaviourToStore = (store: Store): Store => {
   const notify = store.notify.bind(store);
 
   const scheduleGarbageCollection = throttle(
-    // _scheduleGC is still private, but will be public soon :)
-    (store as any)._scheduleGC.bind(store),
+    store.scheduleGC.bind(store),
     5000
   );
 
