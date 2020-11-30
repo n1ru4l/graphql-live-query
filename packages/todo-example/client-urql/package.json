@@ -15,7 +15,7 @@
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "5.11.6",
     "@testing-library/react": "11.2.2",
-    "@testing-library/user-event": "12.2.2",
+    "@testing-library/user-event": "12.3.0",
     "@types/classnames": "2.2.11",
     "@types/react-dom": "16.9.10",
     "classnames": "2.2.6",
