@@ -18,7 +18,7 @@
     "jest": "24.9.0",
     "lint-staged": "10.5.2",
     "patch-package": "6.2.2",
-    "prettier": "2.2.0",
+    "prettier": "2.2.1",
     "ts-jest": "26.4.1",
     "tsc-watch": "4.2.9",
     "typescript": "4.0.5"
