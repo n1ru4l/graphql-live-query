@@ -10,8 +10,8 @@ The patch operations are then sent to the client where they are applied to the i
 **Query**
 
 ```graphql
-query post(id: ID!) @live {
-  post {
+query post($id: ID!) @live {
+  post(id: $id) {
     id
     title
     totalLikeCount
