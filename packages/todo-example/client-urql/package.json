@@ -7,10 +7,10 @@
     "graphql": "15.4.0-experimental-stream-defer.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "1.19.2",
-    "@graphql-codegen/typescript-operations": "1.17.10",
-    "@graphql-codegen/typescript": "1.17.11",
-    "@graphql-codegen/typescript-urql": "2.0.2",
+    "@graphql-codegen/cli": "1.19.4",
+    "@graphql-codegen/typescript-operations": "1.17.12",
+    "@graphql-codegen/typescript": "1.19.0",
+    "@graphql-codegen/typescript-urql": "2.0.3",
     "@n1ru4l/push-pull-async-iterable-iterator": "1.0.0",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "5.11.5",
