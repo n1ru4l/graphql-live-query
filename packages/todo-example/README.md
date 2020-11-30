@@ -13,6 +13,17 @@ All the "frontends" use `create-react-app` as the base.
 - Apollo Client
 - Urql
 
+## Setup
+
+Make sure you you have `yarn` installed, this repository uses yarn workspaces!
+
+```bash
+git clone https://github.com/n1ru4l/graphql-live-query
+cd graphql-live-query
+yarn # install at repository root because this is a mono repository!
+cd todo-example
+```
+
 ## Starting the server
 
 ```bash
