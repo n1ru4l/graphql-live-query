@@ -19,7 +19,7 @@
     "@types/classnames": "2.2.11",
     "@types/react-dom": "16.9.9",
     "classnames": "2.2.6",
-    "react": "16.13.1",
+    "react": "16.14.0",
     "react-dom": "16.14.0",
     "react-scripts": "3.4.3",
     "socket.io-client": "3.0.3",
