@@ -21,6 +21,7 @@ Make sure you you have `yarn` installed, this repository uses yarn workspaces!
 git clone https://github.com/n1ru4l/graphql-live-query
 cd graphql-live-query
 yarn # install at repository root because this is a mono repository!
+yarn build # build all live query packages
 cd todo-example
 ```
 
