@@ -2154,10 +2154,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@n1ru4l/push-pull-async-iterable-iterator@1.0.0-alpha.2":
-  version "1.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@n1ru4l/push-pull-async-iterable-iterator/-/push-pull-async-iterable-iterator-1.0.0-alpha.2.tgz#361b56c2b146e30ececd1b7db6f3ec189c477c65"
-  integrity sha512-ao8QdsYX1T2SpzNAKU4XTuLzZmmEFFZmQxrcgG14sMdFiSmw3p5fcAfGiXnGurXtXrSlinZFbEhSnJZcamJ5Jg==
+"@n1ru4l/push-pull-async-iterable-iterator@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@n1ru4l/push-pull-async-iterable-iterator/-/push-pull-async-iterable-iterator-1.0.0.tgz#d8f603181bde6ccedd9c2cc1cbe58adeaa5c3967"
+  integrity sha512-nGW5BxvPRoywvrBsZN7wrj3KE13nYH0+6IyCBkn8ciyLkTt0mJoPsSUBYJEVPTb4ZthKosgdw396K9kZEU9vCA==
 
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"

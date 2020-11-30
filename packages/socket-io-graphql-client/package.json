@@ -35,7 +35,7 @@
     "socket.io-client": "^3.0.1"
   },
   "dependencies": {
-    "@n1ru4l/push-pull-async-iterable-iterator": "1.0.0-alpha.2"
+    "@n1ru4l/push-pull-async-iterable-iterator": "1.0.0"
   },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
