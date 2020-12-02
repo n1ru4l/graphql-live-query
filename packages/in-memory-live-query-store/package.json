@@ -25,7 +25,7 @@
     "graphql": "15.4.0-experimental-stream-defer.1"
   },
   "dependencies": {
-    "@graphql-tools/wrap": "^7.0.1",
+    "@graphql-tools/wrap": "^7.0.3",
     "@n1ru4l/graphql-live-query": "0.7.0",
     "@n1ru4l/push-pull-async-iterable-iterator": "^1.0.0"
   },
