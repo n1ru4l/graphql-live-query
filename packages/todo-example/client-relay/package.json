@@ -8,7 +8,7 @@
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "5.11.6",
     "@testing-library/react": "11.2.2",
-    "@testing-library/user-event": "12.3.0",
+    "@testing-library/user-event": "12.4.0",
     "react-scripts": "3.4.3",
     "react": "16.14.0",
     "react-dom": "16.14.0",
