@@ -11978,15 +11978,15 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.1.tgz#5b3531bd76a645a4c9fb6e693ed36419e3301339"
   integrity sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
 
-react-relay@10.1.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-10.1.0.tgz#49c6d34b50cf7f99c3d28327bb804ee9bf756023"
-  integrity sha512-xtjgtrVTxIji2VWtlOA+93eVo3uNtZI1aFgRAOaQ58ITLNB3gMAlFX6V4u25XJKKWCIEL1GmVdGSiZQ0So6zYA==
+react-relay@10.1.1:
+  version "10.1.1"
+  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-10.1.1.tgz#93d37b6b234d68a320cb4e8f5f442ec1ed76b4d5"
+  integrity sha512-GABUeGpz4a3yu0t2aS84Gwnz2hhaVKhHIw7QBNkNlA9jcCOfSgRZS8iERMS9ia9q9yJgryws+DOJXrrFRrzIiA==
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^3.0.0"
     nullthrows "^1.1.1"
-    relay-runtime "10.1.0"
+    relay-runtime "10.1.1"
 
 react-router-dom@6.0.0-beta.0:
   version "6.0.0-beta.0"
@@ -12401,6 +12401,14 @@ relay-runtime@10.1.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-10.1.0.tgz#4753bf36e95e8d862cef33608e3d98b4ed730d16"
   integrity sha512-bxznLnQ1ST6APN/cFi7l0FpjbZVchWQjjhj9mAuJBuUqNNCh9uV+UTRhpQF7Q8ycsPp19LHTpVyGhYb0ustuRQ==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    fbjs "^3.0.0"
+
+relay-runtime@10.1.1:
+  version "10.1.1"
+  resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-10.1.1.tgz#bd5e4645f07fa5cdb5a72868414ad205d48ccc72"
+  integrity sha512-kDw1VQiHwJ+rrD6BQBvHsESVeIGAWpmdm7SolClkW3bvt/ZIzqR/GAhCIUE7YZD5TuoEX4umETWksB2/4Mmdxg==
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^3.0.0"
