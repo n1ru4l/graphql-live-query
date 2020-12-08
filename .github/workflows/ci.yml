@@ -4,8 +4,8 @@ on:
   push:
 
 jobs:
-  release:
-    name: Release
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
