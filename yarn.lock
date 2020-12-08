@@ -4650,13 +4650,13 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^0.12.3:
-  version "0.12.3"
-  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-0.12.3.tgz#8b76f59ea02ead356ca39c9574827396e4b4b454"
-  integrity sha512-u0TooVA2MWGNV+Bio89RCTRW9P5FqegB1V9rnz9I0QKoGXX/c9z9/Fc+nj18p8jxkWK8ii8d7hkz7vsNsHxdkw==
+codemirror-graphql@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-0.13.0.tgz#bb01039fb4737f462adcdc4fd911d7aa82b72bfd"
+  integrity sha512-f2w/goKJNXL8+f8a14rD7SnfLPrEoAlvT0qmm2yobXqw7O62QbqFxIkSBcePpUyt3Ki+yyzuCiF4GVHUnGj0+Q==
   dependencies:
-    graphql-language-service-interface "^2.4.2"
-    graphql-language-service-parser "^1.6.4"
+    graphql-language-service-interface "^2.5.0"
+    graphql-language-service-parser "^1.6.5"
 
 codemirror@^5.54.0:
   version "5.57.0"
@@ -7242,13 +7242,13 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-graphiql@1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.0.6.tgz#b551c73a23a0cbf5e4f30a8c29367bad44b1a915"
-  integrity sha512-PgKEfWkXxU4Lx92eSEcLF/2en5bjGplxNwwLCKEQ82xU7t8wfj4UL46Zwx40E9LcxJum6KRfGzMjcY+bNwHzpQ==
+graphiql@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.2.0.tgz#bdd42e6205a3a99b7dfe626f5d233a316eb3ef00"
+  integrity sha512-uSzXp7o+WJdCPOmD9eW2frzF6e3cf2gZT5nUjvQBnRhj5M1vshyDqk1DJqci8jWMQC1SzFrLXqHSHLAekQJWdQ==
   dependencies:
     codemirror "^5.54.0"
-    codemirror-graphql "^0.12.3"
+    codemirror-graphql "^0.13.0"
     copy-to-clipboard "^3.2.0"
     entities "^2.0.0"
     markdown-it "^10.0.0"
@@ -7276,23 +7276,22 @@ graphql-helix@1.1.0:
   resolved "https://registry.yarnpkg.com/graphql-helix/-/graphql-helix-1.1.0.tgz#de5e8b74868b4f930536d767ff4502a0cf86c158"
   integrity sha512-sFRBE+LPB4k9BKu9wUKXUJx1r9HbbnLrB1iEFvOI3hBLHuGrQ8vck+kfmFGGTEB7QPl8UO15r77K1BApzEjTuQ==
 
-graphql-language-service-interface@^2.4.2:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/graphql-language-service-interface/-/graphql-language-service-interface-2.4.2.tgz#77b868c0dad8f18908ff5c6a7a1706d43370bd40"
-  integrity sha512-iFLMz51cA2L5Tu7/mP19++bRGUuIe2J9ekQZrcJ6sMYStsF60x5eNu3JqheduYTLhQaSdKN55jX7RlLeIDUhQA==
+graphql-language-service-interface@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/graphql-language-service-interface/-/graphql-language-service-interface-2.5.0.tgz#5af71b24e85dbb950e837910d5b218995a2327d3"
+  integrity sha512-JOT5X+BqsREMofnnacmyu3oy0CI+15JXp5NQWG+KDp4bQATjTDpiCOFeBNtw6t9z2ozaY8m7PTaknp0YjgDkvA==
   dependencies:
-    graphql-language-service-parser "^1.6.4"
+    graphql-language-service-parser "^1.6.5"
     graphql-language-service-types "^1.6.3"
     graphql-language-service-utils "^2.4.3"
     vscode-languageserver-types "^3.15.1"
 
-graphql-language-service-parser@^1.6.4:
-  version "1.6.4"
-  resolved "https://registry.yarnpkg.com/graphql-language-service-parser/-/graphql-language-service-parser-1.6.4.tgz#d5b92db1e50a91cdcf7f54f79253e13455e20257"
-  integrity sha512-Y365zUFfJ1GJ9NeRHb5Z/HBo6EnbuTi187Gkuldwd1YIDc0QcD7kqz6U5g043zd7BI/UZQth13Zd7pElvbb2zw==
+graphql-language-service-parser@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/graphql-language-service-parser/-/graphql-language-service-parser-1.6.5.tgz#5c9d4c48cbf4b66171f9ec5f182041627669e4f4"
+  integrity sha512-Xti3aQfnp7rTYg5dzhUnt3eqs9zbdr0tIC7S02RRcO1J5tWAwqXzv3PpYpWXGar11kD7VzP8amkh81CD4Q/m0Q==
   dependencies:
     graphql-language-service-types "^1.6.3"
-    typescript "^3.9.5"
 
 graphql-language-service-types@^1.6.3:
   version "1.6.3"
@@ -14191,11 +14190,6 @@ typescript@4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.2.tgz#6369ef22516fe5e10304aae5a5c4862db55380e9"
   integrity sha512-thGloWsGH3SOxv1SoY7QojKi0tc+8FnOmiarEGMbd/lar7QOEd3hvlx3Fp5y6FlDUGl9L+pd4n2e+oToGMmhRQ==
-
-typescript@^3.9.5:
-  version "3.9.7"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
-  integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
 
 ua-parser-js@^0.7.18:
   version "0.7.21"
