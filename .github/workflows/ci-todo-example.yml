@@ -1,0 +1,35 @@
+name: CI Todo Example App
+
+on:
+  push:
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+
+      - name: Setup Node.js 12.x
+        uses: actions/setup-node@master
+        with:
+          node-version: 12.x
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Build Packages
+        run: yarn build
+
+      - name: "Build Relay App"
+        run: yarn workspace @n1ru4l/todo-example-client-relay build
+
+      - name: "Build Apollo App"
+        run: yarn workspace @n1ru4l/todo-example-client-apollo build
+
+      - name: "Build Urql App"
+        run: yarn workspace @n1ru4l/todo-example-client-urql build
