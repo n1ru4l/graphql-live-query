@@ -193,7 +193,7 @@ const randomId = () => {
 };
 
 export const TodoApplication = (): React.ReactElement => {
-  const { data, loading, error } = useTodoApplication_TodosQueryQuery();
+  const { data, error } = useTodoApplication_TodosQueryQuery();
   const [addTodo] = useTodoApplication_TodoAddMutationMutation();
   const handleTextInputSave = (content: string) => {
     addTodo({
