@@ -1,6 +1,6 @@
 import * as React from "react";
 import GraphiQL from "graphiql";
-import { Global, css } from "@emotion/core";
+import { Global, css } from "@emotion/react";
 import "graphiql/graphiql.css";
 
 export const GraphiQLRoute: React.FunctionComponent<{ fetcher: any }> = (
