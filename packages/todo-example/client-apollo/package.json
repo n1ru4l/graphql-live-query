@@ -18,7 +18,7 @@
     "classnames": "2.2.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-scripts": "3.4.3",
+    "react-scripts": "3.4.4",
     "socket.io-client": "3.0.4",
     "todomvc-app-css": "2.3.0",
     "@graphql-codegen/typescript-operations": "1.17.12",
