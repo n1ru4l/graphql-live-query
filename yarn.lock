@@ -125,7 +125,7 @@
     levenary "^1.1.1"
     semver "^5.5.0"
 
-"@babel/helper-create-class-features-plugin@^7.10.4", "@babel/helper-create-class-features-plugin@^7.10.5", "@babel/helper-create-class-features-plugin@^7.8.3":
+"@babel/helper-create-class-features-plugin@^7.10.5", "@babel/helper-create-class-features-plugin@^7.8.3":
   version "7.10.5"
   resolved "https://registry.yarnpkg.com/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.10.5.tgz#9f61446ba80e8240b0a5c85c6fdac8459d6f259d"
   integrity sha512-0nkdeijB7VlZoLT3r/mY3bUkw3T8WG/hNw+FATs/6+pG2039IJWjTYL0VTISqsNHMUTEnwbVnc89WIJX9Qed0A==
@@ -322,21 +322,13 @@
     "@babel/helper-remap-async-to-generator" "^7.10.4"
     "@babel/plugin-syntax-async-generators" "^7.8.0"
 
-"@babel/plugin-proposal-class-properties@7.8.3":
+"@babel/plugin-proposal-class-properties@7.8.3", "@babel/plugin-proposal-class-properties@^7.0.0":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-class-properties/-/plugin-proposal-class-properties-7.8.3.tgz#5e06654af5cd04b608915aada9b2a6788004464e"
   integrity sha512-EqFhbo7IosdgPgZggHaNObkmO1kNUe3slaKu54d5OWvy+p9QIKOzK1GAEpAIsZtWVtPXUHSMcT4smvDrCfY4AA==
   dependencies:
     "@babel/helper-create-class-features-plugin" "^7.8.3"
     "@babel/helper-plugin-utils" "^7.8.3"
-
-"@babel/plugin-proposal-class-properties@^7.0.0":
-  version "7.10.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-class-properties/-/plugin-proposal-class-properties-7.10.4.tgz#a33bf632da390a59c7a8c570045d1115cd778807"
-  integrity sha512-vhwkEROxzcHGNu2mzUC0OFFNXdZ4M23ib8aRRcJSsW8BZK9pQMD7QB7csl97NBbgGZO7ZyHUyKDnxzOaP4IrCg==
-  dependencies:
-    "@babel/helper-create-class-features-plugin" "^7.10.4"
-    "@babel/helper-plugin-utils" "^7.10.4"
 
 "@babel/plugin-proposal-decorators@7.8.3":
   version "7.8.3"
@@ -363,7 +355,7 @@
     "@babel/helper-plugin-utils" "^7.10.4"
     "@babel/plugin-syntax-json-strings" "^7.8.0"
 
-"@babel/plugin-proposal-nullish-coalescing-operator@7.8.3":
+"@babel/plugin-proposal-nullish-coalescing-operator@7.8.3", "@babel/plugin-proposal-nullish-coalescing-operator@^7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-nullish-coalescing-operator/-/plugin-proposal-nullish-coalescing-operator-7.8.3.tgz#e4572253fdeed65cddeecfdab3f928afeb2fd5d2"
   integrity sha512-TS9MlfzXpXKt6YYomudb/KU7nQI6/xnapG6in1uZxoxDghuSMZsPb6D2fyUwNYSAp4l1iR7QtFOjkqcRYcUsfw==
@@ -371,29 +363,13 @@
     "@babel/helper-plugin-utils" "^7.8.3"
     "@babel/plugin-syntax-nullish-coalescing-operator" "^7.8.0"
 
-"@babel/plugin-proposal-nullish-coalescing-operator@^7.8.3":
-  version "7.10.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-nullish-coalescing-operator/-/plugin-proposal-nullish-coalescing-operator-7.10.4.tgz#02a7e961fc32e6d5b2db0649e01bf80ddee7e04a"
-  integrity sha512-wq5n1M3ZUlHl9sqT2ok1T2/MTt6AXE0e1Lz4WzWBr95LsAZ5qDXe4KnFuauYyEyLiohvXFMdbsOTMyLZs91Zlw==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.10.4"
-    "@babel/plugin-syntax-nullish-coalescing-operator" "^7.8.0"
-
-"@babel/plugin-proposal-numeric-separator@7.8.3":
+"@babel/plugin-proposal-numeric-separator@7.8.3", "@babel/plugin-proposal-numeric-separator@^7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-numeric-separator/-/plugin-proposal-numeric-separator-7.8.3.tgz#5d6769409699ec9b3b68684cd8116cedff93bad8"
   integrity sha512-jWioO1s6R/R+wEHizfaScNsAx+xKgwTLNXSh7tTC4Usj3ItsPEhYkEpU4h+lpnBwq7NBVOJXfO6cRFYcX69JUQ==
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.3"
     "@babel/plugin-syntax-numeric-separator" "^7.8.3"
-
-"@babel/plugin-proposal-numeric-separator@^7.8.3":
-  version "7.10.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-numeric-separator/-/plugin-proposal-numeric-separator-7.10.4.tgz#ce1590ff0a65ad12970a609d78855e9a4c1aef06"
-  integrity sha512-73/G7QoRoeNkLZFxsoCCvlg4ezE4eM+57PnOqgaPOozd5myfj7p0muD1mRVJvbUWbOzD+q3No2bWbaKy+DJ8DA==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.10.4"
-    "@babel/plugin-syntax-numeric-separator" "^7.10.4"
 
 "@babel/plugin-proposal-object-rest-spread@^7.0.0", "@babel/plugin-proposal-object-rest-spread@^7.9.0":
   version "7.11.0"
@@ -412,21 +388,12 @@
     "@babel/helper-plugin-utils" "^7.10.4"
     "@babel/plugin-syntax-optional-catch-binding" "^7.8.0"
 
-"@babel/plugin-proposal-optional-chaining@7.9.0":
+"@babel/plugin-proposal-optional-chaining@7.9.0", "@babel/plugin-proposal-optional-chaining@^7.9.0":
   version "7.9.0"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-optional-chaining/-/plugin-proposal-optional-chaining-7.9.0.tgz#31db16b154c39d6b8a645292472b98394c292a58"
   integrity sha512-NDn5tu3tcv4W30jNhmc2hyD5c56G6cXx4TesJubhxrJeCvuuMpttxr0OnNCqbZGhFjLrg+NIhxxC+BK5F6yS3w==
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.3"
-    "@babel/plugin-syntax-optional-chaining" "^7.8.0"
-
-"@babel/plugin-proposal-optional-chaining@^7.9.0":
-  version "7.11.0"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-optional-chaining/-/plugin-proposal-optional-chaining-7.11.0.tgz#de5866d0646f6afdaab8a566382fe3a221755076"
-  integrity sha512-v9fZIu3Y8562RRwhm1BbMRxtqZNFmFA2EG+pT2diuU8PT3H6T/KXoZ54KgYisfOFZHV6PfvAiBIZ9Rcz+/JCxA==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.10.4"
-    "@babel/helper-skip-transparent-expression-wrappers" "^7.11.0"
     "@babel/plugin-syntax-optional-chaining" "^7.8.0"
 
 "@babel/plugin-proposal-unicode-property-regex@^7.4.4", "@babel/plugin-proposal-unicode-property-regex@^7.8.3":
@@ -493,7 +460,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.0"
 
-"@babel/plugin-syntax-numeric-separator@^7.10.4", "@babel/plugin-syntax-numeric-separator@^7.8.0", "@babel/plugin-syntax-numeric-separator@^7.8.3":
+"@babel/plugin-syntax-numeric-separator@^7.8.0", "@babel/plugin-syntax-numeric-separator@^7.8.3":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-numeric-separator/-/plugin-syntax-numeric-separator-7.10.4.tgz#b9b070b3e33570cd9fd07ba7fa91c0dd37b9af97"
   integrity sha512-9H6YdfkcK/uOnY/K7/aA2xpzaAgkQn37yzWUMRK7OaPOqOpGS1+n0H5hxT9AUw9EsSjPW8SVyMJwYRtWs3X3ug==
@@ -734,19 +701,12 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.10.4"
 
-"@babel/plugin-transform-react-display-name@7.8.3":
+"@babel/plugin-transform-react-display-name@7.8.3", "@babel/plugin-transform-react-display-name@^7.0.0", "@babel/plugin-transform-react-display-name@^7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-display-name/-/plugin-transform-react-display-name-7.8.3.tgz#70ded987c91609f78353dd76d2fb2a0bb991e8e5"
   integrity sha512-3Jy/PCw8Fe6uBKtEgz3M82ljt+lTg+xJaM4og+eyu83qLT87ZUSckn0wy7r31jflURWLO83TW6Ylf7lyXj3m5A==
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.3"
-
-"@babel/plugin-transform-react-display-name@^7.0.0", "@babel/plugin-transform-react-display-name@^7.8.3":
-  version "7.10.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-display-name/-/plugin-transform-react-display-name-7.10.4.tgz#b5795f4e3e3140419c3611b7a2a3832b9aef328d"
-  integrity sha512-Zd4X54Mu9SBfPGnEcaGcOrVAYOtjT2on8QZkLKEq1S/tHexG39d9XXGZv19VfRrDjPJzFmPfTAqOQS1pfFOujw==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.10.4"
 
 "@babel/plugin-transform-react-jsx-development@^7.9.0":
   version "7.10.4"
@@ -13846,10 +13806,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.2.tgz#6369ef22516fe5e10304aae5a5c4862db55380e9"
-  integrity sha512-thGloWsGH3SOxv1SoY7QojKi0tc+8FnOmiarEGMbd/lar7QOEd3hvlx3Fp5y6FlDUGl9L+pd4n2e+oToGMmhRQ==
+typescript@4.1.3:
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.3.tgz#519d582bd94cba0cf8934c7d8e8467e473f53bb7"
+  integrity sha512-B3ZIOf1IKeH2ixgHhj6la6xdwR9QrLC5d1VKeCSY4tvkqhF2eqd9O7txNlS0PO3GrBAFIdr3L1ndNwteUbZLYg==
 
 typescript@^3.9.5:
   version "3.9.7"
