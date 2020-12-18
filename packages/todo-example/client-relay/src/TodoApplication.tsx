@@ -304,10 +304,12 @@ export const TodoApplication = (props: {
         </p>
         <p>
           Backend created by{" "}
-          <a href="https://facebook.github.io/relay/">Laurin Quast</a>
+          <a href="https://github.com/n1ru4l/graphql-live-query/tree/main/packages/server">
+            Laurin Quast
+          </a>
         </p>
         <p>
-          <a href="https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/todo-example">
+          <a href="https://github.com/n1ru4l/graphql-live-query/tree/main/packages/todo-example/client-relay">
             Show Source Code on GitHub
           </a>
         </p>

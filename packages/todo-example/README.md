@@ -1,9 +1,9 @@
 # TodoMVC Example App
 
-This directory contains a GraphQL server for a TODO app with full live query support.
-That means all changes to the TODO list are immediately synced across all schema consumers.
+This directory contains a GraphQL server for a todo app with full live query support.
+That means all changes to the todo list are immediately synced across all schema consumers (web clients).
 
-The backend is written with "plain" `graphql-js` and without persistent storage. It is super lightweight and only has around ~300 lines of code.
+The backend is written with "plain" `graphql-js` and without any persistent storage. It is super lightweight and only has around ~300 lines of code.
 
 There are three frontend implementations available that use the most widely adopted React GraphQL clients.
 
@@ -12,6 +12,8 @@ All the "frontends" use `create-react-app` as the base.
 - Relay
 - Apollo Client
 - Urql
+
+Each of those client apps also has with a GraphiQL IDE.
 
 ## Setup
 
