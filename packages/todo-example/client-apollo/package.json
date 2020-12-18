@@ -15,6 +15,7 @@
     "@testing-library/user-event": "12.5.0",
     "@types/classnames": "2.2.11",
     "@types/react-dom": "17.0.0",
+    "graphiql": "1.2.0",
     "classnames": "2.2.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",

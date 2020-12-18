@@ -230,10 +230,12 @@ export const TodoApplication = (): React.ReactElement => {
         </p>
         <p>
           Backend created by{" "}
-          <a href="https://facebook.github.io/relay/">Laurin Quast</a>
+          <a href="https://github.com/n1ru4l/graphql-live-query/tree/main/packages/server">
+            Laurin Quast
+          </a>
         </p>
         <p>
-          <a href="https://github.com/n1ru4l/gql-live-queries/tree/main/packages/todo-example-apollo">
+          <a href="https://github.com/n1ru4l/graphql-live-query/tree/main/packages/todo-example/client-apollo">
             Show Source Code on GitHub
           </a>
         </p>
