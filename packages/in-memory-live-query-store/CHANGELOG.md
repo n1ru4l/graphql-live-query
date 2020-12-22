@@ -1,5 +1,11 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.5.4
+
+### Patch Changes
+
+- 6915f6d: fix support safari 14
+
 ## 0.5.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.9.1
+
+### Patch Changes
+
+- 6915f6d: fix support safari 14
+
 ## 0.9.0
 
 ### Minor Changes
