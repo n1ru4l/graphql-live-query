@@ -1,5 +1,5 @@
 import type { Socket as IOSocket } from "socket.io-client";
-import { PushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
+import { makePushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
 
 export type ExecutionParameter = {
   operation: string;
@@ -15,7 +15,8 @@ export type SocketIOGraphQLClient<TExecutionResult = unknown> = {
 };
 
 type OperationRecord<TExecutionResult = unknown> = {
-  iterator: PushPullAsyncIterableIterator<TExecutionResult>;
+  iterator: AsyncIterableIterator<TExecutionResult>;
+  publishValue: (value: TExecutionResult) => void;
   execute: () => void;
 };
 
@@ -29,7 +30,7 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
     if (!record) {
       return;
     }
-    record.iterator.push(result);
+    record.publishValue(result);
 
     if (isFinal) {
       record.iterator.return?.();
@@ -68,7 +69,10 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
   }: ExecutionParameter): AsyncIterableIterator<TExecutionResult> => {
     const operationId = currentOperationId;
     currentOperationId = currentOperationId + 1;
-    const iterator = new PushPullAsyncIterableIterator<TExecutionResult>();
+    const {
+      asyncIterableIterator: iterator,
+      pushValue: publishValue,
+    } = makePushPullAsyncIterableIterator<TExecutionResult>();
 
     const record: OperationRecord<TExecutionResult> = {
       execute: () => {
@@ -80,24 +84,25 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
         });
       },
       iterator,
+      publishValue,
     };
 
     operations.set(operationId, record);
     record.execute();
 
-    const returnIterator: AsyncIterableIterator<TExecutionResult> = {
-      [Symbol.asyncIterator]: () => iterator,
-      next: () => iterator.next(),
-      return: () => {
-        operations.delete(operationId);
-        socket.emit("@graphql/unsubscribe", {
-          id: operationId,
-        });
-        return iterator.return?.();
-      },
+    const originalReturn = iterator.return;
+    iterator.return = () => {
+      operations.delete(operationId);
+      socket.emit("@graphql/unsubscribe", {
+        id: operationId,
+      });
+
+      return originalReturn
+        ? originalReturn()
+        : Promise.resolve({ done: true, value: undefined });
     };
 
-    return returnIterator;
+    return iterator;
   };
 
   return {

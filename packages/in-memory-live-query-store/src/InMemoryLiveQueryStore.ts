@@ -8,7 +8,7 @@ import {
   GraphQLError,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
-import { PushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
+import { makePushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   isLiveQueryOperationDefinitionNode,
   LiveExecutionResult,
@@ -21,7 +21,8 @@ import { isAsyncIterable } from "./isAsyncIterable";
 
 type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
-  iterator: PushPullAsyncIterableIterator<LiveExecutionResult>;
+  iterator: AsyncIterableIterator<LiveExecutionResult>;
+  pushValue: (value: LiveExecutionResult) => void;
   identifier: Set<string>;
   run: () => MaybePromise<void>;
 };
@@ -205,13 +206,17 @@ export class InMemoryLiveQueryStore {
 
     const schema = this.getPatchedSchema(inputSchema);
 
-    const iterator = new PushPullAsyncIterableIterator<LiveExecutionResult>();
+    const {
+      asyncIterableIterator: iterator,
+      pushValue,
+    } = makePushPullAsyncIterableIterator<LiveExecutionResult>();
 
     // keep track that current execution is the latest in order to prevent race-conditions :)
     let executionCounter = 0;
 
     const record: StoreRecord = {
       iterator,
+      pushValue,
       identifier: new Set(rootFieldIdentifier),
       run: () => {
         executionCounter = executionCounter + 1;
@@ -240,7 +245,7 @@ export class InMemoryLiveQueryStore {
           iterator: AsyncIterableIterator<ExecutionResult>
         ) => {
           iterator.return?.();
-          record.iterator.push({
+          record.pushValue({
             errors: [
               new GraphQLError(
                 `"execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.`
@@ -250,7 +255,7 @@ export class InMemoryLiveQueryStore {
 
           // delay to next tick to ensure the error is delivered to listeners.
           (process?.nextTick ?? setTimeout)(() => {
-            record.iterator?.return();
+            record.iterator?.return?.();
           });
 
           this._store.delete(record);
@@ -265,7 +270,7 @@ export class InMemoryLiveQueryStore {
             record.identifier = newIdentifier;
             const liveResult: LiveExecutionResult = result;
             liveResult.isLive = true;
-            record.iterator.push(liveResult);
+            record.pushValue(liveResult);
           }
         });
       },
@@ -275,16 +280,15 @@ export class InMemoryLiveQueryStore {
     // Execute initial query
     record.run();
 
-    const returnIterator: AsyncIterableIterator<ExecutionResult> = {
-      next: async () => iterator.next(),
-      return: async () => {
-        this._store.delete(record);
-        return iterator.return();
-      },
-      [Symbol.asyncIterator]: () => returnIterator,
+    const originalReturn = iterator.return;
+    iterator.return = () => {
+      this._store.delete(record);
+      return originalReturn
+        ? originalReturn()
+        : Promise.resolve({ done: true, value: undefined });
     };
 
-    return returnIterator;
+    return iterator;
   };
 
   /**
