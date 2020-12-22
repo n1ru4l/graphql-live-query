@@ -99,7 +99,7 @@ import { createApplyLiveQueryPatch } from "@n1ru4l/graphql-live-query-patch";
 const applyLiveQueryPatch = createApplyLiveQueryPatch();
 
 const asyncIterable = applyLiveQueryPatch(
-  # networkLayer.execute returns an AsyncIterable
+  // networkLayer.execute returns an AsyncIterable
   networkLayer.execute({
     operation: /* GraphQL */ `
       query todosQuery @live {
