@@ -4351,13 +4351,13 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-0.13.0.tgz#bb01039fb4737f462adcdc4fd911d7aa82b72bfd"
-  integrity sha512-f2w/goKJNXL8+f8a14rD7SnfLPrEoAlvT0qmm2yobXqw7O62QbqFxIkSBcePpUyt3Ki+yyzuCiF4GVHUnGj0+Q==
+codemirror-graphql@^0.13.1:
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-0.13.1.tgz#09eb5cb5abdf2376d1e8b792b1848bdf4faf87a4"
+  integrity sha512-/KB4BM0O04rPlOERq7mCy6y+L6OVoOCfvDWiySTJ8huOGw942ETI6vqEL1SpHKv4ozq5ql7UsCcb7nLwv49zcg==
   dependencies:
-    graphql-language-service-interface "^2.5.0"
-    graphql-language-service-parser "^1.6.5"
+    graphql-language-service-interface "^2.6.0"
+    graphql-language-service-parser "^1.7.0"
 
 codemirror@^5.54.0:
   version "5.58.3"
@@ -6895,13 +6895,13 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-graphiql@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.2.0.tgz#bdd42e6205a3a99b7dfe626f5d233a316eb3ef00"
-  integrity sha512-uSzXp7o+WJdCPOmD9eW2frzF6e3cf2gZT5nUjvQBnRhj5M1vshyDqk1DJqci8jWMQC1SzFrLXqHSHLAekQJWdQ==
+graphiql@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.2.1.tgz#561dea87136744bf0fbe3e967c55a93a4c3b9681"
+  integrity sha512-WH1/OlXxajntEFY4xfWvT1veEPv2SSTcVGVM6buhJ3T9htek8vwRCBjd22uxjV/YoeomOCZfAakpLvBdxAuYPw==
   dependencies:
     codemirror "^5.54.0"
-    codemirror-graphql "^0.13.0"
+    codemirror-graphql "^0.13.1"
     copy-to-clipboard "^3.2.0"
     entities "^2.0.0"
     markdown-it "^10.0.0"
@@ -6929,20 +6929,20 @@ graphql-helix@1.2.0:
   resolved "https://registry.yarnpkg.com/graphql-helix/-/graphql-helix-1.2.0.tgz#263dba445d1eb668d44ddf592a4a6423f197dcb5"
   integrity sha512-oOdJc9xvbwr5xe0zPublElbE8BUXGJhhtemJbcN8W7+TPEmZm8At1YcRCoazrdrNyd2gPkOCODaFNd9JnByNjA==
 
-graphql-language-service-interface@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/graphql-language-service-interface/-/graphql-language-service-interface-2.5.0.tgz#5af71b24e85dbb950e837910d5b218995a2327d3"
-  integrity sha512-JOT5X+BqsREMofnnacmyu3oy0CI+15JXp5NQWG+KDp4bQATjTDpiCOFeBNtw6t9z2ozaY8m7PTaknp0YjgDkvA==
+graphql-language-service-interface@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/graphql-language-service-interface/-/graphql-language-service-interface-2.6.0.tgz#6149255ad81e884d675c934ed404cf6d16af30d7"
+  integrity sha512-tATUud6B9L6JyqxtA/Gs8E0el0UWNb6hczMnnO1OxuzK92gxl+O/rn++GAegYJzAZH+uO7UaGURyAGaZd5+TtA==
   dependencies:
-    graphql-language-service-parser "^1.6.5"
+    graphql-language-service-parser "^1.7.0"
     graphql-language-service-types "^1.6.3"
     graphql-language-service-utils "^2.4.3"
     vscode-languageserver-types "^3.15.1"
 
-graphql-language-service-parser@^1.6.5:
-  version "1.6.5"
-  resolved "https://registry.yarnpkg.com/graphql-language-service-parser/-/graphql-language-service-parser-1.6.5.tgz#5c9d4c48cbf4b66171f9ec5f182041627669e4f4"
-  integrity sha512-Xti3aQfnp7rTYg5dzhUnt3eqs9zbdr0tIC7S02RRcO1J5tWAwqXzv3PpYpWXGar11kD7VzP8amkh81CD4Q/m0Q==
+graphql-language-service-parser@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/graphql-language-service-parser/-/graphql-language-service-parser-1.7.0.tgz#695ee6b91791e1b2c92804ef281c290f85f39ed0"
+  integrity sha512-m2tV5qBCBBnJNVWPcGX7+XO2dQ1sE8jg9N9vABabNHIW02TMgPlEjWIa98h5QpXp0txcPgobHB1iTIQRE0qBbQ==
   dependencies:
     graphql-language-service-types "^1.6.3"
 
