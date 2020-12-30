@@ -23,7 +23,7 @@
     "socket.io-client": "3.0.4",
     "todomvc-app-css": "2.3.0",
     "@graphql-codegen/typescript-operations": "1.17.13",
-    "@graphql-codegen/typescript": "1.19.0",
+    "@graphql-codegen/typescript": "1.20.0",
     "@graphql-codegen/typescript-react-apollo": "2.2.1"
   },
   "scripts": {
