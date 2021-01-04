@@ -6,7 +6,7 @@
   "devDependencies": {
     "@n1ru4l/push-pull-async-iterable-iterator": "2.0.0",
     "@n1ru4l/socket-io-graphql-client": "*",
-    "@testing-library/jest-dom": "5.11.6",
+    "@testing-library/jest-dom": "5.11.8",
     "@testing-library/react": "11.2.2",
     "@testing-library/user-event": "12.6.0",
     "graphiql": "1.2.2",
