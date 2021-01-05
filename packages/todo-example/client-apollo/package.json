@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "3.3.6",
-    "@n1ru4l/push-pull-async-iterable-iterator": "2.0.0",
+    "@n1ru4l/push-pull-async-iterable-iterator": "2.0.1",
     "@n1ru4l/socket-io-graphql-client": "*",
     "graphql": "15.4.0-experimental-stream-defer.1"
   },

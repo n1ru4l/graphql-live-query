@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {},
   "devDependencies": {
-    "@n1ru4l/push-pull-async-iterable-iterator": "2.0.0",
+    "@n1ru4l/push-pull-async-iterable-iterator": "2.0.1",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "5.11.8",
     "@testing-library/react": "11.2.2",
