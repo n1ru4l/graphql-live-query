@@ -1932,10 +1932,10 @@
     globby "^11.0.0"
     read-yaml-file "^1.1.0"
 
-"@n1ru4l/push-pull-async-iterable-iterator@2.0.0", "@n1ru4l/push-pull-async-iterable-iterator@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@n1ru4l/push-pull-async-iterable-iterator/-/push-pull-async-iterable-iterator-2.0.0.tgz#f0cee4dbaf34a548e8a0f808c63099dea4262c0f"
-  integrity sha512-zZLWgVuhU9SNtw87VtkfHE+zDZhoacGWKE0e8IYfRYG9yVICNA0ewoh5LOvWU6IacnCjw+8NqqkxW8JreirMWw==
+"@n1ru4l/push-pull-async-iterable-iterator@2.0.1", "@n1ru4l/push-pull-async-iterable-iterator@^2.0.0":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@n1ru4l/push-pull-async-iterable-iterator/-/push-pull-async-iterable-iterator-2.0.1.tgz#8fc68e0e9e8bd3826d727b96ddd2afba2a7f26c7"
+  integrity sha512-3nDfpI/4WZgdocw75cxG4Qwmi3yp5zOleaT23EpVUhwVwlYzb4kDojl0nCZKB5lCGcTqT5wFlKepShs4Q+hymw==
 
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
