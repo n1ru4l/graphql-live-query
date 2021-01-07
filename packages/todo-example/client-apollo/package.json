@@ -11,7 +11,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "1.20.0",
     "@testing-library/jest-dom": "5.11.8",
-    "@testing-library/react": "11.2.2",
+    "@testing-library/react": "11.2.3",
     "@testing-library/user-event": "12.6.0",
     "@types/classnames": "2.2.11",
     "@types/react-dom": "17.0.0",
