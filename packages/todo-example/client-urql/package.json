@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "urql": "1.11.4",
+    "urql": "1.11.5",
     "graphql": "15.4.0-experimental-stream-defer.1"
   },
   "devDependencies": {
