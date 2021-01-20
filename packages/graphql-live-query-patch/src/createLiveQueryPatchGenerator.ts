@@ -1,6 +1,7 @@
 import type { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
 import { compare, Operation } from "fast-json-patch";
-import type { AsyncExecutionResult, ExecutionResult } from "graphql";
+import type { ExecutionResult } from "graphql";
+import type { ExecutionPatchResult } from "./ExecutionPatchResult";
 import type { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
 
 export type GeneratePatchFunction = (
@@ -25,7 +26,7 @@ export const createLiveQueryPatchGenerator = (
   return async function* liveQueryPatchGenerator(
     asyncIterator: AsyncIterableIterator<LiveExecutionResult>
   ): AsyncIterableIterator<
-    ExecutionLivePatchResult | ExecutionResult | AsyncExecutionResult
+    ExecutionLivePatchResult | ExecutionResult | ExecutionPatchResult
   > {
     let previousValue: LiveExecutionResult["data"] | null = null;
     let revision = 0;

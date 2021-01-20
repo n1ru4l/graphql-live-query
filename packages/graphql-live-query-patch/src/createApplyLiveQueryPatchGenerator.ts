@@ -4,7 +4,6 @@ import {
   createLiveQueryPatchGenerator,
   CreateLiveQueryPatchGeneratorArgs,
 } from "./createLiveQueryPatchGenerator";
-import { compare, Operation } from "fast-json-patch";
 
 type MaybePromise<T> = T | Promise<T>;
 
