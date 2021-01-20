@@ -8,7 +8,10 @@ import {
   GraphQLError,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
-import { makePushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
+import {
+  makePushPullAsyncIterableIterator,
+  isAsyncIterable,
+} from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   isLiveQueryOperationDefinitionNode,
   LiveExecutionResult,
@@ -17,7 +20,6 @@ import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFiel
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
 import { isNone } from "./Maybe";
-import { isAsyncIterable } from "./isAsyncIterable";
 
 type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
@@ -242,9 +244,10 @@ export class InMemoryLiveQueryStore {
         // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
         // in case anyone forgot to add it we just panic and stop the execution :)
         const handleAsyncIterator = (
-          iterator: AsyncIterableIterator<ExecutionResult>
+          iterator: AsyncIterable<ExecutionResult>
         ) => {
-          iterator.return?.();
+          iterator[Symbol.asyncIterator]().return?.();
+
           record.pushValue({
             errors: [
               new GraphQLError(
