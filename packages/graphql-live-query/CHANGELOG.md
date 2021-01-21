@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query
 
+## 0.7.1
+
+### Patch Changes
+
+- 88270dc: feat: allow conditional live queries via the if argument on the live directive
+
 ## 0.7.0
 
 ### Minor Changes

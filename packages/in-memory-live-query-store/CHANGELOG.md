@@ -1,5 +1,15 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.5.5
+
+### Patch Changes
+
+- 88270dc: feat: allow conditional live queries via the if argument on the live directive
+- 0caaad0: Ensure compat for non experimental graphql releases without defer and stream support.
+- 76c459f: use a resource tracker for more efficient invalidations
+- Updated dependencies [88270dc]
+  - @n1ru4l/graphql-live-query@0.7.1
+
 ## 0.5.4
 
 ### Patch Changes

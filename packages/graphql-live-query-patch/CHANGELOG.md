@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query-patch
 
+## 0.3.1
+
+### Patch Changes
+
+- 0caaad0: Ensure compat for non experimental graphql releases without defer and stream support.
+
 ## 0.3.0
 
 ### Minor Changes
