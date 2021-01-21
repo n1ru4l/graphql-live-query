@@ -255,6 +255,7 @@ export class InMemoryLiveQueryStore {
           });
 
           // delay to next tick to ensure the error is delivered to listeners.
+          // TODO: figure out whether there is a better way for doing this.
           (process?.nextTick ?? setTimeout)(() => {
             record.iterator?.return?.();
           });
@@ -286,6 +287,7 @@ export class InMemoryLiveQueryStore {
     // Execute initial query
     record.run();
 
+    // TODO: figure out how we can do this stuff without monkey-patching the iterator
     const originalReturn = iterator.return;
     iterator.return = () => {
       this._resourceTracker.release(record, previousIdentifier);
