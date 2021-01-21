@@ -6,6 +6,7 @@ import {
   DefinitionNode,
   OperationDefinitionNode,
   GraphQLError,
+  getOperationAST,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
 import {
@@ -88,10 +89,6 @@ type InMemoryLiveQueryStoreParameter = {
   execute?: typeof defaultExecute;
 };
 
-const isOperationDefinitionNode = (
-  input: DefinitionNode
-): input is OperationDefinitionNode => input.kind === "OperationDefinition";
-
 // TODO: Investigate why parameters does not return a union...
 type ExecutionParameter = Parameters<typeof defaultExecute> | [ExecutionArgs];
 
@@ -163,9 +160,7 @@ export class InMemoryLiveQueryStore {
       ...additionalArguments
     } = getExecutionParameters(args);
 
-    const operationDefinitions = document.definitions.filter(
-      isOperationDefinitionNode
-    );
+    const operationNode = getOperationAST(document, operationName);
 
     const fallbackToDefaultExecute = () =>
       this._execute({
@@ -177,20 +172,6 @@ export class InMemoryLiveQueryStore {
         operationName,
         ...additionalArguments,
       });
-
-    if (
-      (isNone(operationName) && operationDefinitions.length > 1) ||
-      operationDefinitions.length === 0
-    ) {
-      return fallbackToDefaultExecute();
-    }
-
-    const operationNode =
-      operationDefinitions.length === 1
-        ? operationDefinitions[0]
-        : operationDefinitions.find(
-            (operation) => operation.name?.value === operationName
-          );
 
     if (
       isNone(operationNode) ||
