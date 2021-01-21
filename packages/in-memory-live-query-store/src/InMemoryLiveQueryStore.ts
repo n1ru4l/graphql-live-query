@@ -175,8 +175,7 @@ export class InMemoryLiveQueryStore {
 
     if (
       isNone(operationNode) ||
-      isLiveQueryOperationDefinitionNode(operationNode, variableValues) ===
-        false
+      isLiveQueryOperationDefinitionNode(operationNode) === false
     ) {
       return fallbackToDefaultExecute();
     }
