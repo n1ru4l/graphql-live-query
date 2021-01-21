@@ -25,7 +25,6 @@ type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
   iterator: AsyncIterableIterator<LiveExecutionResult>;
   pushValue: (value: LiveExecutionResult) => void;
-  identifier: Set<string>;
   run: () => MaybePromise<void>;
 };
 
@@ -50,7 +49,7 @@ const addResourceIdentifierCollectorToSchema = (
 
         let resolve = fieldConfig.resolve!;
         fieldConfig.resolve = (src, args, context, info) => {
-          if (!context || !context[ORIGINAL_CONTEXT_SYMBOL]) {
+          if (!context || ORIGINAL_CONTEXT_SYMBOL in context === false) {
             return resolve(src, args, context, info);
           }
 
@@ -125,9 +124,8 @@ const getExecutionParameters = (params: ExecutionParameter): ExecutionArgs => {
 };
 
 export class InMemoryLiveQueryStore {
-  private _store = new Set<StoreRecord>();
-  // cache that stores all patched schema objects
-  private _cache = new Map<GraphQLSchema, GraphQLSchema>();
+  private _resourceTracker = new ResourceTracker();
+  private _cacheCache = new WeakMap<GraphQLSchema, GraphQLSchema>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
   private _execute = defaultExecute;
 
@@ -141,10 +139,10 @@ export class InMemoryLiveQueryStore {
   }
 
   private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
-    let schema = this._cache.get(inputSchema);
+    let schema = this._cacheCache.get(inputSchema);
     if (isNone(schema)) {
       schema = addResourceIdentifierCollectorToSchema(inputSchema);
-      this._cache.set(inputSchema, schema);
+      this._cacheCache.set(inputSchema, schema);
     }
     return schema;
   }
@@ -215,11 +213,11 @@ export class InMemoryLiveQueryStore {
 
     // keep track that current execution is the latest in order to prevent race-conditions :)
     let executionCounter = 0;
+    let previousIdentifier = new Set<string>(rootFieldIdentifier);
 
     const record: StoreRecord = {
       iterator,
       pushValue,
-      identifier: new Set(rootFieldIdentifier),
       run: () => {
         executionCounter = executionCounter + 1;
         const counter = executionCounter;
@@ -257,11 +255,12 @@ export class InMemoryLiveQueryStore {
           });
 
           // delay to next tick to ensure the error is delivered to listeners.
+          // TODO: figure out whether there is a better way for doing this.
           (process?.nextTick ?? setTimeout)(() => {
             record.iterator?.return?.();
           });
 
-          this._store.delete(record);
+          this._resourceTracker.release(record, previousIdentifier);
         };
 
         runWith(result, (result) => {
@@ -270,7 +269,12 @@ export class InMemoryLiveQueryStore {
             return;
           }
           if (counter === executionCounter) {
-            record.identifier = newIdentifier;
+            this._resourceTracker.track(
+              record,
+              previousIdentifier,
+              newIdentifier
+            );
+            previousIdentifier = newIdentifier;
             const liveResult: LiveExecutionResult = result;
             liveResult.isLive = true;
             record.pushValue(liveResult);
@@ -279,16 +283,17 @@ export class InMemoryLiveQueryStore {
       },
     };
 
-    this._store.add(record);
+    this._resourceTracker.track(record, new Set(), previousIdentifier);
     // Execute initial query
     record.run();
 
+    // TODO: figure out how we can do this stuff without monkey-patching the iterator
     const originalReturn = iterator.return;
     iterator.return = () => {
-      this._store.delete(record);
-      return originalReturn
-        ? originalReturn()
-        : Promise.resolve({ done: true, value: undefined });
+      this._resourceTracker.release(record, previousIdentifier);
+      return (
+        originalReturn?.() ?? Promise.resolve({ done: true, value: undefined })
+      );
     };
 
     return iterator;
@@ -298,23 +303,85 @@ export class InMemoryLiveQueryStore {
    * Invalidate queries (and schedule their re-execution) via a resource identifier.
    * @param identifiers A single or list of resource identifiers that should be invalidated.
    */
-  async invalidate(identifiers: string[] | string) {
+  async invalidate(identifiers: Array<string> | string) {
     if (typeof identifiers === "string") {
       identifiers = [identifiers];
     }
 
-    const invalidatedRecords = new Set<StoreRecord>();
+    const records = this._resourceTracker.getRecordsForIdentifiers(identifiers);
 
-    // Todo: it might be better to simply use a hash map of the events instead of iterating through everything...
+    for (const record of records) {
+      record.run();
+    }
+  }
+}
+
+class ResourceTracker {
+  private _trackedResources: Map<string, Set<StoreRecord>>;
+  constructor() {
+    this._trackedResources = new Map();
+  }
+
+  track(
+    storeRecord: StoreRecord,
+    previousIdentifier: Set<string>,
+    currentIdentifier: Set<string>
+  ): void {
+    const differencePrevious = new Set(
+      [...previousIdentifier].filter(
+        (value) => currentIdentifier.has(value) === false
+      )
+    );
+    const differenceCurrent = new Set(
+      [...currentIdentifier].filter(
+        (value) => previousIdentifier.has(value) === false
+      )
+    );
+
+    for (const identifier of differencePrevious) {
+      let set = this._trackedResources.get(identifier);
+      if (!set) {
+        continue;
+      }
+      set.delete(storeRecord);
+      if (set.size === 0) {
+        this._trackedResources.delete(identifier);
+      }
+    }
+    for (const identifier of differenceCurrent) {
+      let set = this._trackedResources.get(identifier);
+      if (isNone(set)) {
+        set = new Set();
+        this._trackedResources.set(identifier, set);
+      }
+      set.add(storeRecord);
+    }
+  }
+
+  release(storeRecord: StoreRecord, identifiers: Set<string>): void {
     for (const identifier of identifiers) {
-      for (const record of this._store.values()) {
-        if (record.identifier.has(identifier)) {
-          invalidatedRecords.add(record);
+      const records = this._trackedResources.get(identifier);
+      if (!records) {
+        continue;
+      }
+      records.delete(storeRecord);
+      if (records.size === 0) {
+        this._trackedResources.delete(identifier);
+      }
+    }
+  }
+
+  getRecordsForIdentifiers(identifiers: Array<string>): Set<StoreRecord> {
+    const records = new Set<StoreRecord>();
+    for (const identifier of identifiers) {
+      const recordSet = this._trackedResources.get(identifier);
+      if (recordSet) {
+        for (const record of recordSet) {
+          records.add(record);
         }
       }
     }
-    for (const record of invalidatedRecords) {
-      record.run();
-    }
+
+    return records;
   }
 }

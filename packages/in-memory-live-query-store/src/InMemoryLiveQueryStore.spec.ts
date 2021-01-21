@@ -1,4 +1,6 @@
 import {
+  GraphQLID,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
@@ -13,14 +15,43 @@ const isAsyncIterable = (value: unknown): value is AsyncIterable<unknown> => {
 };
 
 const createTestSchema = (
-  mutableSource = { query: "queried", mutation: "mutated" }
+  mutableSource: {
+    query?: string;
+    mutation?: string;
+    post?: {
+      id: string;
+      title: string;
+    };
+  } = {
+    query: "queried",
+    mutation: "mutated",
+    post: {
+      id: "1",
+      title: "lel",
+    },
+  }
 ) => {
+  const GraphQLPostType = new GraphQLObjectType({
+    name: "Post",
+    fields: {
+      id: {
+        type: GraphQLNonNull(GraphQLID),
+      },
+      title: {
+        type: GraphQLString,
+      },
+    },
+  });
   const Query = new GraphQLObjectType({
     name: "Query",
     fields: {
       foo: {
         type: GraphQLString,
         resolve: () => mutableSource.query,
+      },
+      post: {
+        type: GraphQLPostType,
+        resolve: () => mutableSource.post,
       },
     },
   });
@@ -213,6 +244,135 @@ it("returns a AsyncIterable that publishes a query result after the schema coord
   });
 
   executionResult.return?.();
+});
+
+it("returns a AsyncIterable that publishes a query result after the resource identifier was invalidated.", async () => {
+  const schema = createTestSchema();
+  const store = new InMemoryLiveQueryStore();
+  const document = parse(/* GraphQL */ `
+    query @live {
+      post {
+        id
+        title
+      }
+    }
+  `);
+
+  const executionResult = store.execute({
+    schema,
+    document,
+  });
+
+  if (!isAsyncIterable(executionResult)) {
+    return fail(
+      `result should be a AsyncIterable. Got ${typeof executionResult}.`
+    );
+  }
+
+  let result = await executionResult.next();
+  expect(result).toEqual({
+    done: false,
+    value: {
+      data: {
+        post: {
+          id: "1",
+          title: "lel",
+        },
+      },
+      isLive: true,
+    },
+  });
+
+  store.invalidate("Post:1");
+
+  result = await executionResult.next();
+  expect(result).toEqual({
+    done: false,
+    value: {
+      data: {
+        post: {
+          id: "1",
+          title: "lel",
+        },
+      },
+      isLive: true,
+    },
+  });
+
+  executionResult.return?.();
+});
+
+it("does not publish when a old resource identifier is invalidated", async () => {
+  const mutableSource = {
+    post: {
+      id: "1",
+      title: "lel",
+    },
+  };
+  const schema = createTestSchema(mutableSource);
+  const store = new InMemoryLiveQueryStore();
+  const document = parse(/* GraphQL */ `
+    query @live {
+      post {
+        id
+        title
+      }
+    }
+  `);
+
+  const executionResult = store.execute({
+    schema,
+    document,
+  });
+
+  if (!isAsyncIterable(executionResult)) {
+    return fail(
+      `result should be a AsyncIterable. Got ${typeof executionResult}.`
+    );
+  }
+
+  let result = await executionResult.next();
+  expect(result).toEqual({
+    done: false,
+    value: {
+      data: {
+        post: {
+          id: "1",
+          title: "lel",
+        },
+      },
+      isLive: true,
+    },
+  });
+
+  mutableSource.post.id = "2";
+  store.invalidate("Post:1");
+
+  result = await executionResult.next();
+  expect(result).toEqual({
+    done: false,
+    value: {
+      data: {
+        post: {
+          id: "2",
+          title: "lel",
+        },
+      },
+      isLive: true,
+    },
+  });
+
+  store.invalidate("Post:1");
+  const nextResult = executionResult.next();
+
+  executionResult.return?.();
+  result = await nextResult;
+  expect(result).toMatchInlineSnapshot(`
+    Object {
+      "done": true,
+      "value": undefined,
+    }
+  `);
 });
 
 it("can be executed with polymorphic parameter type", () => {
