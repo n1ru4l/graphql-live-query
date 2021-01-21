@@ -349,7 +349,7 @@ class ResourceTracker {
     }
     for (const identifier of differenceCurrent) {
       let set = this._trackedResources.get(identifier);
-      if (!set) {
+      if (isNone(set)) {
         set = new Set();
         this._trackedResources.set(identifier, set);
       }
@@ -371,14 +371,16 @@ class ResourceTracker {
   }
 
   getRecordsForIdentifiers(identifiers: Array<string>): Set<StoreRecord> {
-    const records: Array<StoreRecord> = [];
+    const records = new Set<StoreRecord>();
     for (const identifier of identifiers) {
       const recordSet = this._trackedResources.get(identifier);
       if (recordSet) {
-        records.push(...recordSet);
+        for (const record of recordSet) {
+          records.add(record);
+        }
       }
     }
 
-    return new Set(records);
+    return records;
   }
 }
