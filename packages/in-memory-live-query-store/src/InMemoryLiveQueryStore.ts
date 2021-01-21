@@ -125,8 +125,7 @@ const getExecutionParameters = (params: ExecutionParameter): ExecutionArgs => {
 
 export class InMemoryLiveQueryStore {
   private _resourceTracker = new ResourceTracker();
-  // cache that stores all patched schema objects
-  private _cache = new WeakMap<GraphQLSchema, GraphQLSchema>();
+  private _cacheCache = new WeakMap<GraphQLSchema, GraphQLSchema>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
   private _execute = defaultExecute;
 
@@ -140,10 +139,10 @@ export class InMemoryLiveQueryStore {
   }
 
   private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
-    let schema = this._cache.get(inputSchema);
+    let schema = this._cacheCache.get(inputSchema);
     if (isNone(schema)) {
       schema = addResourceIdentifierCollectorToSchema(inputSchema);
-      this._cache.set(inputSchema, schema);
+      this._cacheCache.set(inputSchema, schema);
     }
     return schema;
   }
