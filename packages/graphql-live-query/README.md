@@ -39,32 +39,59 @@ const schema = new GraphQLSchema({
 Determine whether a `DefinitionNode` is a `LiveQueryOperationDefinitionNode`.
 
 ```ts
-import { parse } from "graphql";
+import { parse, getOperationAST } from "graphql";
 import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
 
-const liveQueryOperationDefinitionNode = parse(/* GraphQL */ `
-  query @live {
-    me {
-      id
-      login
+const liveQueryOperationDefinitionNode = getOperationAST(
+  parse(/* GraphQL */ `
+    query @live {
+      me {
+        id
+        login
+      }
     }
-  }
-`);
+  `)
+);
 
+isLiveQueryOperationDefinitionNode(liveQueryOperationDefinitionNode); // true
+
+const queryOperationDefinitionNode = getOperationAST(
+  parse(/* GraphQL */ `
+    query {
+      me {
+        id
+        login
+      }
+    }
+  `)
+);
+
+isLiveQueryOperationDefinitionNode(queryOperationDefinitionNode); // false
+
+const conditionalLiveQueryDefinitionNode = getOperationAST(
+  parse(/* GraphQL */ `
+    query($isClient: Boolean = false) @live(if: $isClient) {
+      me {
+        id
+        login
+      }
+    }
+  `)
+);
+
+isLiveQueryOperationDefinitionNode(conditionalLiveQueryDefinitionNode); // false
 isLiveQueryOperationDefinitionNode(
-  liveQueryOperationDefinitionNode.definitions[0]
-); // true
-
-const queryOperationDefinitionNode = parse(/* GraphQL */ `
-  query {
-    me {
-      id
-      login
-    }
+  conditionalLiveQueryDefinitionNode,
+  /* variables */ {
+    isClient: false,
   }
-`);
-
-isLiveQueryOperationDefinitionNode(queryOperationDefinitionNode.definitions[0]); // false
+); // false
+isLiveQueryOperationDefinitionNode(
+  conditionalLiveQueryDefinitionNode,
+  /* variables */ {
+    isClient: true,
+  }
+); // true
 ```
 
 ### `NoLiveMixedWithDeferStreamRule`
