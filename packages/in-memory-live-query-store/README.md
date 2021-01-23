@@ -2,11 +2,9 @@
 
 [![npm version](https://img.shields.io/npm/v/@n1ru4l/in-memory-live-query-store.svg)](https://www.npmjs.com/package/@n1ru4l/in-memory-live-query-store) [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/in-memory-live-query-store.svg)](https://www.npmjs.com/package/@n1ru4l/in-memory-live-query-store)
 
-A live query store for GraphQL servers that holds the information about the live queries in memory.
+A GraphQL live query store for that tracks, invalidates and re-executes registered operations. Drop in replacement for `graphql-js` `execute`. Add live query capabilities to your existing GraphQL schema.
 
-Wanna see how you can add it to your existing GraphQL schema? Check out the [todo example server](https://github.com/n1ru4l/graphql-live-queries/blob/main/packages/todo-example/server/src/schema.ts).
-
-With InMemoryLiveQueryStore you can easily add live query capabilities to your existing schema!
+Check out the [todo example server](https://github.com/n1ru4l/graphql-live-queries/blob/main/packages/todo-example/server/src/schema.ts) for a sample integration.
 
 ## Install Instructions
 
@@ -18,9 +16,11 @@ yarn add -E @n1ru4l/in-memory-live-query-store
 
 ### `InMemoryLiveQueryStore`
 
-The `InMemoryLiveQueryStore` can be used to register a live query.
+A `InMemoryLiveQueryStore` instance  tracks, invalidates and re-executes registered live query operations.
 
-The store will keep track of all root query field coordinates (e.g. `Query.todos`) and global resource identifiers (e.g. `Todo:1`). The store can than be notified to re-execute live query operations that select a given root query field or resource identifier via the `invalidate` method with the corresponding resource identifier or field coordinates. A resource identifier is composed out of the typename and the actual resolved id value separated by a colon, but can be customized. For ensuring that the store keeps track of all your query resources you should always select the `id` field on your object types. The store will only keep track of fields with the name `id` and the type `ID!` (`GraphQLNonNull(GraphQLID)`).
+The store will keep track of all root query field coordinates (e.g. `Query.todos`) and global resource identifiers (e.g. `Todo:1`). The store can than be notified to re-execute live query operations that select a given root query field or resource identifier by calling the `invalidate` method with the corresponding values.
+
+A resource identifier is composed out of the typename and the actual resolved id value separated by a colon, but can be customized. For ensuring that the store keeps track of all your query resources you should always select the `id` field on your object types. The store will only keep track of fields with the name `id` and the type `ID!` (`GraphQLNonNull(GraphQLID)`).
 
 ```ts
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
@@ -73,7 +73,7 @@ rootValue.todos.push({ id: "2", content: "Baz", isComplete: false });
 inMemoryLiveQueryStore.invalidate(`Query.todos`);
 ```
 
-The `InMemoryLiveQueryStore.execute` function is a drop-in replacement for the default `execute` function from `graphql-js`.
+The `InMemoryLiveQueryStore.execute` function is a drop-in replacement for the default `execute` function exported from `graphql-js`.
 
 Pass it to your favorite graphql transport that supports returning `AsyncIterator` from `execute` and thus delivering incremental query execution results.
 
