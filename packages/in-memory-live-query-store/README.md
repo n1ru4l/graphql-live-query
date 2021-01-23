@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@n1ru4l/in-memory-live-query-store.svg)](https://www.npmjs.com/package/@n1ru4l/in-memory-live-query-store) [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/in-memory-live-query-store.svg)](https://www.npmjs.com/package/@n1ru4l/in-memory-live-query-store)
 
-A GraphQL live query store for that tracks, invalidates and re-executes registered operations. Drop in replacement for `graphql-js` `execute`. Add live query capabilities to your existing GraphQL schema.
+A GraphQL live query store that tracks, invalidates and re-executes registered operations. Drop in replacement for `graphql-js` `execute`. Add live query capabilities to your existing GraphQL schema.
 
 Check out the [todo example server](https://github.com/n1ru4l/graphql-live-queries/blob/main/packages/todo-example/server/src/schema.ts) for a sample integration.
 
