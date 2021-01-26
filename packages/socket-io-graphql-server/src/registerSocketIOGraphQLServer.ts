@@ -11,6 +11,8 @@ import {
   GraphQLError,
   specifiedRules as defaultValidationRules,
   ValidationRule,
+  getOperationAST,
+  OperationDefinitionNode,
 } from "graphql";
 import { isAsyncIterable } from "./isAsyncIterable";
 import type { Server as IOServer, Socket as IOSocket } from "socket.io";
@@ -76,11 +78,8 @@ export type GetParameterFunction = (
   validationRules?: ValidationRule[];
 }>;
 
-const isSubscriptionOperation = (ast: DocumentNode) =>
-  !!ast.definitions.find(
-    (def) =>
-      def.kind === "OperationDefinition" && def.operation === "subscription"
-  );
+const isSubscriptionOperation = (def: OperationDefinitionNode) =>
+  def.operation === "subscription";
 
 type MessagePayload = {
   id: number;
@@ -304,19 +303,28 @@ export const registerSocketIOGraphQLServer = ({
         ExecutionResult | AsyncIterableIterator<ExecutionResult>
       >;
 
-      try {
-        if (isSubscriptionOperation(documentAst)) {
-          executionResult = await subscribe({
-            ...executionParameter,
-            document: documentAst,
-          });
-        } else {
-          executionResult = execute(executionParameter);
-        }
-      } catch (contextError) {
+      const mainOperation = getOperationAST(documentAst, operationName);
+
+      if (!mainOperation) {
         executionResult = {
-          errors: [contextError],
+          errors: [new GraphQLError("No executable operation sent.")],
         };
+      } else {
+        try {
+          if (isSubscriptionOperation(mainOperation)) {
+            executionResult = await subscribe({
+              ...executionParameter,
+              document: documentAst,
+            });
+          } else {
+            executionResult = execute(executionParameter);
+          }
+        } catch (contextError) {
+          console.error("Unexpected error occurred.", contextError);
+          executionResult = {
+            errors: [new GraphQLError("A unexpected error occurred.")],
+          };
+        }
       }
 
       Promise.resolve(executionResult)
