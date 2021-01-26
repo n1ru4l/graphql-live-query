@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-server
 
+## 0.9.2
+
+### Patch Changes
+
+- 5ca93e3: correctly detect the main operation of the sent graphqll document
+
 ## 0.9.0
 
 ### Minor Changes
