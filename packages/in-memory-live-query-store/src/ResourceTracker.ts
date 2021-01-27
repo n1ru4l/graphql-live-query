@@ -2,10 +2,10 @@ import { isNone } from "./Maybe";
 
 /**
  * ResourceTracker is a ad hoc system for tracking events associated with a record.
- * A record can be tracked with a set of events. In case the set of events change,
- * the list can be updated. By calling the `track` method with the previous and
- * new event identifiers. A set of all records that subscribe to a sepecific event
- * can be retrieved with the `getRecordsForIdentifiers` method.
+ * In case the set of events change, the list can be updated by calling the `track`
+ * method again with the previous and new event identifiers.
+ * A set of all records that subscribe to a sepecific event can be retrieved with
+ * the `getRecordsForIdentifiers` method.
  */
 export class ResourceTracker<TRecord> {
   private _trackedResources: Map<string, Set<TRecord>>;
@@ -14,7 +14,7 @@ export class ResourceTracker<TRecord> {
   }
 
   /**
-   * Track a record by its identifiers
+   * Update the set of identifiers a resource is subscribed to.
    */
   track(
     record: TRecord,
@@ -50,19 +50,20 @@ export class ResourceTracker<TRecord> {
   }
 
   /**
-   * Release a record that subscribes to a specific set of identifiers
+   * Register a record and subscribe to the provided set of identifiers.
+   *
+   * @param record The record that should be tracked
+   * @param identifiers The list of identifiers
+   */
+  register(record: TRecord, identifiers: Set<string>): void {
+    this.track(record, new Set(), identifiers);
+  }
+
+  /**
+   * Release a record that subscribes to a specific set of identifiers.
    */
   release(record: TRecord, identifiers: Set<string>): void {
-    for (const identifier of identifiers) {
-      const records = this._trackedResources.get(identifier);
-      if (!records) {
-        continue;
-      }
-      records.delete(record);
-      if (records.size === 0) {
-        this._trackedResources.delete(identifier);
-      }
-    }
+    this.track(record, identifiers, new Set());
   }
 
   /**

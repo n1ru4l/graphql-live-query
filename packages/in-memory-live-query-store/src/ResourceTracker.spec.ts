@@ -35,3 +35,12 @@ it("can track multiple resources", () => {
   let result = resourceTracker.getRecordsForIdentifiers(["a"]);
   expect([...result]).toEqual([1, 2]);
 });
+
+it("can release a tracked resource", () => {
+  const resourceTracker = new ResourceTracker<number>();
+  const events = new Set(["a", "b"]);
+  resourceTracker.track(1, new Set(), events);
+  resourceTracker.release(1, events);
+  let result = resourceTracker.getRecordsForIdentifiers(["a"]);
+  expect([...result]).toEqual([]);
+});

@@ -263,7 +263,7 @@ export class InMemoryLiveQueryStore {
       },
     };
 
-    this._resourceTracker.track(record, new Set(), previousIdentifier);
+    this._resourceTracker.register(record, previousIdentifier);
     // Execute initial query
     record.run();
 
