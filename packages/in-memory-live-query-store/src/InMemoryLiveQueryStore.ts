@@ -3,8 +3,6 @@ import {
   GraphQLSchema,
   execute as defaultExecute,
   ExecutionArgs,
-  DefinitionNode,
-  OperationDefinitionNode,
   GraphQLError,
   getOperationAST,
 } from "graphql";
@@ -21,6 +19,7 @@ import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFiel
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
 import { isNone } from "./Maybe";
+import { ResourceTracker } from "./ResourceTracker";
 
 type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
@@ -121,7 +120,7 @@ const getExecutionParameters = (params: ExecutionParameter): ExecutionArgs => {
 };
 
 export class InMemoryLiveQueryStore {
-  private _resourceTracker = new ResourceTracker();
+  private _resourceTracker = new ResourceTracker<StoreRecord>();
   private _cacheCache = new WeakMap<GraphQLSchema, GraphQLSchema>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
   private _execute = defaultExecute;
@@ -294,75 +293,5 @@ export class InMemoryLiveQueryStore {
     for (const record of records) {
       record.run();
     }
-  }
-}
-
-class ResourceTracker {
-  private _trackedResources: Map<string, Set<StoreRecord>>;
-  constructor() {
-    this._trackedResources = new Map();
-  }
-
-  track(
-    storeRecord: StoreRecord,
-    previousIdentifier: Set<string>,
-    currentIdentifier: Set<string>
-  ): void {
-    const differencePrevious = new Set(
-      [...previousIdentifier].filter(
-        (value) => currentIdentifier.has(value) === false
-      )
-    );
-    const differenceCurrent = new Set(
-      [...currentIdentifier].filter(
-        (value) => previousIdentifier.has(value) === false
-      )
-    );
-
-    for (const identifier of differencePrevious) {
-      let set = this._trackedResources.get(identifier);
-      if (!set) {
-        continue;
-      }
-      set.delete(storeRecord);
-      if (set.size === 0) {
-        this._trackedResources.delete(identifier);
-      }
-    }
-    for (const identifier of differenceCurrent) {
-      let set = this._trackedResources.get(identifier);
-      if (isNone(set)) {
-        set = new Set();
-        this._trackedResources.set(identifier, set);
-      }
-      set.add(storeRecord);
-    }
-  }
-
-  release(storeRecord: StoreRecord, identifiers: Set<string>): void {
-    for (const identifier of identifiers) {
-      const records = this._trackedResources.get(identifier);
-      if (!records) {
-        continue;
-      }
-      records.delete(storeRecord);
-      if (records.size === 0) {
-        this._trackedResources.delete(identifier);
-      }
-    }
-  }
-
-  getRecordsForIdentifiers(identifiers: Array<string>): Set<StoreRecord> {
-    const records = new Set<StoreRecord>();
-    for (const identifier of identifiers) {
-      const recordSet = this._trackedResources.get(identifier);
-      if (recordSet) {
-        for (const record of recordSet) {
-          records.add(record);
-        }
-      }
-    }
-
-    return records;
   }
 }
