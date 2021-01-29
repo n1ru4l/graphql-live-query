@@ -3,8 +3,9 @@ import type {
   DocumentNode,
   FieldNode,
   OperationDefinitionNode,
+  VariableDefinitionNode,
 } from "graphql";
-import { isNone } from "./Maybe";
+import { isNone, isSome } from "./Maybe";
 
 type MaybeOperationDefinitionNode = OperationDefinitionNode | null;
 
@@ -16,6 +17,7 @@ const gatherFields = (
   for (const selection of selectionSet.selections) {
     switch (selection.kind) {
       case "Field": {
+        selection.arguments?.filter((arg) => arg.value.kind === "Variable");
         fields.push(selection);
         continue;
       }
@@ -46,12 +48,57 @@ const gatherFields = (
  */
 export const extractLiveQueryRootFieldCoordinates = (
   documentNode: DocumentNode,
-  operationNode: OperationDefinitionNode
-) =>
-  Array.from(
-    new Set(
-      gatherFields(operationNode.selectionSet, documentNode).map(
-        (field) => `Query.${field.name.value}`
-      )
-    )
-  );
+  operationNode: OperationDefinitionNode,
+  variableValues?: Record<string, unknown>
+) => {
+  const identifier = new Set<string>();
+  const idVariablesLookupMap = new Map<string, string>();
+
+  if (isSome(operationNode.variableDefinitions) && isSome(variableValues)) {
+    collectIdVariableValues(
+      operationNode.variableDefinitions,
+      variableValues,
+      idVariablesLookupMap
+    );
+  }
+
+  const fields = gatherFields(operationNode.selectionSet, documentNode);
+  for (const field of fields) {
+    identifier.add(`Query.${field.name.value}`);
+    if (isSome(field.arguments)) {
+      for (const arg of field.arguments) {
+        if (
+          arg.value.kind === "Variable" &&
+          idVariablesLookupMap.has(arg.value.name.value)
+        ) {
+          identifier.add(
+            // prettier-ignore
+            `Query.${field.name.value}(${arg.name.value}:"${idVariablesLookupMap.get(arg.value.name.value)}")`
+          );
+        }
+      }
+    }
+  }
+
+  return identifier;
+};
+
+const collectIdVariableValues = (
+  definitions: ReadonlyArray<VariableDefinitionNode>,
+  variableValues: Record<string, unknown>,
+  lookupMap: Map<string, string>
+): void => {
+  for (const def of definitions) {
+    if (
+      def.type.kind == "NonNullType" &&
+      def.type.type.kind === "NamedType" &&
+      def.type.type.name.value === "ID"
+    ) {
+      const name = def.variable.name.value;
+      if (lookupMap.has(name)) {
+        continue;
+      }
+      lookupMap.set(name, variableValues[name] as string);
+    }
+  }
+};

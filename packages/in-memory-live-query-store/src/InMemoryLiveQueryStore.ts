@@ -179,9 +179,8 @@ export class InMemoryLiveQueryStore {
       return fallbackToDefaultExecute();
     }
 
-    const rootFieldIdentifier = extractLiveQueryRootFieldCoordinates(
-      document,
-      operationNode
+    const rootFieldIdentifier = Array.from(
+      extractLiveQueryRootFieldCoordinates(document, operationNode)
     );
 
     const schema = this.getPatchedSchema(inputSchema);
