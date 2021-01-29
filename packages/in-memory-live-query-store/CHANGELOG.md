@@ -1,5 +1,11 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.6.0
+
+### Minor Changes
+
+- 50ffe13: Allow adding additional resource identifier in user-land via the liveQuery.collectResourceIdentifiers extensions field on schema fields.
+
 ## 0.5.5
 
 ### Patch Changes
