@@ -180,7 +180,11 @@ export class InMemoryLiveQueryStore {
     }
 
     const rootFieldIdentifier = Array.from(
-      extractLiveQueryRootFieldCoordinates(document, operationNode)
+      extractLiveQueryRootFieldCoordinates(
+        document,
+        operationNode,
+        variableValues
+      )
     );
 
     const schema = this.getPatchedSchema(inputSchema);

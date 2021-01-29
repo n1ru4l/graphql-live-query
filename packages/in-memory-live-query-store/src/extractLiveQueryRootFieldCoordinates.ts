@@ -5,7 +5,7 @@ import type {
   OperationDefinitionNode,
   VariableDefinitionNode,
 } from "graphql";
-import { isNone, isSome } from "./Maybe";
+import { isNone, isSome, Maybe } from "./Maybe";
 
 type MaybeOperationDefinitionNode = OperationDefinitionNode | null;
 
@@ -49,7 +49,7 @@ const gatherFields = (
 export const extractLiveQueryRootFieldCoordinates = (
   documentNode: DocumentNode,
   operationNode: OperationDefinitionNode,
-  variableValues?: Record<string, unknown>
+  variableValues?: Maybe<Record<string, unknown>>
 ) => {
   const identifier = new Set<string>();
   const idVariablesLookupMap = new Map<string, string>();
