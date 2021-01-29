@@ -14,6 +14,16 @@ const isAsyncIterable = (value: unknown): value is AsyncIterable<unknown> => {
   );
 };
 
+const getAllValues = async <T>(values: AsyncIterableIterator<T>) => {
+  const results: T[] = [];
+
+  for await (const value of values) {
+    results.push(value);
+  }
+
+  return results;
+};
+
 const createTestSchema = (
   mutableSource: {
     query?: string;
@@ -421,4 +431,48 @@ it("can handle missing NoLiveMixedWithDeferStreamRule", async () => {
     return;
   }
   fail("Should return AsyncIterable");
+});
+
+it("can collect additional resource identifiers with 'extensions.liveQuery.collectResourceIdentifiers'", async () => {
+  const schema = new GraphQLSchema({
+    query: new GraphQLObjectType({
+      name: "Query",
+      fields: {
+        ping: {
+          type: GraphQLString,
+          args: {
+            id: {
+              type: GraphQLNonNull(GraphQLString),
+            },
+          },
+          extensions: {
+            liveQuery: {
+              collectResourceIdentifiers: (_: unknown, args: { id: string }) =>
+                args.id,
+            },
+          },
+        },
+      },
+    }),
+  });
+  const document = parse(/* GraphQL */ `
+    query @live {
+      ping(id: "1")
+    }
+  `);
+  const store = new InMemoryLiveQueryStore();
+  const executionResult = await store.execute(schema, document);
+
+  if (!isAsyncIterable(executionResult)) {
+    fail("should return AsyncIterable");
+  }
+
+  store.invalidate("1");
+
+  process.nextTick(() => {
+    executionResult.return?.();
+  });
+
+  const values = await getAllValues(executionResult);
+  expect(values).toHaveLength(2);
 });
