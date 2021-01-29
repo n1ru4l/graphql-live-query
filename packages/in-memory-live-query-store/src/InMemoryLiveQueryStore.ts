@@ -18,7 +18,7 @@ import {
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
-import { isNone } from "./Maybe";
+import { isNone, None } from "./Maybe";
 import { ResourceTracker } from "./ResourceTracker";
 
 type MaybePromise<T> = T | Promise<T>;
@@ -33,6 +33,9 @@ type ResourceIdentifierCollectorFunction = (
     typename: string;
     id: string;
   }>
+) => void;
+type AddResourceIdentifierFunction = (
+  values: string | Iterable<string> | None
 ) => void;
 
 const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
@@ -55,8 +58,20 @@ const addResourceIdentifierCollectorToSchema = (
 
           const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
             context.collectResourceIdentifier;
+          const addResourceIdentifier: AddResourceIdentifierFunction =
+            context.addResourceIdentifier;
           context = context[ORIGINAL_CONTEXT_SYMBOL];
           const result = resolve(src, args, context, info);
+
+          if (fieldConfig.extensions?.liveQuery?.collectResourceIdentifiers) {
+            addResourceIdentifier(
+              fieldConfig.extensions.liveQuery.collectResourceIdentifiers(
+                src,
+                args
+              )
+            );
+          }
+
           if (isIDField) {
             runWith(result, (id: string) =>
               collectResourceIdentifier({ typename, id })
@@ -209,6 +224,21 @@ export class InMemoryLiveQueryStore {
           parameter
         ) => newIdentifier.add(this._buildResourceIdentifier(parameter));
 
+        const addResourceIdentifier: AddResourceIdentifierFunction = (
+          values
+        ) => {
+          if (isNone(values)) {
+            return;
+          }
+          if (typeof values === "string") {
+            newIdentifier.add(values);
+            return;
+          }
+          for (const value of values) {
+            newIdentifier.add(value);
+          }
+        };
+
         const result = this._execute({
           schema,
           document,
@@ -217,6 +247,7 @@ export class InMemoryLiveQueryStore {
           contextValue: {
             [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
             collectResourceIdentifier,
+            addResourceIdentifier,
           },
           variableValues,
           ...additionalArguments,
