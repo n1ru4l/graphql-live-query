@@ -28,9 +28,9 @@
 
 There are no mature live query implementation that are not tied to any specific database or SaaS product. This implementation should serve as an example how live queries can be added to any schema with (almost) any GraphQL transport.
 
-GraphQL already has a solution for real-time: Subscriptions. Those are the right tool for responding to events. E.g. triggering a sound or showing a toast message once a new message has been received. Subscriptions are also often used for updating existing query results on the client. Depending on the complexity cache update code can eventually become pretty bloated. Often it is more straight-forward to simply refetch the query once a subscription event is received.
+GraphQL already has a solution for real-time: Subscriptions. Those are the right tool for responding to events. E.g. triggering a sound or showing a toast message because someone poked you on Facebook. Subscriptions are also often used for updating existing query results on a client that consumes a data from a GraphQL API. Depending on the complexity of that data, cache update code can eventually become pretty bloated. Often it is more straight-forward to simply refetch the query once a subscription event is received.
 
-In contrast live queries should feel magically and update the UI with the latest data from the server without having to write any cache update wizardry code on the client.
+In contrast to manual cache updates using subscriptions, live queries should feel magically and update the UI with the latest data from the server without having to write any cache update wizardry code on the client.
 
 ## Concept
 
@@ -52,12 +52,12 @@ The client can inform the server that it is no longer interested in the query (u
 
 On the server we have a live query invalidation mechanism that is used for determining which queries have become stale, and thus need to be rescheduled for execution. In the future we might event be able to only re-execute partial subtrees of a query operation.
 
-### How does the server know the underlying data has changed?
+### How does the server know the underlying data of a query operation has changed?
 
-The reference live query store implementation must be notified once a resource becomes stale.
+The reference `InMemoryLiveQueryStore` implementation uses an [ad hoc resource tracker](https://github.com/n1ru4l/graphql-live-query/tree/main/packages/in-memory-live-query-store/src/ResourceTracker.ts#L10), where an operation subscribes to the specific topics computed out of the query and resolved resources during the latest query execution.
 
 A resource (in terms of the reference implementation) is described by a root query field schema coordinate (such as `Query.viewer` or `Query.users`),
-but also by a resource identifier (such as `User:1`). The latter is by default composed out of the resource typename and the non nullable id field of the given GraphQL type.
+, a root query field with id argument (`Query.user(id:"1")`) or a resource identifier (such as `User:1`). The latter is by default composed out of the resource typename and the non nullable id field of the given GraphQL type.
 
 For the following type:
 
@@ -68,9 +68,11 @@ type User {
 }
 ```
 
-A legitimate resource identifier would be `User:1`, `User:2`, `User:dfsg12`. Where the string after the first colon describes the id of the resource.
+Legitimate resource identifiers could be `User:1`, `User:2`, `User:dfsg12`. Where the string after the first colon describes the id of the resource.
 
-Practical example:
+In case a resource has become stale it can be invalidated using the `InMemoryLiveQueryStore.invalidate` method, which results in all operations that select a given resource to be scheduled for re-execution.
+
+**Practical example:**
 
 ```js
 // somewhere inside a mutation resolver
@@ -79,17 +81,15 @@ await db.users.push(createNewUser());
 liveQueryStore.invalidate("Query.users");
 ```
 
+Those invalidation calls could be done manually in the mutation resolvers or on more global reactive level e.g. as a listener on a database write log. The possibilities are infinite. 🤔
+
+For scaling horizontally the independent `InMemoryLiveQueryStore` instances could be wired together via a PubSub system such as Redis.
+
 ### How are the updates sent/applied to the client
 
 The transport layer can be any transport that allows sending partial execution results to the client.
 
-Most GraphQL clients (including GraphiQL) have support for Observable data structures which are perfect for describing both Subscription and Live Queries. Ideally a GraphQL Live Query implementation uses a Observable for pushing the latest query data to the client framework that consumes the data.
-
-Inside this mono-repository there is Socket.io GraphQL transport that uses WebSockets and HTTP polling.
-
-Further optimizations could be achieved. E.g. the LiveQueryStore could only send patches to the client which should be applied to the initial query result or clients that have the same selection set could be merged so that the query must be only executed once when the underlying data changes.
-
-A distributed backend with many clients could leverage a query store that relies on redis etc.
+Most GraphQL clients (including GraphiQL) have support for Observable or async iterable data structures which are perfect for describing both Subscription and Live Queries. Ideally a GraphQL Live Query implementation uses a AsyncIterable or Observable for pushing the latest query data to the client framework that consumes the data.
 
 ### List of compatible transports/servers
 
