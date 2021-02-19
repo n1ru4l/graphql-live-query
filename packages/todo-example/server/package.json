@@ -9,7 +9,7 @@
     "socket.io": "3.1.1"
   },
   "devDependencies": {
-    "@types/node": "14.14.28",
+    "@types/node": "14.14.30",
     "ts-node-dev": "1.1.1",
     "typescript": "4.1.5"
   },
