@@ -75,10 +75,16 @@ In case a resource has become stale it can be invalidated using the `InMemoryLiv
 **Practical example:**
 
 ```js
-// somewhere inside a mutation resolver
-await db.users.push(createNewUser());
-// all live queries that select Query.users are invalidated and scheduled for re-execution.
-liveQueryStore.invalidate("Query.users");
+// somewhere inside a userChangeLogin mutation resolver
+user.login = "n1ru4l"
+liveQueryStore.invalidate([
+  // Invalidate all operations whose latest execution result contains the given user
+  `User:${newUser.id}`,
+  // Invalidate query operations that select the Query,user field with the id argument
+  `Query.user(id:"${newUser.id}")`,
+  // invalidate a list of all users (redundant with previous invalidations)
+  `Quer.users`
+]);
 ```
 
 Those invalidation calls could be done manually in the mutation resolvers or on more global reactive level e.g. as a listener on a database write log. The possibilities are infinite. 🤔
