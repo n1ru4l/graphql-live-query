@@ -22,7 +22,7 @@
     "classnames": "2.2.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-scripts": "4.0.2",
+    "react-scripts": "4.0.3",
     "socket.io-client": "3.1.1",
     "todomvc-app-css": "2.3.0"
   },
