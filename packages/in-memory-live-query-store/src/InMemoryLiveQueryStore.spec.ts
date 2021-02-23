@@ -61,6 +61,11 @@ const createTestSchema = (
       },
       post: {
         type: GraphQLPostType,
+        args: {
+          id: {
+            type: GraphQLID,
+          },
+        },
         resolve: () => mutableSource.post,
       },
     },
@@ -475,4 +480,58 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
 
   const values = await getAllValues(executionResult);
   expect(values).toHaveLength(2);
+});
+
+it("adds the resource identifiers as a extension field.", async () => {
+  const schema = createTestSchema();
+  const store = new InMemoryLiveQueryStore({
+    includeIdentifierExtension: true,
+  });
+  const document = parse(/* GraphQL */ `
+    query($id: ID!) @live {
+      post(id: $id) {
+        id
+        title
+      }
+    }
+  `);
+
+  const executionResult = store.execute({
+    schema,
+    document,
+    variableValues: {
+      id: "1",
+    },
+  });
+
+  if (!isAsyncIterable(executionResult)) {
+    return fail(
+      `result should be a AsyncIterable. Got ${typeof executionResult}.`
+    );
+  }
+
+  let result = await executionResult.next();
+  expect(result).toMatchInlineSnapshot(`
+    Object {
+      "done": false,
+      "value": Object {
+        "data": Object {
+          "post": Object {
+            "id": "1",
+            "title": "lel",
+          },
+        },
+        "extensions": Object {
+          "liveResourceIdentifier": Array [
+            "Query.post",
+            "Query.post(id:\\"1\\")",
+            "Post:1",
+          ],
+        },
+        "isLive": true,
+      },
+    }
+  `);
+
+  await executionResult.return?.();
 });

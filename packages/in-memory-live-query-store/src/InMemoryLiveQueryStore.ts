@@ -97,10 +97,28 @@ export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunctio
 ) => `${params.typename}:${params.id}`;
 
 type InMemoryLiveQueryStoreParameter = {
-  /* Custom function for building resource identifiers. By default resource identifiers are built by concatenating the Typename with the id separated by a color (`User:1`). See `defaultResourceIdentifierNormalizer` */
+  /**
+   * Custom function for building resource identifiers.
+   * By default resource identifiers are built by concatenating the Typename with the id separated by a color (`User:1`).
+   * See `defaultResourceIdentifierNormalizer`
+   *
+   * This may be useful if you are using a relay compliant schema and the Typename information is not required for building a unique topic.
+   * */
   buildResourceIdentifier?: BuildResourceIdentifierFunction;
-  /* Function which is used for executing the operations. Uses the `execute` exported from graphql be default. */
+  /**
+   * Function which is used for executing the operations.
+   *
+   * Uses the `execute` exported from graphql be default.
+   * */
   execute?: typeof defaultExecute;
+  /**
+   * Whether the extensions should include a list of all resource identifiers for the latest operation result.
+   * Any of those can be used for invalidating and re-scheduling the operation execution.
+   *
+   * This is mainly useful for discovering and learning what kind of topics a given query will subscribe to.
+   * The default value is `true` if `process.env.NODE_ENV` is equal to `"development"` and `false` otherwise.
+   * */
+  includeIdentifierExtension?: boolean;
 };
 
 // TODO: Investigate why parameters does not return a union...
@@ -139,6 +157,7 @@ export class InMemoryLiveQueryStore {
   private _cacheCache = new WeakMap<GraphQLSchema, GraphQLSchema>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
   private _execute = defaultExecute;
+  private _includeIdentifierExtension = false;
 
   constructor(params?: InMemoryLiveQueryStoreParameter) {
     if (params?.buildResourceIdentifier) {
@@ -147,6 +166,9 @@ export class InMemoryLiveQueryStore {
     if (params?.execute) {
       this._execute = params.execute;
     }
+    this._includeIdentifierExtension =
+      params?.includeIdentifierExtension ??
+      process?.env?.NODE_ENV === "development";
   }
 
   private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
@@ -291,6 +313,14 @@ export class InMemoryLiveQueryStore {
             previousIdentifier = newIdentifier;
             const liveResult: LiveExecutionResult = result;
             liveResult.isLive = true;
+            if (this._includeIdentifierExtension === true) {
+              if (!liveResult.extensions) {
+                liveResult.extensions = {};
+              }
+              liveResult.extensions.liveResourceIdentifier = Array.from(
+                newIdentifier
+              );
+            }
             record.pushValue(liveResult);
           }
         });
