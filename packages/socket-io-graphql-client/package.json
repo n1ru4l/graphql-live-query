@@ -29,7 +29,7 @@
     "prepack": "bob prepack"
   },
   "devDependencies": {
-    "typescript": "4.1.5"
+    "typescript": "4.2.2"
   },
   "peerDependencies": {
     "socket.io-client": "^3.0.1"
