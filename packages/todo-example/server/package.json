@@ -6,7 +6,7 @@
     "@n1ru4l/in-memory-live-query-store": "*",
     "@n1ru4l/socket-io-graphql-server": "*",
     "graphql": "15.4.0-experimental-stream-defer.1",
-    "socket.io": "3.1.1"
+    "socket.io": "3.1.2"
   },
   "devDependencies": {
     "@types/node": "14.14.31",
