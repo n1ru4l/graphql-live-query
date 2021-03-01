@@ -203,7 +203,7 @@ export const registerSocketIOGraphQLServer = ({
       }
 
       const emitFinalResult = (executionResult: ExecutionResult) =>
-        socket.emit("@graphql/result", {
+        socketServer.emit("@graphql/result", {
           ...executionResult,
           id,
           isFinal: true,
@@ -292,7 +292,7 @@ export const registerSocketIOGraphQLServer = ({
         if (isAsyncIterable(result)) {
           subscriptions.set(id, () => result.return?.(null));
           for await (const subscriptionResult of result) {
-            socket.emit("@graphql/result", { ...subscriptionResult, id });
+            socketServer.emit("@graphql/result", { ...subscriptionResult, id });
           }
         } else {
           emitFinalResult(result);
