@@ -91,7 +91,13 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
     record.execute();
 
     const originalReturn = iterator.return;
+    let hasReturned = false;
     iterator.return = () => {
+      if (hasReturned === true) {
+        return Promise.resolve({ done: true, value: undefined });
+      }
+      hasReturned = true
+      
       operations.delete(operationId);
       socket.emit("@graphql/unsubscribe", {
         id: operationId,
