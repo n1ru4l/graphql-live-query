@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.9.3
+
+### Patch Changes
+
+- c552e69: fix: ensure unsubscribe action is only sent once.
+
 ## 0.9.1
 
 ### Patch Changes
