@@ -14,7 +14,7 @@
     "react-scripts": "4.0.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "@types/react-dom": "17.0.1",
+    "@types/react-dom": "17.0.2",
     "@types/react-relay": "7.0.17",
     "@types/relay-runtime": "10.1.9",
     "babel-plugin-relay": "10.1.3",
