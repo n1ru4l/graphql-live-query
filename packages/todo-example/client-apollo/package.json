@@ -24,7 +24,7 @@
     "todomvc-app-css": "2.3.0",
     "@graphql-codegen/typescript-operations": "1.17.15",
     "@graphql-codegen/typescript": "1.21.1",
-    "@graphql-codegen/typescript-react-apollo": "2.2.2"
+    "@graphql-codegen/typescript-react-apollo": "2.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
