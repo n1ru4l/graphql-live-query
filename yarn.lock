@@ -1286,13 +1286,13 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@graphql-codegen/cli@1.21.2":
-  version "1.21.2"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-1.21.2.tgz#2b65acff441f6cbae24bb816790a074264b58f86"
-  integrity sha512-Jt1sJzTD1/0PZ4JIgZZgswTNu+LxJBS706rOo4ol5NsjkD3Wzk3cUvZsBUYTrYc9Zh6XArZzRm5EBLImLRjHlQ==
+"@graphql-codegen/cli@1.21.3":
+  version "1.21.3"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-1.21.3.tgz#3506c5d019c6995be1927bd4d9c67a739fafe5e6"
+  integrity sha512-jwg0mKhseg0QI4/T4IQcttTBCZgnahiTWqnYWIK+E8nrbXCE9o2hxvaYin/Kq9+5oFtxDePED56cjVs/ESRw6g==
   dependencies:
     "@graphql-codegen/core" "1.17.9"
-    "@graphql-codegen/plugin-helpers" "^1.18.3"
+    "@graphql-codegen/plugin-helpers" "^1.18.4"
     "@graphql-tools/apollo-engine-loader" "^6"
     "@graphql-tools/code-file-loader" "^6"
     "@graphql-tools/git-loader" "^6"
@@ -1305,7 +1305,7 @@
     "@graphql-tools/utils" "^7.0.0"
     ansi-escapes "^4.3.1"
     chalk "^4.1.0"
-    change-case-all "^1.0.12"
+    change-case-all "1.0.12"
     chokidar "^3.4.3"
     common-tags "^1.8.0"
     cosmiconfig "^7.0.0"
@@ -4134,7 +4134,7 @@ chalk@^4.0.0, chalk@^4.1.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-change-case-all@1.0.12, change-case-all@^1.0.12:
+change-case-all@1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/change-case-all/-/change-case-all-1.0.12.tgz#ae3e0faf5e610e8e25c5d5eaa4a6d5c2f1d68797"
   integrity sha512-zdQus7R0lkprF99lrWUC5bFj6Nog4Xt4YCEjQ/vM4vbc6b5JHFBQMxRPAjfx+HJH8WxMzH0E+lQ8yQJLgmPCBg==
