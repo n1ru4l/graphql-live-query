@@ -1,5 +1,11 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.6.2
+
+### Patch Changes
+
+- 6be3dc2: browser compat for environment without process.env
+
 ## 0.6.1
 
 ### Patch Changes
