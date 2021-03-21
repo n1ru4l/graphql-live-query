@@ -174,9 +174,10 @@ export class InMemoryLiveQueryStore {
       this._execute = params.execute;
     }
     this._includeIdentifierExtension =
-      params?.includeIdentifierExtension ?? typeof process === "undefined"
+      params?.includeIdentifierExtension ??
+      (typeof process === "undefined"
         ? false
-        : process?.env?.NODE_ENV === "development";
+        : process?.env?.NODE_ENV === "development");
   }
 
   private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
