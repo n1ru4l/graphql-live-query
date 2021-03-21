@@ -152,6 +152,13 @@ const getExecutionParameters = (params: ExecutionParameter): ExecutionArgs => {
   };
 };
 
+const nextTick =
+  (typeof process === "object" && typeof process.nextTick === "function"
+    ? process.nextTick
+    : undefined) ??
+  setImmediate ??
+  setTimeout;
+
 export class InMemoryLiveQueryStore {
   private _resourceTracker = new ResourceTracker<StoreRecord>();
   private _cacheCache = new WeakMap<GraphQLSchema, GraphQLSchema>();
@@ -167,8 +174,9 @@ export class InMemoryLiveQueryStore {
       this._execute = params.execute;
     }
     this._includeIdentifierExtension =
-      params?.includeIdentifierExtension ??
-      process?.env?.NODE_ENV === "development";
+      params?.includeIdentifierExtension ?? typeof process === "undefined"
+        ? false
+        : process?.env?.NODE_ENV === "development";
   }
 
   private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
@@ -292,7 +300,7 @@ export class InMemoryLiveQueryStore {
 
           // delay to next tick to ensure the error is delivered to listeners.
           // TODO: figure out whether there is a better way for doing this.
-          (process?.nextTick ?? setTimeout)(() => {
+          nextTick(() => {
             record.iterator?.return?.();
           });
 
