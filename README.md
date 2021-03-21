@@ -26,11 +26,11 @@
 
 ## Motivation
 
-There ia no mature live query implementation that is not tied to any specific database or SaaS product. This implementation should serve as an example how live queries can be added to any schema with (almost) any GraphQL transport.
+There is no mature live query implementation that is not tied to any specific database or SaaS product. This implementation should serve as an example how live queries can be added to any schema with (almost) any GraphQL transport.
 
 GraphQL already has a solution for real-time: Subscriptions. Those are the right tool for responding to events. E.g. triggering a sound or showing a toast message because someone poked you on Facebook. Subscriptions are also often used for updating existing query results on a client that consumes a data from a GraphQL API. Depending on the complexity of that data, cache update code can eventually become pretty bloated. Often it is more straight-forward to simply refetch the query once a subscription event is received.
 
-In contrast to manual cache updates using subscriptions, live queries should feel magically and update the UI with the latest data from the server without having to write any cache update wizardry code on the client.
+In contrast to manual cache updates using subscriptions, live queries should feel magical and update the UI with the latest data from the server without having to write any cache update wizardry code on the client.
 
 ## Concept
 
