@@ -77,13 +77,14 @@ In case a resource has become stale it can be invalidated using the `InMemoryLiv
 ```js
 // somewhere inside a userChangeLogin mutation resolver
 user.login = "n1ru4l"
+user.save()
 liveQueryStore.invalidate([
   // Invalidate all operations whose latest execution result contains the given user
-  `User:${newUser.id}`,
+  `User:${user.id}`,
   // Invalidate query operations that select the Query,user field with the id argument
-  `Query.user(id:"${newUser.id}")`,
+  `Query.user(id:"${user.id}")`,
   // invalidate a list of all users (redundant with previous invalidations)
-  `Quer.users`
+  `Query.users`
 ]);
 ```
 
