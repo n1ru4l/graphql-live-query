@@ -178,3 +178,66 @@ it("can extract list resources", () => {
     "
   `);
 });
+
+it("also handles fragments", () => {
+  const schema = getSchema();
+
+  const operationAST = parse(/* GraphQL */ `
+    fragment token on MapToken {
+      id
+      label
+      position {
+        x
+        y
+      }
+    }
+    query main {
+      activeMap {
+        id
+        title
+        tokens {
+          ...token
+        }
+      }
+    }
+  `);
+  const result = buildNodeInterfaceRefetchQueryDocuments(
+    schema,
+    operationAST,
+    "main"
+  );
+
+  const mapDocument = result.get("activeMap")!;
+  expect(mapDocument).toBeDefined();
+  expect(print(mapDocument)).toMatchInlineSnapshot(`
+     "query liveNode($id: ID!) {
+       node(id: $id) {
+         ... on Map {
+           id
+           title
+         }
+       }
+     }
+     "
+   `);
+
+  const mapGridDocument = result.get("activeMap.tokens")!;
+  expect(mapGridDocument).toBeDefined();
+  expect(print(mapGridDocument)).toMatchInlineSnapshot(`
+    "query liveNode($id: ID!) {
+      node(id: $id) {
+        ... on MapToken {
+          ... on MapToken {
+            id
+            label
+            position {
+              x
+              y
+            }
+          }
+        }
+      }
+    }
+    "
+  `);
+});

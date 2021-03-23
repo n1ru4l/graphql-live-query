@@ -14,6 +14,8 @@ import {
   GraphQLType,
   isListType,
   isNonNullType,
+  InlineFragmentNode,
+  FragmentDefinitionNode,
 } from "graphql";
 import { isNone } from "./Maybe";
 
@@ -104,9 +106,9 @@ export const buildNodeInterfaceRefetchQueryDocuments = (
     operationAST,
     visitWithTypeInfo(typeInfo, {
       OperationDefinition(node) {
-        if (node.operation !== "query" || node.name !== operationName) {
-          return false;
-        }
+        // if (node.operation !== "query" || node.name !== operationName) {
+        //   return false;
+        // }
       },
       Field: {
         enter(node) {
@@ -124,6 +126,21 @@ export const buildNodeInterfaceRefetchQueryDocuments = (
                   if (isObjectTypeThatImplementsNodeInterface(fieldType)) {
                     return null;
                   }
+                },
+                FragmentSpread(def) {
+                  console.log("encounter");
+                  const fragment: FragmentDefinitionNode = operationAST.definitions.find(
+                    (doc) =>
+                      doc.kind === "FragmentDefinition" &&
+                      doc.name.value === def.name.value
+                  ) as any;
+                  const inlineSpread: InlineFragmentNode = {
+                    kind: "InlineFragment",
+                    typeCondition: fragment.typeCondition,
+                    selectionSet: fragment.selectionSet,
+                  };
+
+                  return inlineSpread;
                 },
               })
             );
