@@ -67,19 +67,28 @@ export class ResourceTracker<TRecord> {
   }
 
   /**
-   * Get all records that subscribes to a specific set of identifiers
+   * Get all records that subscribes to a specific set of identifiers with a set identifiers that are hits for each record.
    */
-  getRecordsForIdentifiers(identifiers: Array<string>): Set<TRecord> {
-    const records = new Set<TRecord>();
+  getRecordsForIdentifiers(
+    identifiers: Array<string>
+  ): Map<TRecord, Set<string>> {
+    const recordWithHits = new Map<TRecord, Set<string>>();
     for (const identifier of identifiers) {
       const recordSet = this._trackedResources.get(identifier);
-      if (recordSet) {
-        for (const record of recordSet) {
-          records.add(record);
+      if (isNone(recordSet)) {
+        continue;
+      }
+
+      for (const record of recordSet) {
+        let identifierHits = recordWithHits.get(record);
+        if (isNone(identifierHits)) {
+          identifierHits = new Set();
+          recordWithHits.set(record, identifierHits);
         }
+        identifierHits.add(identifier);
       }
     }
 
-    return records;
+    return recordWithHits;
   }
 }
