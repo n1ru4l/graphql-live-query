@@ -2,7 +2,7 @@ import { Server as IOServer } from "socket.io";
 import http from "http";
 import type { Socket } from "net";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
-import { createApplyLiveQueryPatchGenerator } from "@n1ru4l/graphql-live-query-patch";
+// import { createApplyLiveQueryPatchGenerator } from "@n1ru4l/graphql-live-query-patch";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import { specifiedRules } from "graphql";
@@ -32,12 +32,15 @@ const server = http
   });
 
 const socketServer = new IOServer(server);
-const liveQueryStore = new InMemoryLiveQueryStore();
+const liveQueryStore = new InMemoryLiveQueryStore({
+  experimental_isNodeInterfaceMode: true,
+});
 const rootValue = {
   todos: new Map(),
 };
 
 rootValue.todos.set("1", {
+  type: "Todo",
   id: "1",
   content: "foo",
   isCompleted: false,
@@ -46,8 +49,9 @@ rootValue.todos.set("1", {
 const validationRules = [...specifiedRules, NoLiveMixedWithDeferStreamRule];
 
 const execute = flow(
-  liveQueryStore.execute,
-  createApplyLiveQueryPatchGenerator()
+  liveQueryStore.execute
+  //  experimental_isNodeInterfaceMode: true does currrently not work with the json-patch middleware
+  //, createApplyLiveQueryPatchGenerator()
 );
 
 registerSocketIOGraphQLServer({

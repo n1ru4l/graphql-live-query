@@ -6,11 +6,13 @@ import {
   GraphQLBoolean,
   GraphQLSchema,
   GraphQLList,
+  GraphQLInterfaceType,
 } from "graphql";
 import { GraphQLLiveDirective } from "@n1ru4l/graphql-live-query";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 
 type Todo = {
+  type: "Todo";
   id: string;
   content: string;
   isCompleted: boolean;
@@ -24,12 +26,23 @@ type Context = {
   liveQueryStore: InMemoryLiveQueryStore;
 };
 
-const GraphQLTodoType = new GraphQLObjectType<Todo>({
-  name: "Todo",
+const GraphQLNodeInterfaceType = new GraphQLInterfaceType({
+  name: "Node",
   fields: {
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      resolve: (todo) => todo.id,
+    },
+  },
+});
+
+const GraphQLTodoType = new GraphQLObjectType<Todo>({
+  name: "Todo",
+  interfaces: [GraphQLNodeInterfaceType],
+  isTypeOf: (obj) => obj?.type === "Todo",
+  fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      resolve: (todo) => `Todo:${todo.id}`,
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
@@ -49,7 +62,18 @@ const GraphQLQueryType = new GraphQLObjectType<Root>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLTodoType))
       ),
-      resolve: (root, args, context) => Array.from(root.todos.values()),
+      resolve: (root) => Array.from(root.todos.values()),
+    },
+    node: {
+      type: GraphQLNodeInterfaceType,
+      args: {
+        id: {
+          type: GraphQLNonNull(GraphQLID),
+        },
+      },
+      resolve: (root, args) => {
+        return root.todos.get(args.id.split(":")[1]) ?? null;
+      },
     },
   },
 });
@@ -108,7 +132,8 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
         if (root.todos.has(args.id)) {
           throw new Error("Todo does already exist.");
         }
-        const addedTodo = {
+        const addedTodo: Todo = {
+          type: "Todo",
           id: args.id,
           content: args.content,
           isCompleted: false,
@@ -128,7 +153,7 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
         },
       },
       resolve: (root, args, context) => {
-        root.todos.delete(args.id);
+        root.todos.delete(args.id.replace("Todo:", ""));
         context.liveQueryStore.invalidate(`Query.todos`);
         return {
           removedTodoId: args.id,
@@ -143,12 +168,12 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
         },
       },
       resolve: (root, args, context) => {
-        const todo = root.todos.get(args.id);
+        const todo = root.todos.get(args.id.replace("Todo:", ""));
         if (!todo) {
           throw new Error(`Todo with id '${args.id}' does not exist.`);
         }
         todo.isCompleted = !todo.isCompleted;
-        context.liveQueryStore.invalidate(`Todo:${args.id}`);
+        context.liveQueryStore.invalidate(`Todo:${todo.id}`);
         return {
           toggledTodo: todo,
         };
@@ -165,12 +190,12 @@ const GraphQLMutationType = new GraphQLObjectType<Root, Context>({
         },
       },
       resolve: (root, args, context) => {
-        const todo = root.todos.get(args.id);
+        const todo = root.todos.get(args.id.replace("Todo:", ""));
         if (!todo) {
           throw new Error(`Todo with id '${args.id}' does not exist.`);
         }
         todo.content = args.content;
-        context.liveQueryStore.invalidate(`Todo:${args.id}`);
+        context.liveQueryStore.invalidate(`Todo:${todo.id}`);
         return {
           changedTodo: todo,
         };
