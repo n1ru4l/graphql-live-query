@@ -41,7 +41,7 @@ const rootValue = {
 
 inMemoryLiveQueryStore
   .execute({
-    schema,
+    schema, // make sure your schema has the GraphQLLiveDirective from @n1ru4l/graphql-live-query
     operationDocument: parse(/* GraphQL */ `
       query todosQuery @live {
         todos {
