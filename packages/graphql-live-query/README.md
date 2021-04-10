@@ -34,7 +34,7 @@ const schema = new GraphQLSchema({
 });
 ```
 
-**Note:** If you are using a SDL first approach for defining your schema (such as advocated by `makeExecutableSchema`) you must add the directly to your type-definitions. In orde to be as up to date as possible we recommend using the `print` function exported from `graphql` for generating the SDL from `GraphQLLiveDirective`.
+**Note:** If you are using a SDL first approach for defining your schema (such as advocated by `makeExecutableSchema`) you must add the directly to your type-definitions. In order to be as up to date as possible we recommend using `graphql-tools/utils` `astFromDirective` together with `print` exported from `graphql` for generating the SDL from `GraphQLLiveDirective`.
 
 **Example ([on CodeSandbox](https://codesandbox.io/s/graphqllivedirective-usage-with-makeexecutableschema-xv2q5?file=/src/schema.ts:376-483)
 ):**
