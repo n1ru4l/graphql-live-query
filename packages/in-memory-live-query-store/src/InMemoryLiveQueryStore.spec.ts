@@ -1,5 +1,8 @@
 import {
+  GraphQLFloat,
   GraphQLID,
+  GraphQLInterfaceType,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
@@ -81,6 +84,109 @@ const createTestSchema = (
   });
 
   return new GraphQLSchema({ query: Query, mutation: Mutation });
+};
+
+const createRelayTestSchema = () => {
+  const GraphQLNodeInterface = new GraphQLInterfaceType({
+    name: "Node",
+    fields: {
+      id: {
+        type: GraphQLNonNull(GraphQLID),
+      },
+    },
+  });
+
+  const GraphQLPosition2DObjectType = new GraphQLObjectType({
+    name: "Position2D",
+    fields: {
+      x: {
+        type: GraphQLNonNull(GraphQLFloat),
+      },
+      y: {
+        type: GraphQLNonNull(GraphQLFloat),
+      },
+    },
+  });
+
+  const GraphQLMapGridObjectType = new GraphQLObjectType({
+    name: "MapGrid",
+    interfaces: [GraphQLNodeInterface],
+    isTypeOf: (value) => value?.id.startsWith("MapGrid:"),
+    fields: {
+      id: {
+        type: GraphQLNonNull(GraphQLID),
+      },
+      offset: {
+        type: GraphQLNonNull(GraphQLPosition2DObjectType),
+      },
+      columnWidth: {
+        type: GraphQLNonNull(GraphQLFloat),
+      },
+      columnHeight: {
+        type: GraphQLNonNull(GraphQLFloat),
+      },
+    },
+  });
+
+  const GraphQLMapTokenObjectType = new GraphQLObjectType({
+    name: "MapToken",
+    interfaces: [GraphQLNodeInterface],
+    isTypeOf: (value) => value?.id.startsWith("MapToken:"),
+    fields: {
+      id: {
+        type: GraphQLNonNull(GraphQLID),
+      },
+      position: {
+        type: GraphQLNonNull(GraphQLPosition2DObjectType),
+      },
+      label: {
+        type: GraphQLNonNull(GraphQLString),
+      },
+    },
+  });
+
+  const GraphQLMapObjectType = new GraphQLObjectType({
+    name: "Map",
+    interfaces: [GraphQLNodeInterface],
+    isTypeOf: (value) => value?.id.startsWith("Map:"),
+    fields: {
+      id: {
+        type: GraphQLNonNull(GraphQLID),
+      },
+      title: {
+        type: GraphQLNonNull(GraphQLString),
+      },
+      grid: {
+        type: GraphQLMapGridObjectType,
+      },
+      tokens: {
+        type: GraphQLNonNull(
+          GraphQLList(GraphQLNonNull(GraphQLMapTokenObjectType))
+        ),
+      },
+    },
+  });
+
+  const GraphQLQueryObjectType = new GraphQLObjectType({
+    name: "Query",
+    fields: {
+      activeMap: {
+        type: GraphQLMapObjectType,
+      },
+      node: {
+        type: GraphQLNodeInterface,
+        args: {
+          id: {
+            type: GraphQLID,
+          },
+        },
+      },
+    },
+  });
+
+  return new GraphQLSchema({
+    query: GraphQLQueryObjectType,
+  });
 };
 
 describe("conformance with default `graphql-js` exports", () => {
@@ -534,4 +640,137 @@ it("adds the resource identifiers as a extension field.", async () => {
   `);
 
   await executionResult.return?.();
+});
+
+it("can be create in relay mode.", async () => {
+  new InMemoryLiveQueryStore({ experimental_isNodeInterfaceMode: true });
+});
+
+it("can cannot run in relay mode with a non relay schema.", async () => {
+  const schema = createTestSchema();
+  const store = new InMemoryLiveQueryStore({
+    experimental_isNodeInterfaceMode: true,
+  });
+  expect(() => {
+    store.prepareSchema(schema);
+  }).toThrowErrorMatchingInlineSnapshot(
+    `"The provided schema is not compatible with the relay mode as no type named 'Node' is in the GraphQL schema."`
+  );
+});
+
+it("can be created with a relay conform schema.", async () => {
+  const schema = createRelayTestSchema();
+  const store = new InMemoryLiveQueryStore({
+    experimental_isNodeInterfaceMode: true,
+  });
+  store.prepareSchema(schema);
+});
+
+it.only("can execute a live operation against a relay conform schema", async () => {
+  const schema = createRelayTestSchema();
+  const store = new InMemoryLiveQueryStore({
+    experimental_isNodeInterfaceMode: true,
+  });
+  const rootValue = {
+    activeMap: {
+      id: "Map:1",
+      title: "foo",
+      tokens: [
+        {
+          id: "MapToken:1",
+          label: "lol",
+          position: {
+            x: 1,
+            y: 1,
+          },
+        },
+        {
+          id: "MapToken:2",
+          label: "lel",
+          position: {
+            x: 10,
+            y: 10,
+          },
+        },
+      ],
+    },
+    node: null,
+  };
+  const document = parse(/* GraphQL */ `
+    query @live {
+      activeMap {
+        id
+        title
+        tokens {
+          id
+          label
+          position {
+            x
+            y
+          }
+        }
+      }
+    }
+  `);
+
+  const result = (await store.execute({
+    schema,
+    document,
+    rootValue,
+    contextValue: {},
+  })) as AsyncIterableIterator<unknown>;
+
+  if (isAsyncIterable(result) === false) {
+    fail("Should return AsyncIterable.");
+  }
+
+  let value = (await result.next()).value;
+  expect(value).toMatchObject({
+    data: {
+      activeMap: {
+        id: "Map:1",
+        title: "foo",
+        tokens: [
+          {
+            id: "MapToken:1",
+            label: "lol",
+            position: {
+              x: 1,
+              y: 1,
+            },
+          },
+          {
+            id: "MapToken:2",
+            label: "lel",
+            position: {
+              x: 10,
+              y: 10,
+            },
+          },
+        ],
+      },
+    },
+    isLive: true,
+  });
+  rootValue.activeMap.tokens[0].position = {
+    x: -1,
+    y: -1,
+  };
+  // @ts-ignore
+  rootValue.node = rootValue.activeMap.tokens[0];
+
+  store.invalidate("MapToken:1");
+  value = (await result.next()).value;
+  expect(value).toMatchObject({
+    data: {
+      id: "MapToken:1",
+      label: "lol",
+      position: {
+        x: -1,
+        y: -1,
+      },
+    },
+    path: ["activeMap", "tokens", 0],
+    isLive: true,
+  });
 });

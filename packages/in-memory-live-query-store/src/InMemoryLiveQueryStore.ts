@@ -5,6 +5,9 @@ import {
   ExecutionArgs,
   GraphQLError,
   getOperationAST,
+  GraphQLObjectType,
+  GraphQLInterfaceType,
+  isInterfaceType,
 } from "graphql";
 import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
 import {
@@ -18,21 +21,24 @@ import {
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
-import { isNone, None } from "./Maybe";
+import { isNone, None, isSome } from "./Maybe";
 import { ResourceTracker } from "./ResourceTracker";
+import { pathToArray } from "graphql/jsutils/Path";
+import { buildNodeInterfaceRefetchQueryDocuments } from "./buildNodeInterfaceRefetchQueryDocuments";
 
 type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
   iterator: AsyncIterableIterator<LiveExecutionResult>;
   pushValue: (value: LiveExecutionResult) => void;
-  run: () => MaybePromise<void>;
+  run: (identifiers: Set<string> | null) => MaybePromise<void>;
 };
 
 type ResourceIdentifierCollectorFunction = (
   parameter: Readonly<{
     typename: string;
     id: string;
-  }>
+  }>,
+  path: Array<string | number> | null
 ) => void;
 type AddResourceIdentifierFunction = (
   values: string | Iterable<string> | None
@@ -40,10 +46,30 @@ type AddResourceIdentifierFunction = (
 
 const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
 
+const getNodeInterfaceType = (schema: GraphQLSchema): GraphQLInterfaceType => {
+  const maybeNodeInterface = schema.getType("Node");
+
+  if (isNone(maybeNodeInterface)) {
+    throw new Error(
+      "The provided schema is not compatible with the relay mode as no type named 'Node' is in the GraphQL schema."
+    );
+  }
+  if (isInterfaceType(maybeNodeInterface)) {
+    return maybeNodeInterface;
+  }
+
+  throw new Error(
+    "The provided schema is not compatible with the relay mode as the type 'Node' is not an interface type."
+  );
+};
+
 const addResourceIdentifierCollectorToSchema = (
-  schema: GraphQLSchema
-): GraphQLSchema =>
-  wrapSchema({
+  schema: GraphQLSchema,
+  isRelayMode: boolean
+): GraphQLSchema => {
+  const nodeInterfaceType = isRelayMode ? getNodeInterfaceType(schema) : null;
+
+  return wrapSchema({
     schema,
     transforms: [
       new TransformObjectFields((typename, fieldName, fieldConfig) => {
@@ -51,6 +77,12 @@ const addResourceIdentifierCollectorToSchema = (
           fieldName === "id" && isNonNullIDScalarType(fieldConfig.type);
 
         let resolve = fieldConfig.resolve!;
+        const isNodeInterfaceCompatibleField =
+          isSome(nodeInterfaceType) &&
+          (schema.getType(typename) as GraphQLObjectType)
+            .getInterfaces()
+            .includes(nodeInterfaceType);
+
         fieldConfig.resolve = (src, args, context, info) => {
           if (!context || ORIGINAL_CONTEXT_SYMBOL in context === false) {
             return resolve(src, args, context, info);
@@ -60,6 +92,7 @@ const addResourceIdentifierCollectorToSchema = (
             context.collectResourceIdentifier;
           const addResourceIdentifier: AddResourceIdentifierFunction =
             context.addResourceIdentifier;
+
           context = context[ORIGINAL_CONTEXT_SYMBOL];
           const result = resolve(src, args, context, info);
 
@@ -72,9 +105,13 @@ const addResourceIdentifierCollectorToSchema = (
             );
           }
 
+          const resourcePath = isNodeInterfaceCompatibleField
+            ? pathToArray(info.path.prev!)
+            : null;
+
           if (isIDField) {
             runWith(result, (id: string) =>
-              collectResourceIdentifier({ typename, id })
+              collectResourceIdentifier({ typename, id }, resourcePath)
             );
           }
           return result;
@@ -84,6 +121,7 @@ const addResourceIdentifierCollectorToSchema = (
       }),
     ],
   });
+};
 
 export type BuildResourceIdentifierFunction = (
   parameter: Readonly<{
@@ -95,6 +133,10 @@ export type BuildResourceIdentifierFunction = (
 export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunction = (
   params
 ) => `${params.typename}:${params.id}`;
+
+export const defaultRelayResourceIdentifierNormalizer: BuildResourceIdentifierFunction = (
+  params
+) => params.id;
 
 type InMemoryLiveQueryStoreParameter = {
   /**
@@ -119,6 +161,11 @@ type InMemoryLiveQueryStoreParameter = {
    * The default value is `true` if `process.env.NODE_ENV` is equal to `"development"` and `false` otherwise.
    * */
   includeIdentifierExtension?: boolean;
+  /**
+   * Whether the live query engine should run in node interface mode. Running in node interface mode requires that the schema has a `Query.node` field and uses global unique identifiers.
+   * Running in this mode allows certain optimizations such as re-executing only smaller parts of a live query operation.
+   */
+  experimental_isNodeInterfaceMode?: boolean;
 };
 
 // TODO: Investigate why parameters does not return a union...
@@ -162,31 +209,46 @@ const nextTick =
 export class InMemoryLiveQueryStore {
   private _resourceTracker = new ResourceTracker<StoreRecord>();
   private _cacheCache = new WeakMap<GraphQLSchema, GraphQLSchema>();
-  private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
-  private _execute = defaultExecute;
+  private _buildResourceIdentifier: BuildResourceIdentifierFunction;
+  private _execute: typeof defaultExecute;
   private _includeIdentifierExtension = false;
+  private _isNodeInterfaceMode: boolean;
 
   constructor(params?: InMemoryLiveQueryStoreParameter) {
-    if (params?.buildResourceIdentifier) {
-      this._buildResourceIdentifier = params.buildResourceIdentifier;
-    }
-    if (params?.execute) {
-      this._execute = params.execute;
-    }
+    this._buildResourceIdentifier =
+      params?.buildResourceIdentifier ??
+      params?.experimental_isNodeInterfaceMode === true
+        ? defaultRelayResourceIdentifierNormalizer
+        : defaultResourceIdentifierNormalizer;
+
+    this._execute = params?.execute ?? defaultExecute;
     this._includeIdentifierExtension =
       params?.includeIdentifierExtension ??
       (typeof process === "undefined"
         ? false
         : process?.env?.NODE_ENV === "development");
+    this._isNodeInterfaceMode =
+      params?.experimental_isNodeInterfaceMode ?? false;
   }
 
-  private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
+  private _getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
     let schema = this._cacheCache.get(inputSchema);
     if (isNone(schema)) {
-      schema = addResourceIdentifierCollectorToSchema(inputSchema);
+      schema = addResourceIdentifierCollectorToSchema(
+        inputSchema,
+        this._isNodeInterfaceMode
+      );
       this._cacheCache.set(inputSchema, schema);
     }
     return schema;
+  }
+
+  /**
+   * Prepare a schema for live query execution. The input schema will not be modified. The prepared schema is available until the `inputSchema` is garbage collected.
+   * This is handy if you wanna do the heavy lifting at server start-up and not once the initial request is hitting the server.
+   */
+  prepareSchema(inputSchema: GraphQLSchema): void {
+    this._getPatchedSchema(inputSchema);
   }
 
   execute = (
@@ -233,7 +295,14 @@ export class InMemoryLiveQueryStore {
       )
     );
 
-    const schema = this.getPatchedSchema(inputSchema);
+    const schema = this._getPatchedSchema(inputSchema);
+    const nodeRefetchDocuments = this._isNodeInterfaceMode
+      ? buildNodeInterfaceRefetchQueryDocuments(
+          inputSchema,
+          document,
+          operationName ?? undefined
+        )
+      : null;
 
     const {
       asyncIterableIterator: iterator,
@@ -244,16 +313,94 @@ export class InMemoryLiveQueryStore {
     let executionCounter = 0;
     let previousIdentifier = new Set<string>(rootFieldIdentifier);
 
+    type ResourcePathRecord = {
+      refetchKey: string;
+      resourcePath: Array<string | number>;
+    };
+    let resourcePathsMap = new Map<string, Array<ResourcePathRecord>>();
+
     const record: StoreRecord = {
       iterator,
       pushValue,
-      run: () => {
+      run: async (identifiers) => {
+        // experimental node interface mode
+        // if it is enabled and all identifiers that got invalidated are looked up in our node interface refetch map
+        // if there is a strategy for each of those documents it is possible to re-execute each of those instead of the full initial live operation document.
+        let allIdentifiersDidHitNodeInterfaceDocuments = false;
+        if (isSome(identifiers) && isSome(nodeRefetchDocuments)) {
+          for (const identifier of identifiers) {
+            let identifierDidHit = false;
+            allIdentifiersDidHitNodeInterfaceDocuments = true;
+
+            const records = resourcePathsMap.get(identifier);
+            if (isSome(records)) {
+              for (const record of records) {
+                const document = nodeRefetchDocuments.get(record.refetchKey)!;
+                // TODO: how should we handle race conditions in general?
+                // should every .run() call be chained?
+                // how do we recover in case of an error?
+                const result = (await this._execute({
+                  schema,
+                  document,
+                  // we use the refetch document operationName
+                  // operationName,
+                  rootValue,
+                  contextValue,
+                  variableValues: {
+                    id: identifier,
+                  },
+                })) as ExecutionResult;
+                pushValue({
+                  data: result.data!.node,
+                  errors: result.errors,
+                  path: record.resourcePath.slice(),
+                  isLive: true,
+                });
+              }
+              identifierDidHit = true;
+            }
+
+            if (identifierDidHit === false) {
+              allIdentifiersDidHitNodeInterfaceDocuments = false;
+              break;
+            }
+          }
+        }
+
+        if (allIdentifiersDidHitNodeInterfaceDocuments === true) {
+          return;
+        }
+
+        resourcePathsMap = new Map();
+
         executionCounter = executionCounter + 1;
         const counter = executionCounter;
         const newIdentifier = new Set(rootFieldIdentifier);
+
         const collectResourceIdentifier: ResourceIdentifierCollectorFunction = (
-          parameter
-        ) => newIdentifier.add(this._buildResourceIdentifier(parameter));
+          parameter,
+          resourcePath: Array<string | number> | null
+        ) => {
+          const identifier = this._buildResourceIdentifier(parameter);
+          newIdentifier.add(identifier);
+          if (isSome(nodeRefetchDocuments) && isSome(resourcePath)) {
+            // If we have a resourcePath it provides can be used for getting a document from relayRefetchDocuments
+            // e.g. `relayRefetchDocuments.get(identifier)`
+            // with which we can re-execute a query for the data at this resourcePath.
+            const record = {
+              refetchKey: resourcePath
+                .filter((value) => typeof value === "string")
+                .join("."),
+              resourcePath,
+            };
+            let records = resourcePathsMap.get(identifier);
+            if (isNone(records)) {
+              records = [];
+              resourcePathsMap.set(identifier, records);
+            }
+            records.push(record);
+          }
+        };
 
         const addResourceIdentifier: AddResourceIdentifierFunction = (
           values
@@ -338,15 +485,14 @@ export class InMemoryLiveQueryStore {
 
     this._resourceTracker.register(record, previousIdentifier);
     // Execute initial query
-    record.run();
+    record.run(null);
 
     // TODO: figure out how we can do this stuff without monkey-patching the iterator
-    const originalReturn = iterator.return;
+    // We know that the iterator has a return property, so it is safe to cast it.
+    const originalReturn = iterator.return!;
     iterator.return = () => {
       this._resourceTracker.release(record, previousIdentifier);
-      return (
-        originalReturn?.() ?? Promise.resolve({ done: true, value: undefined })
-      );
+      return originalReturn();
     };
 
     return iterator;
@@ -363,8 +509,8 @@ export class InMemoryLiveQueryStore {
 
     const records = this._resourceTracker.getRecordsForIdentifiers(identifiers);
 
-    for (const record of records) {
-      record.run();
+    for (const [record, identifiers] of records) {
+      record.run(identifiers);
     }
   }
 }
