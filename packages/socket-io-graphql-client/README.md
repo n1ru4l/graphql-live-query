@@ -90,30 +90,11 @@ import GraphiQL from "graphiql";
 const socket = io();
 const socketIOGraphQLClient = createSocketIOGraphQLClient(socket);
 
-const fetcher: Fetcher = ({ query: operation, ...restGraphQLParams }) =>
-  ({
-    subscribe: (
-      sinkOrNext: Sink["next"] | Sink,
-      ...args: [Sink["error"], Sink["complete"]]
-    ) => {
-      const sink: Sink =
-        typeof sinkOrNext === "function"
-          ? { next: sinkOrNext, error: args[0], complete: args[1] }
-          : sinkOrNext;
-
-      const unsubscribe = applyAsyncIterableIteratorToSink(
-        (socketIOGraphQLClient as SocketIOGraphQLClient<FetcherResult>).execute(
-          {
-            operation,
-            ...restGraphQLParams,
-          }
-        ),
-        sink
-      );
-
-      return { unsubscribe };
-    },
-  } as any);
+const fetcher: Fetcher = ({ query: operation, ...restGraphQLParams }: any) =>
+ socketIOGraphQLClient.execute({
+   operation,
+   ...restGraphQLParams,
+ });
 
 export const LiveGraphiQL = (): React.ReactElement => (
   <GraphiQL fetcher={fetcher} />
