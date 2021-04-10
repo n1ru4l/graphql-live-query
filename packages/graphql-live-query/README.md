@@ -34,6 +34,39 @@ const schema = new GraphQLSchema({
 });
 ```
 
+**Note:** If you are using a SDL first approach for defining your schema (such as advocated by `makeExecutableSchema`) you must add the directly to your type-definitions. In orde to be as up to date as possible we recommend using the `print` function exported from `graphql` for generating the SDL from `GraphQLLiveDirective`.
+
+**Example ([on CodeSandbox](https://codesandbox.io/s/graphqllivedirective-usage-with-makeexecutableschema-xv2q5?file=/src/schema.ts:376-483)
+):**
+
+```ts
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { astFromDirective } from "@graphql-tools/utils";
+import { GraphQLLiveDirective } from "@n1ru4l/graphql-live-query";
+import { print, GraphQLSchema } from "graphql";
+
+const typeDefinitions = /* GraphQL */ `
+  type Query {
+    ping: Boolean
+  }
+`;
+
+const resolvers = {
+  Query: {
+    ping: () => true
+  }
+};
+
+const liveDirectiveTypeDefs = print(
+  astFromDirective(GraphQLLiveDirective, new GraphQLSchema({}), [])
+);
+
+export const schema = makeExecutableSchema({
+  typeDefs: [typeDefinitions, liveDirectiveTypeDefs],
+  resolvers
+});
+```
+
 ### `isLiveQueryOperationDefinitionNode`
 
 Determine whether a `DefinitionNode` is a `LiveQueryOperationDefinitionNode`.
