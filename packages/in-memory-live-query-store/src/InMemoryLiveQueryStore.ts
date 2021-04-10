@@ -5,8 +5,8 @@ import {
   ExecutionArgs,
   GraphQLError,
   getOperationAST,
+  defaultFieldResolver,
 } from "graphql";
-import { wrapSchema, TransformObjectFields } from "@graphql-tools/wrap";
 import {
   makePushPullAsyncIterableIterator,
   isAsyncIterable,
@@ -20,6 +20,8 @@ import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
 import { isNone, None } from "./Maybe";
 import { ResourceTracker } from "./ResourceTracker";
+import { mapSchema } from "@graphql-tools/utils";
+import { MapperKind } from "@graphql-tools/utils";
 
 type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
@@ -43,46 +45,45 @@ const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
 const addResourceIdentifierCollectorToSchema = (
   schema: GraphQLSchema
 ): GraphQLSchema =>
-  wrapSchema({
-    schema,
-    transforms: [
-      new TransformObjectFields((typename, fieldName, fieldConfig) => {
-        let isIDField =
-          fieldName === "id" && isNonNullIDScalarType(fieldConfig.type);
+  mapSchema(schema, {
+    [MapperKind.OBJECT_FIELD]: (fieldConfig, fieldName, typename) => {
+      const newFieldConfig = { ...fieldConfig };
 
-        let resolve = fieldConfig.resolve!;
-        fieldConfig.resolve = (src, args, context, info) => {
-          if (!context || ORIGINAL_CONTEXT_SYMBOL in context === false) {
-            return resolve(src, args, context, info);
-          }
+      let isIDField =
+        fieldName === "id" && isNonNullIDScalarType(fieldConfig.type);
+      let resolve = fieldConfig.resolve ?? defaultFieldResolver;
 
-          const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
-            context.collectResourceIdentifier;
-          const addResourceIdentifier: AddResourceIdentifierFunction =
-            context.addResourceIdentifier;
-          context = context[ORIGINAL_CONTEXT_SYMBOL];
-          const result = resolve(src, args, context, info);
+      newFieldConfig.resolve = (src, args, context, info) => {
+        if (!context || ORIGINAL_CONTEXT_SYMBOL in context === false) {
+          return resolve(src, args, context, info);
+        }
 
-          if (fieldConfig.extensions?.liveQuery?.collectResourceIdentifiers) {
-            addResourceIdentifier(
-              fieldConfig.extensions.liveQuery.collectResourceIdentifiers(
-                src,
-                args
-              )
-            );
-          }
+        const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
+          context.collectResourceIdentifier;
+        const addResourceIdentifier: AddResourceIdentifierFunction =
+          context.addResourceIdentifier;
+        context = context[ORIGINAL_CONTEXT_SYMBOL];
+        const result = resolve(src, args, context, info);
 
-          if (isIDField) {
-            runWith(result, (id: string) =>
-              collectResourceIdentifier({ typename, id })
-            );
-          }
-          return result;
-        };
+        if (fieldConfig.extensions?.liveQuery?.collectResourceIdentifiers) {
+          addResourceIdentifier(
+            fieldConfig.extensions.liveQuery.collectResourceIdentifiers(
+              src,
+              args
+            )
+          );
+        }
 
-        return fieldConfig;
-      }),
-    ],
+        if (isIDField) {
+          runWith(result, (id: string) =>
+            collectResourceIdentifier({ typename, id })
+          );
+        }
+        return result;
+      };
+
+      return newFieldConfig;
+    },
   });
 
 export type BuildResourceIdentifierFunction = (
