@@ -1,5 +1,11 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.6.3
+
+### Patch Changes
+
+- dc5b2cc: Internal refactor: replace usages of graphql-tools wrapSchema with mapSchema.
+
 ## 0.6.2
 
 ### Patch Changes
