@@ -7,6 +7,7 @@ import {
   getOperationAST,
   defaultFieldResolver,
 } from "graphql";
+import { mapSchema, MapperKind } from "@graphql-tools/utils";
 import {
   makePushPullAsyncIterableIterator,
   isAsyncIterable,
@@ -20,8 +21,6 @@ import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
 import { isNone, None } from "./Maybe";
 import { ResourceTracker } from "./ResourceTracker";
-import { mapSchema } from "@graphql-tools/utils";
-import { MapperKind } from "@graphql-tools/utils";
 
 type MaybePromise<T> = T | Promise<T>;
 type StoreRecord = {
