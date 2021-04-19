@@ -42,14 +42,15 @@ type AddResourceIdentifierFunction = (
 const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
 
 const addResourceIdentifierCollectorToSchema = (
-  schema: GraphQLSchema
+  schema: GraphQLSchema,
+  idFieldName: string
 ): GraphQLSchema =>
   mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (fieldConfig, fieldName, typename) => {
       const newFieldConfig = { ...fieldConfig };
 
       let isIDField =
-        fieldName === "id" && isNonNullIDScalarType(fieldConfig.type);
+        fieldName === idFieldName && isNonNullIDScalarType(fieldConfig.type);
       let resolve = fieldConfig.resolve ?? defaultFieldResolver;
 
       newFieldConfig.resolve = (src, args, context, info) => {
@@ -119,6 +120,7 @@ type InMemoryLiveQueryStoreParameter = {
    * The default value is `true` if `process.env.NODE_ENV` is equal to `"development"` and `false` otherwise.
    * */
   includeIdentifierExtension?: boolean;
+  idFieldName?: string;
 };
 
 // TODO: Investigate why parameters does not return a union...
@@ -165,6 +167,7 @@ export class InMemoryLiveQueryStore {
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
   private _execute = defaultExecute;
   private _includeIdentifierExtension = false;
+  private _idFieldName = "id";
 
   constructor(params?: InMemoryLiveQueryStoreParameter) {
     if (params?.buildResourceIdentifier) {
@@ -172,6 +175,9 @@ export class InMemoryLiveQueryStore {
     }
     if (params?.execute) {
       this._execute = params.execute;
+    }
+    if (params?.idFieldName) {
+      this._idFieldName = params.idFieldName;
     }
     this._includeIdentifierExtension =
       params?.includeIdentifierExtension ??
@@ -183,7 +189,10 @@ export class InMemoryLiveQueryStore {
   private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
     let schema = this._cacheCache.get(inputSchema);
     if (isNone(schema)) {
-      schema = addResourceIdentifierCollectorToSchema(inputSchema);
+      schema = addResourceIdentifierCollectorToSchema(
+        inputSchema,
+        this._idFieldName
+      );
       this._cacheCache.set(inputSchema, schema);
     }
     return schema;

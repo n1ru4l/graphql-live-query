@@ -535,3 +535,75 @@ it("adds the resource identifiers as a extension field.", async () => {
 
   await executionResult.return?.();
 });
+
+it("can set the id field name arbitrarially", async () => {
+  const arbitraryIdName = "whateverIWant";
+
+  const GraphQLPostType = new GraphQLObjectType({
+    name: "Post",
+    fields: {
+      [arbitraryIdName]: {
+        type: GraphQLNonNull(GraphQLID),
+      },
+      title: {
+        type: GraphQLString,
+      },
+    },
+  });
+
+  const Query = new GraphQLObjectType({
+    name: "Query",
+    fields: {
+      post: {
+        type: GraphQLPostType,
+        args: {
+          id: {
+            type: GraphQLID,
+          },
+        },
+        resolve: () => ({
+          [arbitraryIdName]: "1",
+          title: "lel",
+        }),
+      },
+    },
+  });
+
+  const schema = new GraphQLSchema({ query: Query });
+
+  const store = new InMemoryLiveQueryStore({
+    includeIdentifierExtension: true,
+    idFieldName: arbitraryIdName,
+  });
+
+  const document = parse(/* GraphQL */ `
+    query($id: ID!) @live {
+      post(id: $id) {
+        ${arbitraryIdName}
+        title
+      }
+    }
+  `);
+
+  const executionResult = store.execute({
+    schema,
+    document,
+    variableValues: {
+      id: "1",
+    },
+  });
+
+  if (!isAsyncIterable(executionResult)) {
+    return fail(
+      `result should be a AsyncIterable. Got ${typeof executionResult}.`
+    );
+  }
+
+  let result = await executionResult.next();
+
+  expect(result.value.extensions.liveResourceIdentifier).toEqual([
+    "Query.post",
+    'Query.post(id:"1")',
+    "Post:1",
+  ]);
+});
