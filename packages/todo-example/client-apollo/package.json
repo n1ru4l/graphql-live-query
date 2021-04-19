@@ -9,7 +9,7 @@
     "graphql": "15.4.0-experimental-stream-defer.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "1.21.3",
+    "@graphql-codegen/cli": "1.21.4",
     "@testing-library/jest-dom": "5.11.10",
     "@testing-library/react": "11.2.6",
     "@testing-library/user-event": "13.1.5",
@@ -22,9 +22,9 @@
     "react-scripts": "4.0.3",
     "socket.io-client": "4.0.1",
     "todomvc-app-css": "2.4.0",
-    "@graphql-codegen/typescript-operations": "1.17.15",
-    "@graphql-codegen/typescript": "1.21.1",
-    "@graphql-codegen/typescript-react-apollo": "2.2.3"
+    "@graphql-codegen/typescript-operations": "1.17.16",
+    "@graphql-codegen/typescript": "1.22.0",
+    "@graphql-codegen/typescript-react-apollo": "2.2.4"
   },
   "scripts": {
     "start": "react-scripts start",
