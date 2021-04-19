@@ -1,6 +1,6 @@
 {
   "name": "@n1ru4l/todo-example-server-helix",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "dependencies": {
     "@n1ru4l/in-memory-live-query-store": "*",

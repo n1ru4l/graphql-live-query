@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.9.4
+
+### Patch Changes
+
+- 916de62: fix: bump upstream issue in @n1ru4l/push-pull-async-iterable-iterator
+
 ## 0.9.3
 
 ### Patch Changes
