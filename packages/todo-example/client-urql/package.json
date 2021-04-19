@@ -11,7 +11,7 @@
     "@graphql-codegen/typescript-operations": "1.17.16",
     "@graphql-codegen/typescript": "1.22.0",
     "@graphql-codegen/typescript-urql": "2.0.6",
-    "@n1ru4l/push-pull-async-iterable-iterator": "2.1.2",
+    "@n1ru4l/push-pull-async-iterable-iterator": "2.1.4",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "5.11.10",
     "@testing-library/react": "11.2.6",
