@@ -1,5 +1,12 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.6.4
+
+### Patch Changes
+
+- 41e6c0a: add optional identification field parameter to store configuration
+- 916de62: fix: bump upstream issue in @n1ru4l/push-pull-async-iterable-iterator
+
 ## 0.6.3
 
 ### Patch Changes
