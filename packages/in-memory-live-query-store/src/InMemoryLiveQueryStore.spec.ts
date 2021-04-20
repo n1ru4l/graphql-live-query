@@ -1,5 +1,6 @@
 import {
   GraphQLID,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
@@ -605,5 +606,86 @@ it("can set the id field name arbitrarially", async () => {
     "Query.post",
     'Query.post(id:"1")',
     "Post:1",
+  ]);
+});
+
+it("tracks all ids for list types", async () => {
+  const posts = [
+    {
+      id: "1",
+      title: "hi",
+    },
+    {
+      id: "2",
+      title: "yo",
+    },
+    {
+      id: "3",
+      title: "hello",
+    },
+  ];
+
+  const GraphQLPostType = new GraphQLObjectType({
+    name: "Post",
+    fields: {
+      id: {
+        type: GraphQLNonNull(GraphQLID),
+      },
+      title: {
+        type: GraphQLString,
+      },
+    },
+  });
+
+  const Query = new GraphQLObjectType({
+    name: "Query",
+    fields: {
+      post: {
+        type: GraphQLPostType,
+        args: {
+          id: {
+            type: GraphQLID,
+          },
+        },
+        resolve: (_, args) => posts.find(({ id }) => id === args.id),
+      },
+      posts: {
+        type: GraphQLList(GraphQLPostType),
+        resolve: () => posts,
+      },
+    },
+  });
+
+  const schema = new GraphQLSchema({ query: Query });
+
+  const store = new InMemoryLiveQueryStore({
+    includeIdentifierExtension: true,
+  });
+
+  const document = parse(/* GraphQL */ `
+    query @live {
+      posts {
+        id
+        title
+      }
+    }
+  `);
+
+  const executionResult = store.execute({
+    schema,
+    document,
+  });
+
+  if (!isAsyncIterable(executionResult)) {
+    return fail(
+      `result should be a AsyncIterable. Got ${typeof executionResult}.`
+    );
+  }
+
+  let result = await executionResult.next();
+
+  expect(result.value.extensions.liveResourceIdentifier).toEqual([
+    "Query.posts",
+    ...posts.map(({ id }) => `Post:${id}`),
   ]);
 });

@@ -6,6 +6,17 @@ import {
   GraphQLError,
   getOperationAST,
   defaultFieldResolver,
+  GraphQLList,
+  FieldNode,
+  typeFromAST,
+  SelectionSetNode,
+  parseType,
+  GraphQLType,
+  GraphQLObjectType,
+  GraphQLFieldMap,
+  GraphQLField,
+  isListType,
+  isObjectType,
 } from "graphql";
 import { mapSchema, MapperKind } from "@graphql-tools/utils";
 import {
@@ -78,6 +89,27 @@ const addResourceIdentifierCollectorToSchema = (
           runWith(result, (id: string) =>
             collectResourceIdentifier({ typename, id })
           );
+        }
+
+        if (isListType(fieldConfig.type)) {
+          const type: GraphQLType = fieldConfig.type.ofType;
+
+          if (isObjectType(type)) {
+            const typeName = (type as GraphQLObjectType).name;
+            const typeFields = (type as GraphQLObjectType).getFields();
+            const idField = Object.values(typeFields).find(
+              (field) =>
+                field.name === idFieldName && isNonNullIDScalarType(field.type)
+            );
+
+            if (idField) {
+              const realIdFieldName = idField.name;
+              const currentIds = result.map(
+                (document: any) => `${typeName}:${document[realIdFieldName]}`
+              );
+              addResourceIdentifier(currentIds);
+            }
+          }
         }
         return result;
       };
