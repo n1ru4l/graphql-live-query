@@ -2,6 +2,7 @@ name: CI Todo Example App
 
 on:
   push:
+  pull_request:
 
 jobs:
   ci:
