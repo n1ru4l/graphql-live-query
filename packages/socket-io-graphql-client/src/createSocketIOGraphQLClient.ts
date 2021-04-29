@@ -88,7 +88,8 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
     };
 
     operations.set(operationId, record);
-    record.execute();
+
+    if (!isOffline) record.execute();
 
     const originalReturn = iterator.return;
     iterator.return = () => {
