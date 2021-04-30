@@ -5,8 +5,9 @@
   Real-Time with any schema or transport.
   </p>
   <p align="center">
-    <a href="https://dev.to/n1ru4l/graphql-live-queries-with-socket-io-4mh6">Read the blog post</a>
-    - <a href="https://dev.to/n1ru4l/collecting-graphql-live-query-resource-identifier-with-graphql-tools-5fm5">Learn how operations are tracked</a>
+    <a href="https://the-guild.dev/blog/subscriptions-and-live-queries-real-time-with-graphql">Why Live Queries?</a>
+    - <a href="https://dev.to/n1ru4l/graphql-live-queries-with-socket-io-4mh6">Read the introduction Post</a>
+    - <a href="https://dev.to/n1ru4l/collecting-graphql-live-query-resource-identifier-with-graphql-tools-5fm5">Learn how Live Query Tracking works</a>
   </p>
   <br />
   <br />
