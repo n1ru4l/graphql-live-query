@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" width="450" alt="GraphQL Live Query" />
+  <img src="assets/logo.svg" width="250" alt="GraphQL Live Query" />
    <br />
   <p align="center">
   Real-Time with GraphQL for any GraphQL schema or transport.
