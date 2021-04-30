@@ -2,7 +2,7 @@
   <img src="assets/logo.svg" width="250" alt="GraphQL Live Query" />
    <br />
   <p align="center">
-  Real-Time with GraphQL for any GraphQL schema or transport.
+  Real-Time with any schema or transport.
   </p>
   <p align="center">
     <a href="https://dev.to/n1ru4l/graphql-live-queries-with-socket-io-4mh6">Read the blog post</a>
