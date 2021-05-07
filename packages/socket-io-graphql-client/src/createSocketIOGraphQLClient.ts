@@ -89,9 +89,11 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
 
     operations.set(operationId, record);
 
-    if (!isOffline) record.execute();
+    if (!isOffline) {
+      record.execute();
+    }
 
-    const originalReturn = iterator.return;
+    const originalReturn = iterator.return!;
     iterator.return = () => {
       if (operations.delete(operationId) === false) {
         return Promise.resolve({ done: true, value: undefined });
@@ -101,9 +103,7 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
         id: operationId,
       });
 
-      return originalReturn
-        ? originalReturn()
-        : Promise.resolve({ done: true, value: undefined });
+      return originalReturn();
     };
 
     return iterator;
