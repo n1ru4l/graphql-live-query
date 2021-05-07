@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.9.5
+
+### Patch Changes
+
+- 456d91e: Fixed race condition where subscriptions would be duplicated if socket connection was interrupted during initial subscription transmission
+
 ## 0.9.4
 
 ### Patch Changes
