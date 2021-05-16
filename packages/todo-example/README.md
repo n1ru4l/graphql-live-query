@@ -15,6 +15,8 @@ All the "frontends" use `create-react-app` as the base.
 
 Each of those client apps also has with a GraphiQL IDE.
 
+The clients use the [GraphQL over Socket.io transport](https://github.com/n1ru4l/graphql-live-query/tree/main/packages/socket-io-graphql-server). For other compatible transports like [GraphQL over WebSocket](https://github.com/graphql/graphql-over-http/pull/140) or [GraphQL over HTTP](https://github.com/graphql/graphql-over-http) [(experimental SSE as supported by graphql-helix)](https://github.com/contrawork/graphql-helix) we recommend checking out [GraphQL Bleeding Edge Playground](https://github.com/n1ru4l/graphql-bleeding-edge-playground)
+
 ## Setup
 
 Make sure you you have `yarn` installed, this repository uses yarn workspaces!
