@@ -100,8 +100,9 @@ import {
   ExecutionArgs,
   ExecutionResult
 } from 'graphql'
-import { MaybePromise } from 'type-graphql'
 import { LiveExecutionResult } from '@n1ru4l/graphql-live-query'
+
+declare type MaybePromise<T> = T | Promise<T>
 
 declare type ExecutionParameter =
   | Parameters<typeof defaultExecute>
