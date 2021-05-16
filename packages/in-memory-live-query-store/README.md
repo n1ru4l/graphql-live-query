@@ -84,3 +84,72 @@ List of known and tested compatible transports/servers:
 | [`@n1ru4l/socket-io-graphql-server`](https://github.com/n1ru4l/graphql-live-queries/blob/main/packages/socket-io-graphql-server) | WebSocket/HTTP Long Polling | [![npm version](https://badge.fury.io/js/%40n1ru4l%2Fsocket-io-graphql-server.svg)](https://github.com/n1ru4l/graphql-live-queries/blob/main/packages/socket-io-graphql-server) | [![npm downloads](https://img.shields.io/npm/dm/@n1ru4l/socket-io-graphql-server.svg)](https://github.com/n1ru4l/graphql-live-queries/blob/main/packages/socket-io-graphql-server) |
 | [`graphql-helix`](https://github.com/danielrearden/graphql-helix)                                                                | HTTP/SSE                    | [![npm version](https://badge.fury.io/js/graphql-helix.svg)](https://github.com/danielrearden/graphql-helix)                                                                    | [![npm downloads](https://img.shields.io/npm/dm/graphql-helix.svg)](https://github.com/danielrearden/graphql-helix)                                                                |
 | [`graphql-ws`](https://github.com/enisdenjo/graphql-ws)                                                                          | WebSocket                   | [![npm version](https://badge.fury.io/js/graphql-ws.svg)](https://github.com/enisdenjo/graphql-ws)                                                                              | [![npm downloads](https://img.shields.io/npm/dm/graphql-ws.svg)](https://github.com/enisdenjo/graphql-ws)                                                                          |
+
+
+## Recipes
+
+### Using with Redis
+
+You can use Redis to synchronize invalidations across multiple instances.
+
+```ts
+import Redis from 'ioredis'
+import { InMemoryLiveQueryStore } from '@n1ru4l/in-memory-live-query-store'
+import {
+  execute as defaultExecute,
+  ExecutionArgs,
+  ExecutionResult
+} from 'graphql'
+import { MaybePromise } from 'type-graphql'
+import { LiveExecutionResult } from '@n1ru4l/graphql-live-query'
+
+declare type ExecutionParameter =
+  | Parameters<typeof defaultExecute>
+  | [ExecutionArgs]
+
+export interface LiveQueryStore {
+  invalidate: (identifiers: Array<string> | string) => Promise<void>
+  execute: (
+    ...args: ExecutionParameter
+  ) => MaybePromise<
+    | AsyncIterableIterator<ExecutionResult | LiveExecutionResult>
+    | ExecutionResult
+  >
+}
+
+const CHANNEL = 'LIVE_QUERY_INVALIDATIONS'
+
+export class RedisLiveQueryStore {
+  pub: Redis.Redis
+  sub: Redis.Redis
+  liveQueryStore: InMemoryLiveQueryStore
+
+  constructor(redisUrl: string) {
+    this.pub = new Redis(redisUrl)
+    this.sub = new Redis(redisUrl)
+    this.liveQueryStore = new InMemoryLiveQueryStore()
+
+    this.sub.subscribe(CHANNEL, err => {
+      if (err) throw err
+    })
+
+    this.sub.on('message', (channel, resourceIdentifier) => {
+      if (channel === CHANNEL && resourceIdentifier)
+        this.liveQueryStore.invalidate(resourceIdentifier)
+    })
+  }
+
+  async invalidate(identifiers: Array<string> | string) {
+    if (typeof identifiers === 'string') {
+      identifiers = [identifiers]
+    }
+    for (const identifier of identifiers) {
+      this.pub.publish(CHANNEL, identifier)
+    }
+  }
+
+  execute(...args: ExecutionParameter) {
+    return this.liveQueryStore.execute(...args)
+  }
+}
+```
