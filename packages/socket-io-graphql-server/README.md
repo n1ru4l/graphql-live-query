@@ -147,7 +147,6 @@ const graphqlServer  = registerSocketIOGraphQLServer({
       rootValue:,
       contextValue: {
         socket,
-        liveQueryStore,
       },
       // client source is just the id instead of a full document.
       // we map the id to the actual document.
