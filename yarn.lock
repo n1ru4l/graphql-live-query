@@ -13658,10 +13658,10 @@ ts-pnp@1.2.0, ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-tsc-watch@4.2.9:
-  version "4.2.9"
-  resolved "https://registry.yarnpkg.com/tsc-watch/-/tsc-watch-4.2.9.tgz#d93fc74233ca4ef7ee6b12d08c0fe6aca3e19044"
-  integrity sha512-DlTaoDs74+KUpyWr7dCGhuscAUKCz6CiFduBN7R9RbLJSSN1moWdwoCLASE7+zLgGvV5AwXfYDiEMAsPGaO+Vw==
+tsc-watch@4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/tsc-watch/-/tsc-watch-4.4.0.tgz#3ebbf1db54bcef6bfe534b330fa87284a4139320"
+  integrity sha512-+0Yey6ptOOXAnt44OKTk2/EnQnmA0auL7VWXm9d9abMS4tabt0Xdr9B4AK6OJbWAre9ZdLA81+Nk8sz9unptyA==
   dependencies:
     cross-spawn "^7.0.3"
     node-cleanup "^2.1.2"
