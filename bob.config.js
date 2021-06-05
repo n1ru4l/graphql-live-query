@@ -5,7 +5,8 @@ module.exports = {
     "@n1ru4l/todo-example-client-apollo",
     "@n1ru4l/todo-example-client-urql",
     "@n1ru4l/todo-example-server",
-    "@n1ru4l/todo-example-server-helix"
+    "@n1ru4l/todo-example-server-helix",
+    "@n1ru4l/todo-example-server-ws",
   ], // ignored packages
-  base: "origin/main"
+  base: "origin/main",
 };
