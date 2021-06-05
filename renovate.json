@@ -19,6 +19,10 @@
         "^@types/relay-runtime",
         "^relay-compiler-language-typescript"
       ]
+    },
+    {
+      "groupName": "jest packages",
+      "packagePatterns": ["jest", "ts-jest"]
     }
   ]
 }
