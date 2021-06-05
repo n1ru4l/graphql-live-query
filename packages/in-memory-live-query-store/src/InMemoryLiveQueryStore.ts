@@ -22,11 +22,11 @@ import { runWith } from "./runWith";
 import { isNone, None } from "./Maybe";
 import { ResourceTracker } from "./ResourceTracker";
 
-type MaybePromise<T> = T | Promise<T>;
+type PromiseOrValue<T> = T | Promise<T>;
 type StoreRecord = {
   iterator: AsyncIterableIterator<LiveExecutionResult>;
   pushValue: (value: LiveExecutionResult) => void;
-  run: () => MaybePromise<void>;
+  run: () => PromiseOrValue<void>;
 };
 
 type ResourceIdentifierCollectorFunction = (
@@ -93,9 +93,8 @@ export type BuildResourceIdentifierFunction = (
   }>
 ) => string;
 
-export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunction = (
-  params
-) => `${params.typename}:${params.id}`;
+export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunction =
+  (params) => `${params.typename}:${params.id}`;
 
 type InMemoryLiveQueryStoreParameter = {
   /**
@@ -198,168 +197,167 @@ export class InMemoryLiveQueryStore {
     return schema;
   }
 
-  execute = (
-    ...args: ExecutionParameter
-  ): MaybePromise<
-    | AsyncIterableIterator<ExecutionResult | LiveExecutionResult>
-    | ExecutionResult
-  > => {
-    const {
-      schema: inputSchema,
-      document,
-      rootValue,
-      contextValue,
-      variableValues,
-      operationName,
-      ...additionalArguments
-    } = getExecutionParameters(args);
-
-    const operationNode = getOperationAST(document, operationName);
-
-    const fallbackToDefaultExecute = () =>
-      this._execute({
+  makeExecute =
+    (execute: typeof defaultExecute) =>
+    (
+      ...args: ExecutionParameter
+    ): PromiseOrValue<
+      | AsyncIterableIterator<ExecutionResult | LiveExecutionResult>
+      | ExecutionResult
+    > => {
+      const {
         schema: inputSchema,
         document,
         rootValue,
         contextValue,
         variableValues,
         operationName,
-        ...additionalArguments,
-      });
+        ...additionalArguments
+      } = getExecutionParameters(args);
 
-    if (
-      isNone(operationNode) ||
-      isLiveQueryOperationDefinitionNode(operationNode) === false
-    ) {
-      return fallbackToDefaultExecute();
-    }
+      const operationNode = getOperationAST(document, operationName);
 
-    const rootFieldIdentifier = Array.from(
-      extractLiveQueryRootFieldCoordinates(
-        document,
-        operationNode,
-        variableValues
-      )
-    );
-
-    const schema = this.getPatchedSchema(inputSchema);
-
-    const {
-      asyncIterableIterator: iterator,
-      pushValue,
-    } = makePushPullAsyncIterableIterator<LiveExecutionResult>();
-
-    // keep track that current execution is the latest in order to prevent race-conditions :)
-    let executionCounter = 0;
-    let previousIdentifier = new Set<string>(rootFieldIdentifier);
-
-    const record: StoreRecord = {
-      iterator,
-      pushValue,
-      run: () => {
-        executionCounter = executionCounter + 1;
-        const counter = executionCounter;
-        const newIdentifier = new Set(rootFieldIdentifier);
-        const collectResourceIdentifier: ResourceIdentifierCollectorFunction = (
-          parameter
-        ) => newIdentifier.add(this._buildResourceIdentifier(parameter));
-
-        const addResourceIdentifier: AddResourceIdentifierFunction = (
-          values
-        ) => {
-          if (isNone(values)) {
-            return;
-          }
-          if (typeof values === "string") {
-            newIdentifier.add(values);
-            return;
-          }
-          for (const value of values) {
-            newIdentifier.add(value);
-          }
-        };
-
-        const result = this._execute({
-          schema,
+      const fallbackToDefaultExecute = () =>
+        execute({
+          schema: inputSchema,
           document,
-          operationName,
           rootValue,
-          contextValue: {
-            [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
-            collectResourceIdentifier,
-            addResourceIdentifier,
-          },
+          contextValue,
           variableValues,
+          operationName,
           ...additionalArguments,
         });
 
-        // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
-        // in case anyone forgot to add it we just panic and stop the execution :)
-        const handleAsyncIterator = (
-          iterator: AsyncIterable<ExecutionResult>
-        ) => {
-          iterator[Symbol.asyncIterator]().return?.();
+      if (
+        isNone(operationNode) ||
+        isLiveQueryOperationDefinitionNode(operationNode) === false
+      ) {
+        return fallbackToDefaultExecute();
+      }
 
-          record.pushValue({
-            errors: [
-              new GraphQLError(
-                `"execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.`
-              ),
-            ],
+      const rootFieldIdentifier = Array.from(
+        extractLiveQueryRootFieldCoordinates(
+          document,
+          operationNode,
+          variableValues
+        )
+      );
+
+      const schema = this.getPatchedSchema(inputSchema);
+
+      const { asyncIterableIterator: iterator, pushValue } =
+        makePushPullAsyncIterableIterator<LiveExecutionResult>();
+
+      // keep track that current execution is the latest in order to prevent race-conditions :)
+      let executionCounter = 0;
+      let previousIdentifier = new Set<string>(rootFieldIdentifier);
+
+      const record: StoreRecord = {
+        iterator,
+        pushValue,
+        run: () => {
+          executionCounter = executionCounter + 1;
+          const counter = executionCounter;
+          const newIdentifier = new Set(rootFieldIdentifier);
+          const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
+            (parameter) =>
+              newIdentifier.add(this._buildResourceIdentifier(parameter));
+
+          const addResourceIdentifier: AddResourceIdentifierFunction = (
+            values
+          ) => {
+            if (isNone(values)) {
+              return;
+            }
+            if (typeof values === "string") {
+              newIdentifier.add(values);
+              return;
+            }
+            for (const value of values) {
+              newIdentifier.add(value);
+            }
+          };
+
+          const result = this._execute({
+            schema,
+            document,
+            operationName,
+            rootValue,
+            contextValue: {
+              [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
+              collectResourceIdentifier,
+              addResourceIdentifier,
+            },
+            variableValues,
+            ...additionalArguments,
           });
 
-          // delay to next tick to ensure the error is delivered to listeners.
-          // TODO: figure out whether there is a better way for doing this.
-          nextTick(() => {
-            record.iterator?.return?.();
-          });
+          // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
+          // in case anyone forgot to add it we just panic and stop the execution :)
+          const handleAsyncIterator = (
+            iterator: AsyncIterable<ExecutionResult>
+          ) => {
+            iterator[Symbol.asyncIterator]().return?.();
 
-          this._resourceTracker.release(record, previousIdentifier);
-        };
+            record.pushValue({
+              errors: [
+                new GraphQLError(
+                  `"execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.`
+                ),
+              ],
+            });
 
-        runWith(result, (result) => {
-          if (isAsyncIterable(result)) {
-            handleAsyncIterator(result);
-            return;
-          }
-          if (counter === executionCounter) {
-            this._resourceTracker.track(
-              record,
-              previousIdentifier,
-              newIdentifier
-            );
-            previousIdentifier = newIdentifier;
-            const liveResult: LiveExecutionResult = result;
-            liveResult.isLive = true;
-            if (this._includeIdentifierExtension === true) {
-              if (!liveResult.extensions) {
-                liveResult.extensions = {};
-              }
-              liveResult.extensions.liveResourceIdentifier = Array.from(
+            // delay to next tick to ensure the error is delivered to listeners.
+            // TODO: figure out whether there is a better way for doing this.
+            nextTick(() => {
+              record.iterator.return!();
+            });
+
+            this._resourceTracker.release(record, previousIdentifier);
+          };
+
+          runWith(result, (result) => {
+            if (isAsyncIterable(result)) {
+              handleAsyncIterator(result);
+              return;
+            }
+            if (counter === executionCounter) {
+              this._resourceTracker.track(
+                record,
+                previousIdentifier,
                 newIdentifier
               );
+              previousIdentifier = newIdentifier;
+              const liveResult: LiveExecutionResult = result;
+              liveResult.isLive = true;
+              if (this._includeIdentifierExtension === true) {
+                if (!liveResult.extensions) {
+                  liveResult.extensions = {};
+                }
+                liveResult.extensions.liveResourceIdentifier =
+                  Array.from(newIdentifier);
+              }
+              record.pushValue(liveResult);
             }
-            record.pushValue(liveResult);
-          }
-        });
-      },
+          });
+        },
+      };
+
+      this._resourceTracker.register(record, previousIdentifier);
+      // Execute initial query
+      record.run();
+
+      // TODO: figure out how we can do this stuff without monkey-patching the iterator
+      const originalReturn = iterator.return!.bind(iterator);
+      iterator.return = () => {
+        this._resourceTracker.release(record, previousIdentifier);
+        return originalReturn();
+      };
+
+      return iterator;
     };
 
-    this._resourceTracker.register(record, previousIdentifier);
-    // Execute initial query
-    record.run();
-
-    // TODO: figure out how we can do this stuff without monkey-patching the iterator
-    const originalReturn = iterator.return;
-    iterator.return = () => {
-      this._resourceTracker.release(record, previousIdentifier);
-      return (
-        originalReturn?.() ?? Promise.resolve({ done: true, value: undefined })
-      );
-    };
-
-    return iterator;
-  };
+  execute = this.makeExecute(this._execute);
 
   /**
    * Invalidate queries (and schedule their re-execution) via a resource identifier.
