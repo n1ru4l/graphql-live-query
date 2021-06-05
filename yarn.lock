@@ -1257,6 +1257,17 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@graphiql/toolkit@^0.2.0":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@graphiql/toolkit/-/toolkit-0.2.2.tgz#193d570afcf686c9ee61c92054c1782b9f3c1255"
+  integrity sha512-kDgYhqnS4p4LqSo1KvLd3tbX8Hhdj0ZrgQuGsosjjEnahiPYmmylxUL1p9lj6348OsypcTlCncGpEjeb9S3TiQ==
+  dependencies:
+    "@n1ru4l/push-pull-async-iterable-iterator" "^2.1.4"
+    graphql-ws "^4.3.2"
+    meros "^1.1.4"
+  optionalDependencies:
+    subscriptions-transport-ws "^0.9.18"
+
 "@graphql-codegen/cli@1.21.5":
   version "1.21.5"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-1.21.5.tgz#b9041553747cfb2dee7c3473a2e2461ec3e7ada5"
@@ -4312,10 +4323,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^0.15.2:
-  version "0.15.2"
-  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-0.15.2.tgz#69e94beee94cba4d5117a2a92ffef92e850aa290"
-  integrity sha512-Hxod/lFyDV3kXXgnqVDzThpxIudBCH70yJ5YospeBAFqdHpd8dgsJLIAlIxeqT3x5hcdWu1Rd1RI3qx84FTvMg==
+codemirror-graphql@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-1.0.2.tgz#cfbfb4ab9ed81467dc606848c5eb84e1f5d82766"
+  integrity sha512-D4+BdYa6iQnDlio4mBk1Yap5ROCqEWapSFLkiKGatx/I0dF6euzdwd0um3Ndudw6rFQbNuT7hpcH8tnBO6VOfQ==
   dependencies:
     graphql-language-service-interface "^2.8.2"
     graphql-language-service-parser "^1.9.0"
@@ -5436,6 +5447,11 @@ dotenv@8.2.0, dotenv@^8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
   integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
+
+dset@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/dset/-/dset-3.1.0.tgz#23feb6df93816ea452566308b1374d6e869b0d7b"
+  integrity sha512-7xTQ5DzyE59Nn+7ZgXDXjKAGSGmXZHqttMVVz1r4QNfmGpyj+cm2YtI3II0c/+4zS4a9yq2mBhgdeq2QnpcYlw==
 
 duplexer3@^0.1.4:
   version "0.1.4"
@@ -6853,14 +6869,16 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-graphiql@1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.3.2.tgz#fc9123ec63e587e02699983c617f9338bc09cb40"
-  integrity sha512-huo1Uxkcb1wpCGlDjE1N5X3dUrBTnOlj7/VgXwFUF0mcq/l/5RBTYx49pAc92DXO7rx715ZtUtAL60PxzGeh+w==
+graphiql@1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.4.2.tgz#a1dc1a4d8d35f60c90d6d8a9eb62a99756e9fd9b"
+  integrity sha512-TQDuuU/ZqTWV1yQDpVEiKskg0IYA+Wck37DYrrFzLlpgZWRbWiyab1PyHKiRep7J540CgScBg6C/gGCymKyO3g==
   dependencies:
+    "@graphiql/toolkit" "^0.2.0"
     codemirror "^5.54.0"
-    codemirror-graphql "^0.15.2"
+    codemirror-graphql "^1.0.0"
     copy-to-clipboard "^3.2.0"
+    dset "^3.1.0"
     entities "^2.0.0"
     graphql-language-service "^3.1.2"
     markdown-it "^10.0.0"
@@ -6941,10 +6959,10 @@ graphql-tag@^2.11.0, graphql-tag@^2.12.0:
   dependencies:
     tslib "^1.14.1"
 
-graphql-ws@^4.4.1:
-  version "4.5.1"
-  resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-4.5.1.tgz#d9dc6e047c6d4ddb928ccbfb3ca3022580a89925"
-  integrity sha512-GE7vCMKe2D7fc0ugkM1V8QMneHcbV9c3BpPBzdlW/Uzkqv0F/zZq9DDHxLzg55ZhE5OSLL+n/gyqAMPgH59hcw==
+graphql-ws@^4.3.2, graphql-ws@^4.4.1:
+  version "4.8.0"
+  resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-4.8.0.tgz#4b0a82fa1ad00a3baa1cae980032dcaaad08b339"
+  integrity sha512-0jk0c7GPfAlQfA7xZ4CKlLvFF4JBPYbczIHIXl/tk/fXoCLzmrmwQ/HNwOoOHfFMS3usbD1nt77k67pgXx2BYQ==
 
 graphql@15.4.0-experimental-stream-defer.1:
   version "15.4.0-experimental-stream-defer.1"
@@ -9314,7 +9332,7 @@ merge2@^1.3.0:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-meros@1.1.4:
+meros@1.1.4, meros@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/meros/-/meros-1.1.4.tgz#c17994d3133db8b23807f62bec7f0cb276cfd948"
   integrity sha512-E9ZXfK9iQfG9s73ars9qvvvbSIkJZF5yOo9j4tcwM5tN8mUKfj/EKN5PzOr3ZH0y5wL7dLAHw3RVEfpQV9Q7VQ==

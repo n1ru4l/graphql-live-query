@@ -1,6 +1,5 @@
 import * as React from "react";
-import GraphiQL from "graphiql";
-import type { Fetcher } from "graphiql/dist/components/GraphiQL";
+import GraphiQL, { Fetcher } from "graphiql";
 import "graphiql/graphiql.css";
 import "./GraphiQLWidget.css";
 
@@ -9,9 +8,8 @@ type GraphiQLWidgetState = "show" | "hidden";
 export const GraphiQLWidget: React.FunctionComponent<{ fetcher: Fetcher }> = (
   props
 ) => {
-  const [widgetState, setWidgetState] = React.useState<GraphiQLWidgetState>(
-    "hidden"
-  );
+  const [widgetState, setWidgetState] =
+    React.useState<GraphiQLWidgetState>("hidden");
 
   if (widgetState === "hidden") {
     return (
