@@ -1,5 +1,11 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.6.5
+
+### Patch Changes
+
+- a84e469: add InMemoryLiveQueryStore.makeExecute function for ad-hoc execute function composition
+
 ## 0.6.4
 
 ### Patch Changes
