@@ -10,9 +10,10 @@
   "updateInternalDependencies": "patch",
   "ignore": [
     "@n1ru4l/todo-example-server",
+    "@n1ru4l/todo-example-server-helix",
+    "@n1ru4l/todo-example-server-ws",
     "@n1ru4l/todo-example-client-apollo",
     "@n1ru4l/todo-example-client-relay",
-    "@n1ru4l/todo-example-client-urql",
-    "@n1ru4l/todo-example-server"
+    "@n1ru4l/todo-example-client-urql"
   ]
 }

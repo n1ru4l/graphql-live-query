@@ -1,0 +1,25 @@
+{
+  "name": "@n1ru4l/todo-example-server-ws",
+  "version": "0.1.2",
+  "private": true,
+  "dependencies": {
+    "@n1ru4l/in-memory-live-query-store": "*",
+    "@n1ru4l/socket-io-graphql-server": "*",
+    "@types/express": "4.17.12",
+    "express": "4.17.1",
+    "graphql": "15.4.0-experimental-stream-defer.1",
+    "graphql-ws": "4.8.0",
+    "ws": "7.4.6"
+  },
+  "devDependencies": {
+    "@types/node": "14.17.2",
+    "@types/ws": "7.4.4",
+    "ts-node-dev": "1.1.6",
+    "typescript": "4.3.2"
+  },
+  "scripts": {
+    "write:schema": "ts-node scripts/write-graphql-schema.ts",
+    "build": "tsc",
+    "start": "ts-node-dev src/main.ts"
+  }
+}
