@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 import { GraphQLResponse } from "relay-runtime";
-import type { FetcherResult } from "graphiql/dist/components/GraphiQL";
+import type { FetcherResult } from "graphiql";
 import "todomvc-app-css/index.css";
 import { io } from "socket.io-client";
 import { TodoApplication } from "./TodoApplication";

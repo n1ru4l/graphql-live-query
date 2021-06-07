@@ -4,7 +4,7 @@ import "todomvc-app-css/index.css";
 import { Provider, ExecutionResult } from "urql";
 import { io } from "socket.io-client";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
-import type { FetcherResult } from "graphiql/dist/components/GraphiQL";
+import type { FetcherResult } from "graphiql";
 import type { GraphiQLWidget as GraphiQLWidgetType } from "./GraphiQLWidget";
 
 import { createUrqlClient } from "./createUrgqlClient";
