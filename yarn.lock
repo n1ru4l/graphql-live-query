@@ -2644,6 +2644,11 @@
     "@graphql-typed-document-node/core" "^3.1.0"
     wonka "^4.0.14"
 
+"@vercel/ncc@0.28.3":
+  version "0.28.3"
+  resolved "https://registry.yarnpkg.com/@vercel/ncc/-/ncc-0.28.3.tgz#9461bdbf334d616759b0e7e5415e2f480b9aa30f"
+  integrity sha512-g3gk4D9itbhUQa5MtN7TOdeoQnNLkPDCox5SBaQ/H3Or5lo59TOaZWrLb+x47StiAJ+8DXZS/9MJ67cIBWSsRw==
+
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"
@@ -3584,12 +3589,13 @@ bn.js@^5.1.1:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.1.2.tgz#c9686902d3c9a27729f43ab10f9d79c2004da7b0"
   integrity sha512-40rZaf3bUNKTVYu9sIeeEGOg7g14Yvnj9kH7b50EiwX0Q7A6umbvfI5tvHaOERH0XigqKkfLkFQxzb4e6CIXnA==
 
-bob-the-bundler@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/bob-the-bundler/-/bob-the-bundler-1.2.1.tgz#ed759de2ac59f5bda71cb625d17f1cd787984e4e"
-  integrity sha512-mrmiqX10ghyMB6v4T/VXjmhQie8xrqoOCWZ0b3N8JmTqnzYpOZbSw9UaAygxGzg4V2hjwTz0Wl7H1GlXQnawVA==
+bob-the-bundler@1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/bob-the-bundler/-/bob-the-bundler-1.4.1.tgz#794382f60f0d2a68c57d85a41d06caf4a45cb1b4"
+  integrity sha512-Ho7JLV8ePKjWgV1USjoZK7w0rJ64RXv8WTBjP/J+l3wILem+TekcBPjKvpYvAqmWBZIliaKVyZhGHgTOaqjabw==
   dependencies:
     "@rollup/plugin-node-resolve" "7.1.1"
+    "@vercel/ncc" "0.28.3"
     builtins "4.0.0"
     consola "2.11.3"
     cosmiconfig "6.0.0"
