@@ -58,7 +58,7 @@ const resolvers = {
 };
 
 const liveDirectiveTypeDefs = print(
-  astFromDirective(GraphQLLiveDirective, new GraphQLSchema({}), [])
+  astFromDirective(GraphQLLiveDirective)
 );
 
 export const schema = makeExecutableSchema({
