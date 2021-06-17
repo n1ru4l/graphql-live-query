@@ -1,0 +1,53 @@
+{
+  "name": "@n1ru4l/graphql-live-query-patch-jsondiffpatch",
+  "version": "0.3.1",
+  "author": "n1ru4l <laurinquast@googlemail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n1ru4l/graphql-live-queries.git",
+    "directory": "packages/graphql-live-query-patch-json-diff"
+  },
+  "bugs": {
+    "url": "https://github.com/n1ru4l/graphql-live-queries/issues"
+  },
+  "homepage": "https://github.com/n1ru4l/graphql-live-queries#readme",
+  "keywords": [
+    "graphql",
+    "query",
+    "live",
+    "real-time"
+  ],
+  "scripts": {
+    "prepack": "bob prepack"
+  },
+  "dependencies": {
+    "jsondiffpatch": "^0.4.1",
+    "@n1ru4l/graphql-live-query-patch": "^0.3.1"
+  },
+  "devDependencies": {
+    "graphql": "15.4.0-experimental-stream-defer.1",
+    "@n1ru4l/graphql-live-query": "*",
+    "@n1ru4l/in-memory-live-query-store": "*"
+  },
+  "peerDependencies": {
+    "graphql": "^15.4.0"
+  },
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "exports": {
+    "require": "./dist/index.cjs.js",
+    "default": "./dist/index.mjs"
+  },
+  "typings": "dist/index.d.ts",
+  "typescript": {
+    "definition": "dist/index.d.ts"
+  },
+  "buildOptions": {
+    "input": "./src/index.ts"
+  },
+  "publishConfig": {
+    "directory": "dist",
+    "access": "public"
+  }
+}
