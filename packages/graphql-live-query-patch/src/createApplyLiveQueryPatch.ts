@@ -1,29 +1,18 @@
-import { applyPatch, Operation } from "fast-json-patch";
 import { ExecutionResult } from "graphql";
 import { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
 
-export type ApplyPatchFunction = (
+export type ApplyPatchFunction<PatchPayload = unknown> = (
   previous: Record<string, unknown>,
-  patch: Operation[]
+  patch: PatchPayload
 ) => Record<string, unknown>;
-
-const defaultApplyPatch: ApplyPatchFunction = (
-  previous: Record<string, unknown>,
-  patch: Operation[]
-): Record<string, unknown> => {
-  const result = applyPatch(previous, patch, true, false);
-  return result.newDocument;
-};
 
 /**
  * Create a middleware generator function for applying live query patches on the client.
  */
-export const createApplyLiveQueryPatch = (args?: {
-  /* Provide your own custom apply patch function */
-  applyPatch?: ApplyPatchFunction;
-}) => {
-  const applyPatch = args?.applyPatch ?? defaultApplyPatch;
-
+export const createApplyLiveQueryPatch = <PatchPayload = unknown>(
+  /* Function which is used for generating the patches */
+  applyPatch: ApplyPatchFunction<PatchPayload>
+) => {
   return async function* applyLiveQueryPatch<
     TExecutionResult = Record<string, unknown>
   >(
@@ -32,7 +21,9 @@ export const createApplyLiveQueryPatch = (args?: {
     let mutableData: ExecutionResult | null = null;
     let lastRevision = 0;
 
-    for await (const result of asyncIterator as AsyncIterableIterator<ExecutionLivePatchResult>) {
+    for await (const result of asyncIterator as AsyncIterableIterator<
+      ExecutionLivePatchResult<PatchPayload>
+    >) {
       // no revision means this is no live query patch.
       if ("revision" in result && result.revision) {
         const valueToPublish: ExecutionLivePatchResult = {};

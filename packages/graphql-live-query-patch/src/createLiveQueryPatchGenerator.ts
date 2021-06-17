@@ -1,29 +1,17 @@
 import type { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
-import { compare, Operation } from "fast-json-patch";
 import type { ExecutionResult } from "graphql";
 import type { ExecutionPatchResult } from "./ExecutionPatchResult";
 import type { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
 
-export type GeneratePatchFunction = (
+export type GeneratePatchFunction<PatchPayload = unknown> = (
   previous: Record<string, unknown>,
   current: Record<string, unknown>
-) => Operation[];
+) => PatchPayload;
 
-const defaultGeneratePatch: GeneratePatchFunction = (
-  previous: Record<string, unknown>,
-  current: Record<string, unknown>
-): Operation[] => compare(previous, current);
-
-export type CreateLiveQueryPatchGeneratorArgs = {
-  generatePatch?: GeneratePatchFunction;
-};
-
-export const createLiveQueryPatchGenerator = (
-  args?: CreateLiveQueryPatchGeneratorArgs
-) => {
-  const generatePatch = args?.generatePatch ?? defaultGeneratePatch;
-
-  return async function* liveQueryPatchGenerator(
+export const createLiveQueryPatchGenerator = <PatchPayload = unknown>(
+  generatePatch: GeneratePatchFunction<PatchPayload>
+) =>
+  async function* liveQueryPatchGenerator(
     asyncIterator: AsyncIterableIterator<LiveExecutionResult>
   ): AsyncIterableIterator<
     ExecutionLivePatchResult | ExecutionResult | ExecutionPatchResult
@@ -64,4 +52,3 @@ export const createLiveQueryPatchGenerator = (
       yield valueToPublish;
     }
   };
-};

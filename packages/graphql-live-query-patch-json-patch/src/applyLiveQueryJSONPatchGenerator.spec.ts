@@ -1,8 +1,8 @@
 import { ExecutionResult } from "graphql";
 import { LiveExecutionResult } from "packages/graphql-live-query/src";
-import { createApplyLiveQueryPatch } from "./createApplyLiveQueryPatch";
+import { liveQueryJSONPatchGenerator } from "./liveQueryJSONPatchGenerator";
 
-test("pass through non live query patch result", async () => {
+it("passes through non live query values", async () => {
   async function* source() {
     yield {
       data: {
@@ -20,10 +20,10 @@ test("pass through non live query patch result", async () => {
     } as ExecutionResult;
   }
 
-  const stream = createApplyLiveQueryPatch()(source());
+  const stream = liveQueryJSONPatchGenerator(source());
+
   let value = await stream.next();
   expect(value).toEqual({
-    done: false,
     value: {
       data: {
         foo: {
@@ -31,10 +31,10 @@ test("pass through non live query patch result", async () => {
         },
       },
     },
+    done: false,
   });
   value = await stream.next();
   expect(value).toEqual({
-    done: false,
     value: {
       data: {
         foo: {
@@ -42,15 +42,16 @@ test("pass through non live query patch result", async () => {
         },
       },
     },
+    done: false,
   });
   value = await stream.next();
   expect(value).toEqual({
-    done: true,
     value: undefined,
+    done: true,
   });
 });
 
-it("applies patch results", async () => {
+it("publishes patches for live query results", async () => {
   async function* source() {
     yield {
       data: {
@@ -58,9 +59,35 @@ it("applies patch results", async () => {
           bar: "kek",
         },
       },
-      revision: 1,
+      isLive: true,
     } as LiveExecutionResult;
     yield {
+      data: {
+        foo: {
+          bar: "speck",
+        },
+      },
+      isLive: true,
+    } as LiveExecutionResult;
+  }
+
+  const stream = liveQueryJSONPatchGenerator(source());
+
+  let value = await stream.next();
+  expect(value).toEqual({
+    value: {
+      data: {
+        foo: {
+          bar: "kek",
+        },
+      },
+      revision: 1,
+    },
+    done: false,
+  });
+  value = await stream.next();
+  expect(value).toEqual({
+    value: {
       patch: [
         {
           op: "replace",
@@ -69,35 +96,12 @@ it("applies patch results", async () => {
         },
       ],
       revision: 2,
-    } as LiveExecutionResult;
-  }
-
-  const stream = createApplyLiveQueryPatch()(source());
-  let value = await stream.next();
-  expect(value).toEqual({
-    done: false,
-    value: {
-      data: {
-        foo: {
-          bar: "kek",
-        },
-      },
     },
+    done: false,
   });
   value = await stream.next();
   expect(value).toEqual({
-    done: false,
-    value: {
-      data: {
-        foo: {
-          bar: "speck",
-        },
-      },
-    },
-  });
-  value = await stream.next();
-  expect(value).toEqual({
-    done: true,
     value: undefined,
+    done: true,
   });
 });
