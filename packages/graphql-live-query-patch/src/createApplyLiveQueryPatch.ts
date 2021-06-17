@@ -16,12 +16,12 @@ export const createApplyLiveQueryPatch = <PatchPayload = unknown>(
   return async function* applyLiveQueryPatch<
     TExecutionResult = Record<string, unknown>
   >(
-    asyncIterator: AsyncIterableIterator<TExecutionResult>
+    asyncIterable: AsyncIterableIterator<TExecutionResult>
   ): AsyncIterableIterator<TExecutionResult> {
     let mutableData: ExecutionResult | null = null;
     let lastRevision = 0;
 
-    for await (const result of asyncIterator as AsyncIterableIterator<
+    for await (const result of asyncIterable as AsyncIterableIterator<
       ExecutionLivePatchResult<PatchPayload>
     >) {
       // no revision means this is no live query patch.
@@ -67,7 +67,7 @@ export const createApplyLiveQueryPatch = <PatchPayload = unknown>(
       }
 
       yield result as TExecutionResult;
-      yield* asyncIterator;
+      yield* asyncIterable;
     }
   };
 };
