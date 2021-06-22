@@ -1,6 +1,6 @@
 import { SocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
 import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
-import { createApplyLiveQueryPatch } from "@n1ru4l/graphql-live-query-patch";
+import { applyLiveQueryJSONPatch } from "@n1ru4l/graphql-live-query-patch-json-patch";
 import {
   ApolloClient,
   InMemoryCache,
@@ -19,10 +19,9 @@ class SocketIOGraphQLApolloLink extends ApolloLink {
   }
 
   public request(operation: Operation): Observable<FetchResult> | null {
-    const applyLiveQueryPatch = createApplyLiveQueryPatch();
     return new Observable<FetchResult>((sink) =>
       applyAsyncIterableIteratorToSink(
-        applyLiveQueryPatch(
+        applyLiveQueryJSONPatch(
           this.networkLayer.execute({
             operationName: operation.operationName,
             operation: print(operation.query),

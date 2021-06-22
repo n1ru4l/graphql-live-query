@@ -7,6 +7,7 @@
     "graphql": "15.4.0-experimental-stream-defer.1"
   },
   "devDependencies": {
+    "@n1ru4l/graphql-live-query-patch-json-patch": "*",
     "@graphql-codegen/cli": "1.21.5",
     "@graphql-codegen/typescript-operations": "1.18.0",
     "@graphql-codegen/typescript": "1.22.1",

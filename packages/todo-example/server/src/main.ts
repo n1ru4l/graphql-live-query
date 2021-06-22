@@ -2,7 +2,7 @@ import { Server as IOServer } from "socket.io";
 import http from "http";
 import type { Socket } from "net";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
-import { createApplyLiveQueryPatchGenerator } from "@n1ru4l/graphql-live-query-patch";
+import { applyLiveQueryJSONPatchGenerator } from "@n1ru4l/graphql-live-query-patch-json-patch";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import { specifiedRules } from "graphql";
@@ -45,10 +45,7 @@ rootValue.todos.set("1", {
 
 const validationRules = [...specifiedRules, NoLiveMixedWithDeferStreamRule];
 
-const execute = flow(
-  liveQueryStore.execute,
-  createApplyLiveQueryPatchGenerator()
-);
+const execute = flow(liveQueryStore.execute, applyLiveQueryJSONPatchGenerator);
 
 registerSocketIOGraphQLServer({
   socketServer,

@@ -1,12 +1,11 @@
-import { Operation } from "fast-json-patch";
 import { ExecutionResult } from "graphql";
 
-export type ExecutionLivePatchResult = {
+export type ExecutionLivePatchResult<PatchPayload = unknown> = {
   errors?: ExecutionResult["errors"];
   /* data must be included in the first result */
   data?: ExecutionResult["data"];
   /* patch must be present in the next results */
-  patch?: Operation[];
+  patch?: PatchPayload;
   revision?: number;
   extensions?: ExecutionResult["extensions"];
 };

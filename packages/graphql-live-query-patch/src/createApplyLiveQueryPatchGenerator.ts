@@ -2,7 +2,7 @@ import type { ExecutionResult } from "graphql";
 import type { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
 import {
   createLiveQueryPatchGenerator,
-  CreateLiveQueryPatchGeneratorArgs,
+  GeneratePatchFunction,
 } from "./createLiveQueryPatchGenerator";
 
 type MaybePromise<T> = T | Promise<T>;
@@ -18,15 +18,15 @@ type LiveQueryDeflatorExecutionResult = MaybePromise<
 >;
 
 /**
- *  afterware for wrapping execute in order to generate live query patches.
+ *  after-ware for wrapping execute in order to generate live query patches.
  */
-export const createApplyLiveQueryPatchGenerator = (
-  args?: CreateLiveQueryPatchGeneratorArgs
+export const createApplyLiveQueryPatchGenerator = <PatchPayload = unknown>(
+  generatePatch: GeneratePatchFunction<PatchPayload>
 ) => {
   return (
     executionResult: LiveQueryDeflatorExecutionResult
   ): LiveQueryDeflatorExecutionResult => {
-    const makePatch = createLiveQueryPatchGenerator(args);
+    const makePatch = createLiveQueryPatchGenerator(generatePatch);
 
     const handler = (
       result:
