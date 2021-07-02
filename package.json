@@ -13,7 +13,7 @@
   "devDependencies": {
     "@changesets/cli": "2.16.0",
     "@types/jest": "26.0.23",
-    "bob-the-bundler": "1.2.1",
+    "bob-the-bundler": "1.4.1",
     "husky": "4.3.8",
     "jest": "26.6.0",
     "lint-staged": "11.0.0",

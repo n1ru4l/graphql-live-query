@@ -35,11 +35,17 @@
     "graphql": "^15.4.0",
     "socket.io": "^3.0.1 || ^4.0.0"
   },
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "exports": {
-    "require": "./dist/index.cjs.js",
-    "default": "./dist/index.mjs"
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./*": {
+      "require": "./dist/*.js",
+      "import": "./dist/*.mjs"
+    }
   },
   "typings": "dist/index.d.ts",
   "typescript": {
