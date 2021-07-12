@@ -27,7 +27,7 @@
   "dependencies": {
     "@graphql-tools/utils": "^7.7.1",
     "@n1ru4l/graphql-live-query": "0.7.1",
-    "@n1ru4l/push-pull-async-iterable-iterator": "^2.1.4"
+    "@n1ru4l/push-pull-async-iterable-iterator": "^3.0.0"
   },
   "peerDependencies": {
     "graphql": "^15.4.0"
