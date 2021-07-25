@@ -488,7 +488,7 @@ it("adds the resource identifiers as a extension field.", async () => {
     includeIdentifierExtension: true,
   });
   const document = parse(/* GraphQL */ `
-    query($id: ID!) @live {
+    query ($id: ID!) @live {
       post(id: $id) {
         id
         title
@@ -536,7 +536,7 @@ it("adds the resource identifiers as a extension field.", async () => {
   await executionResult.return?.();
 });
 
-it("can set the id field name arbitrarially", async () => {
+it("can set the id field name arbitrarily", async () => {
   const arbitraryIdName = "whateverIWant";
 
   const GraphQLPostType = new GraphQLObjectType({
