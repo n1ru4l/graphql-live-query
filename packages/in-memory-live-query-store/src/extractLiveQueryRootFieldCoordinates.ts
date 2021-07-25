@@ -1,10 +1,13 @@
-import type {
+import {
   SelectionSetNode,
   DocumentNode,
   FieldNode,
   OperationDefinitionNode,
-  VariableDefinitionNode,
+  TypeInfo,
+  visitWithTypeInfo,
+  visit,
 } from "graphql";
+import { getArgumentValues } from "graphql/execution/values";
 import { isNone, isSome, Maybe } from "./Maybe";
 
 type MaybeOperationDefinitionNode = OperationDefinitionNode | null;
@@ -46,59 +49,47 @@ const gatherFields = (
 /**
  * Returns an array that contains all the root query type field coordinates for a given graphql operation.
  */
-export const extractLiveQueryRootFieldCoordinates = (
-  documentNode: DocumentNode,
-  operationNode: OperationDefinitionNode,
-  variableValues?: Maybe<Record<string, unknown>>
-) => {
+export const extractLiveQueryRootFieldCoordinates = (params: {
+  documentNode: DocumentNode;
+  operationNode: OperationDefinitionNode;
+  typeInfo: TypeInfo;
+  variableValues?: Maybe<Record<string, unknown>>;
+}) => {
   const identifier = new Set<string>();
-  const idVariablesLookupMap = new Map<string, string>();
-
-  if (isSome(operationNode.variableDefinitions) && isSome(variableValues)) {
-    collectIdVariableValues(
-      operationNode.variableDefinitions,
-      variableValues,
-      idVariablesLookupMap
-    );
-  }
-
-  const fields = gatherFields(operationNode.selectionSet, documentNode);
-  for (const field of fields) {
-    identifier.add(`Query.${field.name.value}`);
-    if (isSome(field.arguments)) {
-      for (const arg of field.arguments) {
+  visit(
+    params.documentNode,
+    visitWithTypeInfo(params.typeInfo, {
+      Field(fieldNode) {
+        const parentType = params.typeInfo.getParentType();
         if (
-          arg.value.kind === "Variable" &&
-          idVariablesLookupMap.has(arg.value.name.value)
+          isSome(parentType) &&
+          parentType.name === "Query" &&
+          isSome(fieldNode.arguments?.length)
         ) {
-          identifier.add(
-            // prettier-ignore
-            `Query.${field.name.value}(${arg.name.value}:"${idVariablesLookupMap.get(arg.value.name.value)}")`
-          );
+          const fieldDef = params.typeInfo.getFieldDef();
+          identifier.add(`Query.${fieldNode.name.value}`);
+          if (isSome(fieldDef)) {
+            for (const arg of fieldDef.args) {
+              if (arg.name === "id") {
+                const fieldSDLType = arg.type.toString();
+                if (fieldSDLType === "ID!" || fieldSDLType === "ID") {
+                  const values = getArgumentValues(
+                    fieldDef,
+                    fieldNode,
+                    params.variableValues
+                  );
+                  identifier.add(
+                    `Query.${fieldNode.name.value}(${arg.name}:"${values["id"]}")`
+                  );
+                }
+                break;
+              }
+            }
+          }
         }
-      }
-    }
-  }
+      },
+    })
+  );
 
   return identifier;
-};
-
-const collectIdVariableValues = (
-  definitions: ReadonlyArray<VariableDefinitionNode>,
-  variableValues: Record<string, unknown>,
-  lookupMap: Map<string, string>
-): void => {
-  for (const def of definitions) {
-    if (
-      def.type.kind == "NonNullType" &&
-      def.type.type.kind === "NamedType" &&
-      def.type.type.name.value === "ID"
-    ) {
-      const name = def.variable.name.value;
-      if (lookupMap.has(name)) {
-        continue;
-      }
-      lookupMap.set(name, variableValues[name] as string);
-    }
-  }
 };

@@ -6,6 +6,7 @@ import {
   GraphQLError,
   getOperationAST,
   defaultFieldResolver,
+  TypeInfo,
 } from "graphql";
 import { mapSchema, MapperKind } from "@graphql-tools/utils";
 import {
@@ -160,9 +161,14 @@ const nextTick =
   setImmediate ??
   setTimeout;
 
+type SchemaCacheRecord = {
+  schema: GraphQLSchema;
+  typeInfo: TypeInfo;
+};
+
 export class InMemoryLiveQueryStore {
   private _resourceTracker = new ResourceTracker<StoreRecord>();
-  private _cacheCache = new WeakMap<GraphQLSchema, GraphQLSchema>();
+  private _schemaCache = new WeakMap<GraphQLSchema, SchemaCacheRecord>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
   private _execute = defaultExecute;
   private _includeIdentifierExtension = false;
@@ -185,16 +191,20 @@ export class InMemoryLiveQueryStore {
         : process?.env?.NODE_ENV === "development");
   }
 
-  private getPatchedSchema(inputSchema: GraphQLSchema): GraphQLSchema {
-    let schema = this._cacheCache.get(inputSchema);
-    if (isNone(schema)) {
-      schema = addResourceIdentifierCollectorToSchema(
+  private getPatchedSchema(inputSchema: GraphQLSchema): SchemaCacheRecord {
+    let data = this._schemaCache.get(inputSchema);
+    if (isNone(data)) {
+      const schema = addResourceIdentifierCollectorToSchema(
         inputSchema,
         this._idFieldName
       );
-      this._cacheCache.set(inputSchema, schema);
+      data = {
+        schema,
+        typeInfo: new TypeInfo(schema),
+      };
+      this._schemaCache.set(inputSchema, data);
     }
-    return schema;
+    return data;
   }
 
   makeExecute =
@@ -235,15 +245,16 @@ export class InMemoryLiveQueryStore {
         return fallbackToDefaultExecute();
       }
 
-      const rootFieldIdentifier = Array.from(
-        extractLiveQueryRootFieldCoordinates(
-          document,
-          operationNode,
-          variableValues
-        )
-      );
+      const { schema, typeInfo } = this.getPatchedSchema(inputSchema);
 
-      const schema = this.getPatchedSchema(inputSchema);
+      const rootFieldIdentifier = Array.from(
+        extractLiveQueryRootFieldCoordinates({
+          documentNode: document,
+          operationNode,
+          variableValues,
+          typeInfo,
+        })
+      );
 
       const { asyncIterableIterator: iterator, pushValue } =
         makePushPullAsyncIterableIterator<LiveExecutionResult>();
