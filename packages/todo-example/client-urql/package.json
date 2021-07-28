@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",
-    "@graphql-codegen/cli": "1.21.7",
+    "@graphql-codegen/cli": "1.21.8",
     "@graphql-codegen/typescript-operations": "1.18.4",
     "@graphql-codegen/typescript": "1.23.0",
     "@graphql-codegen/typescript-urql": "2.0.11",
