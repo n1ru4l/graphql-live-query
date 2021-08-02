@@ -1,5 +1,11 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.6.6
+
+### Patch Changes
+
+- e15005f: refactor logic for extracting id schema coordinates
+
 ## 0.6.5
 
 ### Patch Changes
