@@ -1,4 +1,4 @@
-import { GraphQLDirective, DirectiveLocation, GraphQLBoolean } from "graphql";
+import { GraphQLDirective, DirectiveLocation, GraphQLBoolean, GraphQLInt } from "graphql";
 
 export const GraphQLLiveDirective = new GraphQLDirective({
   name: "live",
@@ -11,5 +11,9 @@ export const GraphQLLiveDirective = new GraphQLDirective({
       defaultValue: true,
       description: "Whether the query should be live or not.",
     },
+    throttle: {
+      type: GraphQLInt,
+      description: "Limit updates to at most once per \"throttle\" milliseconds."
+    }
   },
 });

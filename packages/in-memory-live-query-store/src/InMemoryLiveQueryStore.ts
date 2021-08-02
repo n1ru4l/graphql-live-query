@@ -14,14 +14,16 @@ import {
   isAsyncIterable,
 } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
+  getLiveQueryOperationThrottle,
   isLiveQueryOperationDefinitionNode,
-  LiveExecutionResult,
+  LiveExecutionResult
 } from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
 import { isNone, None } from "./Maybe";
 import { ResourceTracker } from "./ResourceTracker";
+import { throttle } from "./throttle";
 
 type PromiseOrValue<T> = T | Promise<T>;
 type StoreRecord = {
@@ -259,6 +261,19 @@ export class InMemoryLiveQueryStore {
       const { asyncIterableIterator: iterator, pushValue } =
         makePushPullAsyncIterableIterator<LiveExecutionResult>();
 
+      // utils for throttle
+      let cleanup = () => {};
+
+      const throttleIfNeeded = (fn: StoreRecord['run']) => {
+        const throttleWait = getLiveQueryOperationThrottle(operationNode, variableValues);
+        if (!isNone(throttleWait) && throttleWait > 0) {
+          const { run, cancel } = throttle(() => fn(), throttleWait);
+          cleanup = cancel;
+          return run;
+        }
+        return fn;
+      }
+
       // keep track that current execution is the latest in order to prevent race-conditions :)
       let executionCounter = 0;
       let previousIdentifier = new Set<string>(rootFieldIdentifier);
@@ -266,7 +281,7 @@ export class InMemoryLiveQueryStore {
       const record: StoreRecord = {
         iterator,
         pushValue,
-        run: () => {
+        run: throttleIfNeeded(() => {
           executionCounter = executionCounter + 1;
           const counter = executionCounter;
           const newIdentifier = new Set(rootFieldIdentifier);
@@ -351,7 +366,7 @@ export class InMemoryLiveQueryStore {
               record.pushValue(liveResult);
             }
           });
-        },
+        }),
       };
 
       this._resourceTracker.register(record, previousIdentifier);
@@ -361,6 +376,7 @@ export class InMemoryLiveQueryStore {
       // TODO: figure out how we can do this stuff without monkey-patching the iterator
       const originalReturn = iterator.return!.bind(iterator);
       iterator.return = () => {
+        cleanup();
         this._resourceTracker.release(record, previousIdentifier);
         return originalReturn();
       };
