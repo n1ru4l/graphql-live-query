@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query-patch-json-patch
 
+## 0.3.3
+
+### Patch Changes
+
+- 791ed67: add missing dependency on `@n1ru4l/graphql-live-query-patch`
+
 ## 0.3.2
 
 ### Patch Changes
