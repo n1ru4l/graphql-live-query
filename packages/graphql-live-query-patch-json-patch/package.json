@@ -22,6 +22,7 @@
     "prepack": "bob prepack"
   },
   "dependencies": {
+    "@n1ru4l/graphql-live-query-patch": "^0.3.2",
     "fast-json-patch": "3.0.0-1"
   },
   "devDependencies": {
