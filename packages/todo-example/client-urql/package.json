@@ -8,8 +8,8 @@
   },
   "devDependencies": {
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",
-    "@graphql-codegen/cli": "2.0.0",
-    "@graphql-codegen/typescript-operations": "2.0.0",
+    "@graphql-codegen/cli": "2.0.1",
+    "@graphql-codegen/typescript-operations": "2.0.1",
     "@graphql-codegen/typescript": "2.0.0",
     "@graphql-codegen/typescript-urql": "3.0.0",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.0.0",
