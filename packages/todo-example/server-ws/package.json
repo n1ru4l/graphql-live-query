@@ -9,7 +9,7 @@
     "express": "4.17.1",
     "graphql": "15.4.0-experimental-stream-defer.1",
     "graphql-ws": "5.3.0",
-    "ws": "8.0.0"
+    "ws": "8.1.0"
   },
   "devDependencies": {
     "@types/node": "14.17.9",
