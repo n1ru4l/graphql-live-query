@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@n1ru4l/graphql-live-query-patch": "^0.3.2",
-    "fast-json-patch": "3.0.0-1"
+    "fast-json-patch": "3.1.0"
   },
   "devDependencies": {
     "graphql": "15.4.0-experimental-stream-defer.1",
