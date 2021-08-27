@@ -27,13 +27,16 @@ export const createLiveQueryPatchGenerator = <PatchPayload = unknown>(
         continue;
       }
 
-      revision++;
+      const valueToPublish: ExecutionLivePatchResult = {};
 
-      const valueToPublish: ExecutionLivePatchResult = { revision };
+      let shouldPublish = true;
 
       if (previousValue) {
         const currentValue = value.data ?? {};
         valueToPublish.patch = generatePatch(previousValue, currentValue);
+
+        // skip publishing the patch if it's empty.
+        shouldPublish = valueToPublish.patch !== undefined;
         previousValue = currentValue;
       } else {
         previousValue = value.data ?? {};
@@ -49,6 +52,10 @@ export const createLiveQueryPatchGenerator = <PatchPayload = unknown>(
         valueToPublish.extensions = value.extensions;
       }
 
-      yield valueToPublish;
+      if (shouldPublish) {
+        revision++;
+        valueToPublish.revision = revision;
+        yield valueToPublish;
+      }
     }
   };

@@ -105,3 +105,45 @@ it("publishes patches for live query results", async () => {
     done: true,
   });
 });
+
+it("doesn't publish empty patches for data that hasn't changed", async () => {
+  async function* source() {
+    yield {
+      data: {
+        foo: {
+          bar: "kek",
+        },
+      },
+      isLive: true,
+    } as LiveExecutionResult;
+    yield {
+      data: {
+        foo: {
+          bar: "kek",
+        },
+      },
+      isLive: true,
+    } as LiveExecutionResult;
+  }
+
+  const stream = liveQueryJSONPatchGenerator(source());
+
+  let value = await stream.next();
+  expect(value).toEqual({
+    value: {
+      data: {
+        foo: {
+          bar: "kek",
+        },
+      },
+      revision: 1,
+    },
+    done: false,
+  });
+  value = await stream.next();
+
+  expect(value).toEqual({
+    value: undefined,
+    done: true,
+  });
+});
