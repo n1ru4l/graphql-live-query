@@ -11,7 +11,7 @@
     "packages/todo-example/*"
   ],
   "devDependencies": {
-    "@changesets/cli": "2.16.0",
+    "@changesets/cli": "2.17.0",
     "@types/jest": "26.0.23",
     "bob-the-bundler": "1.2.1",
     "husky": "7.0.2",
