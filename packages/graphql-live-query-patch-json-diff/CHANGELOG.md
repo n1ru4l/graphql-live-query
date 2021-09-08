@@ -1,5 +1,16 @@
 # @n1ru4l/graphql-live-query-patch-jsondiffpatch
 
+## 0.4.0
+
+### Minor Changes
+
+- a002527: omit empty patches from being sent to clients
+
+### Patch Changes
+
+- Updated dependencies [a002527]
+  - @n1ru4l/graphql-live-query-patch@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes
