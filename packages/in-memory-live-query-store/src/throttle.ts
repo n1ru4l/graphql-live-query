@@ -1,22 +1,25 @@
-import { runWith } from "./runWith";
-
 export interface ThrottledFunction {
   run: (...args: unknown[]) => void;
   cancel: () => void;
 }
 
-export const throttle = <T>(fn: (...args: unknown[]) => T | Promise<T>, wait: number): ThrottledFunction => {
+/**
+ * Creates a throttled function that only invokes func at most once per every wait milliseconds.
+ */
+export const throttle = <T>(
+  fn: (...args: unknown[]) => T | Promise<T>,
+  wait: number
+): ThrottledFunction => {
   let timeout: ReturnType<typeof setTimeout>;
   let lastCalled = 0;
   let cancelled = false;
 
   const exec = (...args: unknown[]) => {
     if (!cancelled) {
-      runWith(fn(...args), () => {
-        lastCalled = Date.now();
-      });
+      fn(...args);
+      lastCalled = Date.now();
     }
-  }
+  };
 
   const run = (...args: unknown[]) => {
     if (cancelled) {
@@ -44,6 +47,6 @@ export const throttle = <T>(fn: (...args: unknown[]) => T | Promise<T>, wait: nu
 
   return {
     run,
-    cancel
-  }
+    cancel,
+  };
 };

@@ -14,14 +14,14 @@ import {
   isAsyncIterable,
 } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
-  getLiveQueryOperationThrottle,
-  isLiveQueryOperationDefinitionNode,
-  LiveExecutionResult
+  getLiveDirectiveArgumentValues,
+  LiveExecutionResult,
+  getLiveDirectiveNode,
 } from "@n1ru4l/graphql-live-query";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
-import { isNone, None } from "./Maybe";
+import { isNone, isSome, None, Maybe } from "./Maybe";
 import { ResourceTracker } from "./ResourceTracker";
 import { throttle } from "./throttle";
 
@@ -99,6 +99,10 @@ export type BuildResourceIdentifierFunction = (
 export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunction =
   (params) => `${params.typename}:${params.id}`;
 
+export type ValidateThrottleFunction = (
+  throttleValue: Maybe<number>
+) => Maybe<string>;
+
 type InMemoryLiveQueryStoreParameter = {
   /**
    * Custom function for building resource identifiers.
@@ -123,6 +127,11 @@ type InMemoryLiveQueryStoreParameter = {
    * */
   includeIdentifierExtension?: boolean;
   idFieldName?: string;
+  /**
+   * Validate the provided throttle value. Return a string for triggering an error and stopping the execution.
+   * Note: Ideally this should actually happen in the validation phase, but since we do not have access to the variableValues it must happen after.
+   */
+  validateThrottle?: ValidateThrottleFunction;
 };
 
 // TODO: Investigate why parameters does not return a union...
@@ -175,6 +184,7 @@ export class InMemoryLiveQueryStore {
   private _execute = defaultExecute;
   private _includeIdentifierExtension = false;
   private _idFieldName = "id";
+  private _validateThrottle: Maybe<ValidateThrottleFunction>;
 
   constructor(params?: InMemoryLiveQueryStoreParameter) {
     if (params?.buildResourceIdentifier) {
@@ -185,6 +195,9 @@ export class InMemoryLiveQueryStore {
     }
     if (params?.idFieldName) {
       this._idFieldName = params.idFieldName;
+    }
+    if (params?.validateThrottle) {
+      this._validateThrottle = params.validateThrottle;
     }
     this._includeIdentifierExtension =
       params?.includeIdentifierExtension ??
@@ -240,11 +253,33 @@ export class InMemoryLiveQueryStore {
           ...additionalArguments,
         });
 
-      if (
-        isNone(operationNode) ||
-        isLiveQueryOperationDefinitionNode(operationNode) === false
-      ) {
+      if (isNone(operationNode)) {
         return fallbackToDefaultExecute();
+      }
+
+      const liveDirectiveNode = getLiveDirectiveNode(operationNode);
+
+      if (isNone(liveDirectiveNode)) {
+        return fallbackToDefaultExecute();
+      }
+
+      // TODO: assert throttle value whether it is in the desired range
+      const { isLive, throttleValue } = getLiveDirectiveArgumentValues(
+        liveDirectiveNode,
+        variableValues
+      );
+
+      if (isLive === false) {
+        return fallbackToDefaultExecute();
+      }
+
+      if (isSome(this._validateThrottle)) {
+        const maybeError = this._validateThrottle(throttleValue);
+        if (isSome(maybeError)) {
+          return {
+            errors: [new GraphQLError(maybeError, [liveDirectiveNode])],
+          };
+        }
       }
 
       const { schema, typeInfo } = this.getPatchedSchema(inputSchema);
@@ -261,19 +296,6 @@ export class InMemoryLiveQueryStore {
       const { asyncIterableIterator: iterator, pushValue } =
         makePushPullAsyncIterableIterator<LiveExecutionResult>();
 
-      // utils for throttle
-      let cleanup = () => {};
-
-      const throttleIfNeeded = (fn: StoreRecord['run']) => {
-        const throttleWait = getLiveQueryOperationThrottle(operationNode, variableValues);
-        if (!isNone(throttleWait) && throttleWait > 0) {
-          const { run, cancel } = throttle(() => fn(), throttleWait);
-          cleanup = cancel;
-          return run;
-        }
-        return fn;
-      }
-
       // keep track that current execution is the latest in order to prevent race-conditions :)
       let executionCounter = 0;
       let previousIdentifier = new Set<string>(rootFieldIdentifier);
@@ -281,7 +303,7 @@ export class InMemoryLiveQueryStore {
       const record: StoreRecord = {
         iterator,
         pushValue,
-        run: throttleIfNeeded(() => {
+        run: () => {
           executionCounter = executionCounter + 1;
           const counter = executionCounter;
           const newIdentifier = new Set(rootFieldIdentifier);
@@ -366,8 +388,17 @@ export class InMemoryLiveQueryStore {
               record.pushValue(liveResult);
             }
           });
-        }),
+        },
       };
+
+      // utils for throttle
+      let cancelThrottle: Function | undefined;
+
+      if (isSome(throttleValue)) {
+        const { run, cancel } = throttle(record.run, throttleValue);
+        record.run = run;
+        cancelThrottle = cancel;
+      }
 
       this._resourceTracker.register(record, previousIdentifier);
       // Execute initial query
@@ -376,7 +407,7 @@ export class InMemoryLiveQueryStore {
       // TODO: figure out how we can do this stuff without monkey-patching the iterator
       const originalReturn = iterator.return!.bind(iterator);
       iterator.return = () => {
-        cleanup();
+        cancelThrottle?.();
         this._resourceTracker.release(record, previousIdentifier);
         return originalReturn();
       };
