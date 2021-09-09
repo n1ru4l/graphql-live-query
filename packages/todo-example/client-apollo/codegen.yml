@@ -1,9 +1,9 @@
 overwrite: true
 schema: "../schema.graphql"
-documents: "src/**/*.graphql"
+documents:
+  - "src/**/*.tsx"
+  - "src/**/*.ts"
+  - "!src/gql/**/*"
 generates:
-  src/generated/graphql.tsx:
-    plugins:
-      - "typescript"
-      - "typescript-operations"
-      - "typescript-react-apollo"
+  ./src/gql/:
+    preset: gql-tag-operations-preset

@@ -1,5 +1,0 @@
-mutation TodoApplication_TodoAddMutation($id: ID!, $content: String!) {
-  todoAdd(id: $id, content: $content) {
-    __typename
-  }
-}

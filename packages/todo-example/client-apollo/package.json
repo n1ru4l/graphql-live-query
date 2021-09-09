@@ -7,13 +7,12 @@
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.0.0",
     "@n1ru4l/socket-io-graphql-client": "*",
+    "@app/gql": "link:./src/gql",
     "graphql": "15.4.0-experimental-stream-defer.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.2.0",
-    "@graphql-codegen/typescript-operations": "2.1.3",
-    "@graphql-codegen/typescript": "2.2.1",
-    "@graphql-codegen/typescript-react-apollo": "3.1.3",
+    "@graphql-codegen/gql-tag-operations-preset": "1.1.4",
     "@testing-library/jest-dom": "5.13.0",
     "@testing-library/react": "12.0.0",
     "@testing-library/user-event": "13.2.1",

@@ -1,3 +1,0 @@
-query TodoApplication_TodosQuery @live {
-  ...TodoApplication_data
-}

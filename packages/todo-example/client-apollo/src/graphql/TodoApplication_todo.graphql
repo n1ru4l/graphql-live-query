@@ -1,5 +1,0 @@
-fragment TodoApplication_todo on Todo {
-  id
-  content
-  isCompleted
-}

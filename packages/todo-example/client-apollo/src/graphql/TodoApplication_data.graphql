@@ -1,6 +1,0 @@
-fragment TodoApplication_data on Query {
-  todos {
-    id
-    ...TodoApplication_todo
-  }
-}
