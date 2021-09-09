@@ -27,10 +27,16 @@ jobs:
         run: yarn build
 
       - name: "Build Relay App"
-        run: yarn workspace @n1ru4l/todo-example-client-relay build
+        run: >
+          yarn workspace @n1ru4l/todo-example-client-relay build
+          yarn workspace @n1ru4l/todo-example-client-relay ts:check
 
       - name: "Build Apollo App"
-        run: yarn workspace @n1ru4l/todo-example-client-apollo build
+        run: >
+          yarn workspace @n1ru4l/todo-example-client-apollo build
+          yarn workspace @n1ru4l/todo-example-client-apollo ts:check
 
       - name: "Build Urql App"
-        run: yarn workspace @n1ru4l/todo-example-client-urql build
+        run: >
+          yarn workspace @n1ru4l/todo-example-client-urql build
+          yarn workspace @n1ru4l/todo-example-client-urql ts:check
