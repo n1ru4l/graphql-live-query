@@ -111,7 +111,7 @@ const tock = (() => {
       mockedTime = time;
       spy.mockRestore();
       spy = jest.spyOn(Date, "now").mockReturnValue(mockedTime);
-      jest.useFakeTimers();
+      jest.useFakeTimers("legacy");
     },
 
     advanceTime(time = 0) {
