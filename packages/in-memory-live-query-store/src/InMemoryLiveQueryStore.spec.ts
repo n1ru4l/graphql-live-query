@@ -31,6 +31,8 @@ function assertNoAsyncIterable(value: unknown) {
   }
 }
 
+const runAllPendingStuff = () => new Promise((res) => setImmediate(res));
+
 const getAllValues = async <T>(values: AsyncIterableIterator<T>) => {
   const results: T[] = [];
 
@@ -661,7 +663,7 @@ it("can throttle and prevent multiple publishes", async () => {
   store.invalidate("Query.foo");
   store.invalidate("Query.foo");
 
-  await new Promise((res) => setImmediate(res));
+  await runAllPendingStuff();
   // only one value should be published
   expect(values).toHaveLength(1);
   executionResult.return!();
@@ -695,16 +697,16 @@ it("can throttle and publish new values after the throttle interval", async () =
     }
   })();
   store.invalidate("Query.foo");
-  await new Promise((res) => setImmediate(res));
+  await runAllPendingStuff();
   expect(values).toHaveLength(1);
   tock.advanceTime(100);
-  await new Promise((res) => setImmediate(res));
+  await runAllPendingStuff();
   expect(values).toHaveLength(2);
   executionResult.return!();
   await done;
 });
 
-it("can disallow throttle certain values", async () => {
+it("can prevent execution by returning a string from validateThrottle", async () => {
   const schema = createTestSchema();
 
   const document = parse(/* GraphQL */ `
@@ -714,7 +716,7 @@ it("can disallow throttle certain values", async () => {
   `);
 
   const store = new InMemoryLiveQueryStore({
-    validateThrottle: (value) => {
+    validateThrottleValue: (value) => {
       return value === 100 ? "Noop" : null;
     },
   });
@@ -743,4 +745,50 @@ it("can disallow throttle certain values", async () => {
       ],
     }
   `);
+});
+
+it("can override the throttle interval by returning a number from validateThrottle", async () => {
+  tock.useFakeTime(Date.now());
+
+  const schema = createTestSchema();
+
+  const document = parse(/* GraphQL */ `
+    query foo($throttle: Int) @live(throttle: $throttle) {
+      foo
+    }
+  `);
+
+  const store = new InMemoryLiveQueryStore({
+    validateThrottleValue: (value) => {
+      expect(value).toEqual(420);
+      return 690;
+    },
+  });
+
+  let executionResult = store.execute({
+    schema,
+    document,
+    variableValues: {
+      throttle: 420,
+    },
+  });
+  assertAsyncIterable(executionResult);
+
+  const values: Array<unknown> = [];
+  const done = (async function run() {
+    for await (const value of executionResult) {
+      values.push(value);
+    }
+  })();
+  store.invalidate("Query.foo");
+  await runAllPendingStuff();
+  expect(values).toHaveLength(1);
+  tock.advanceTime(420);
+  await runAllPendingStuff();
+  expect(values).toHaveLength(1);
+  tock.advanceTime(690);
+  await runAllPendingStuff();
+  expect(values).toHaveLength(2);
+  executionResult.return!();
+  await done;
 });

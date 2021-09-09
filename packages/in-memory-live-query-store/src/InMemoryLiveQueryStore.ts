@@ -99,9 +99,9 @@ export type BuildResourceIdentifierFunction = (
 export const defaultResourceIdentifierNormalizer: BuildResourceIdentifierFunction =
   (params) => `${params.typename}:${params.id}`;
 
-export type ValidateThrottleFunction = (
+export type ValidateThrottleValueFunction = (
   throttleValue: Maybe<number>
-) => Maybe<string>;
+) => Maybe<string | number>;
 
 type InMemoryLiveQueryStoreParameter = {
   /**
@@ -128,10 +128,13 @@ type InMemoryLiveQueryStoreParameter = {
   includeIdentifierExtension?: boolean;
   idFieldName?: string;
   /**
-   * Validate the provided throttle value. Return a string for triggering an error and stopping the execution.
-   * Note: Ideally this should actually happen in the validation phase, but since we do not have access to the variableValues it must happen after.
+   * Validate the provided throttle value.
+   *
+   * Return a string for triggering an error and stopping the execution.
+   * Return a number for overriding the provided value.
+   * Return null or undefined for disabling throttle completely.
    */
-  validateThrottle?: ValidateThrottleFunction;
+  validateThrottleValue?: ValidateThrottleValueFunction;
 };
 
 // TODO: Investigate why parameters does not return a union...
@@ -184,7 +187,7 @@ export class InMemoryLiveQueryStore {
   private _execute = defaultExecute;
   private _includeIdentifierExtension = false;
   private _idFieldName = "id";
-  private _validateThrottle: Maybe<ValidateThrottleFunction>;
+  private _validateThrottleValue: Maybe<ValidateThrottleValueFunction>;
 
   constructor(params?: InMemoryLiveQueryStoreParameter) {
     if (params?.buildResourceIdentifier) {
@@ -196,8 +199,8 @@ export class InMemoryLiveQueryStore {
     if (params?.idFieldName) {
       this._idFieldName = params.idFieldName;
     }
-    if (params?.validateThrottle) {
-      this._validateThrottle = params.validateThrottle;
+    if (params?.validateThrottleValue) {
+      this._validateThrottleValue = params.validateThrottleValue;
     }
     this._includeIdentifierExtension =
       params?.includeIdentifierExtension ??
@@ -263,8 +266,7 @@ export class InMemoryLiveQueryStore {
         return fallbackToDefaultExecute();
       }
 
-      // TODO: assert throttle value whether it is in the desired range
-      const { isLive, throttleValue } = getLiveDirectiveArgumentValues(
+      let { isLive, throttleValue } = getLiveDirectiveArgumentValues(
         liveDirectiveNode,
         variableValues
       );
@@ -273,12 +275,19 @@ export class InMemoryLiveQueryStore {
         return fallbackToDefaultExecute();
       }
 
-      if (isSome(this._validateThrottle)) {
-        const maybeError = this._validateThrottle(throttleValue);
-        if (isSome(maybeError)) {
+      if (isSome(this._validateThrottleValue)) {
+        const maybeErrorOrNewThrottleValue =
+          this._validateThrottleValue(throttleValue);
+        if (typeof maybeErrorOrNewThrottleValue === "string") {
           return {
-            errors: [new GraphQLError(maybeError, [liveDirectiveNode])],
+            errors: [
+              new GraphQLError(maybeErrorOrNewThrottleValue, [
+                liveDirectiveNode,
+              ]),
+            ],
           };
+        } else {
+          throttleValue = maybeErrorOrNewThrottleValue;
         }
       }
 
