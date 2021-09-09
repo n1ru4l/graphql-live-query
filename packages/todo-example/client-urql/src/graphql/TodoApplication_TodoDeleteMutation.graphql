@@ -1,5 +1,0 @@
-mutation TodoApplication_TodoDeleteMutation($id: ID!) {
-  todoDelete(id: $id) {
-    __typename
-  }
-}

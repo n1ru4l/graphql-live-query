@@ -1,5 +1,0 @@
-mutation TodoApplication_TodoToggleIsCompletedMutation($id: ID!) {
-  todoToggleIsCompleted(id: $id) {
-    __typename
-  }
-}

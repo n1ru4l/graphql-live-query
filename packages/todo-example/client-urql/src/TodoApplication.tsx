@@ -1,25 +1,52 @@
-import React from "react";
+import * as React from "react";
 import classnames from "classnames";
-import {
-  TodoApplication_TodoFragment,
-  useTodoApplication_TodoDeleteMutationMutation,
-  useTodoApplication_TodoChangeContentMutationMutation,
-  useTodoApplication_TodoToggleIsCompletedMutationMutation,
-  TodoApplication_DataFragment,
-  useTodoApplication_TodoAddMutationMutation,
-  useTodoApplication_TodosQueryQuery,
-} from "./generated/graphql";
+import { gql, DocumentType } from "./gql";
+import { useMutation, useQuery } from "urql";
+
+const TodoApplication_TodoFragment = gql(/* GraphQL */ `
+  fragment TodoApplication_todo on Todo {
+    id
+    content
+    isCompleted
+  }
+`);
+
+const TodoApplication_TodoChangeContentMutation = gql(/* GraphQL */ `
+  mutation TodoApplication_TodoChangeContentMutation(
+    $id: ID!
+    $content: String!
+  ) {
+    todoChangeContent(id: $id, content: $content) {
+      __typename
+    }
+  }
+`);
+
+const TodoApplication_TodoDeleteMutation = gql(/* GraphQL */ `
+  mutation TodoApplication_TodoDeleteMutation($id: ID!) {
+    todoDelete(id: $id) {
+      __typename
+    }
+  }
+`);
+
+const TodoApplication_TodoToggleIsCompletedMutation = gql(/* GraphQL */ `
+  mutation TodoApplication_TodoToggleIsCompletedMutation($id: ID!) {
+    todoToggleIsCompleted(id: $id) {
+      __typename
+    }
+  }
+`);
 
 const TodoRenderer = (props: {
-  todo: TodoApplication_TodoFragment;
+  todo: DocumentType<typeof TodoApplication_TodoFragment>;
 }): React.ReactElement => {
   const [isEditing, setIsEditing] = React.useState(false);
-  const [, deleteTodo] = useTodoApplication_TodoDeleteMutationMutation();
-  const [, changeTodo] = useTodoApplication_TodoChangeContentMutationMutation();
-  const [
-    ,
-    toggleIsComplete,
-  ] = useTodoApplication_TodoToggleIsCompletedMutationMutation();
+  const [, deleteTodo] = useMutation(TodoApplication_TodoDeleteMutation);
+  const [, changeTodo] = useMutation(TodoApplication_TodoChangeContentMutation);
+  const [, toggleIsComplete] = useMutation(
+    TodoApplication_TodoToggleIsCompletedMutation
+  );
   const handleDestroyClick = () => {
     deleteTodo({
       id: props.todo.id,
@@ -84,8 +111,17 @@ const TodoRenderer = (props: {
 
 const Todo = TodoRenderer;
 
+const TodoApplication_DataFragment = gql(/* GraphQL */ `
+  fragment TodoApplication_data on Query {
+    todos {
+      id
+      ...TodoApplication_todo
+    }
+  }
+`);
+
 const TodoListRenderer = (props: {
-  data: TodoApplication_DataFragment;
+  data: DocumentType<typeof TodoApplication_DataFragment>;
 }): React.ReactElement => {
   return (
     <section className="main">
@@ -187,9 +223,23 @@ const randomId = () => {
   return uint32.toString(16);
 };
 
+const TodoApplication_TodosQuery = gql(/* GraphQL */ `
+  query TodoApplication_TodosQuery @live {
+    ...TodoApplication_data
+  }
+`);
+
+const TodoApplication_TodoAddMutation = gql(/* GraphQL */ `
+  mutation TodoApplication_TodoAddMutation($id: ID!, $content: String!) {
+    todoAdd(id: $id, content: $content) {
+      __typename
+    }
+  }
+`);
+
 export const TodoApplication = (): React.ReactElement => {
-  const [result] = useTodoApplication_TodosQueryQuery();
-  const [, addTodo] = useTodoApplication_TodoAddMutationMutation();
+  const [result] = useQuery({ query: TodoApplication_TodosQuery });
+  const [, addTodo] = useMutation(TodoApplication_TodoAddMutation);
   const handleTextInputSave = (content: string) => {
     addTodo({
       id: randomId(),
