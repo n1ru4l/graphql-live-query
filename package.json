@@ -37,12 +37,9 @@
     "ts:transpile": "tsc --project tsconfig.build.json",
     "prerelease": "yarn build",
     "release": "changeset publish",
-    "postinstall": "patch-package"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "postinstall": "patch-package",
+    "prepare": "husky install",
+    "lint-staged": "lint-staged"
   },
   "lint-staged": {
     "**/*.{ts,tsx,graphql,yml}": [
