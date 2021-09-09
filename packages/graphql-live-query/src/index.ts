@@ -1,4 +1,5 @@
 export * from "./GraphQLLiveDirective";
-export * from "./isLiveQueryOperationDefinitionNode";
 export * from "./rules/NoLiveMixedWithDeferStreamRule";
 export * from "./LiveExecutionResult";
+export * from "./getLiveDirectiveNode";
+export * from "./getLiveDirectiveArgumentValues";

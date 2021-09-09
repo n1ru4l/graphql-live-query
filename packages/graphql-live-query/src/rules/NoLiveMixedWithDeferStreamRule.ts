@@ -1,13 +1,12 @@
 import { GraphQLError } from "graphql";
 import { ValidationRule } from "graphql";
-import { isLiveQueryOperationDefinitionNode } from "../isLiveQueryOperationDefinitionNode";
+import { getLiveDirectiveNode } from "../getLiveDirectiveNode";
+import { isNone } from "../Maybe";
 
 export const NoLiveMixedWithDeferStreamRule: ValidationRule = (context) => {
   return {
     OperationDefinition(operationDefinitionNode) {
-      if (
-        isLiveQueryOperationDefinitionNode(operationDefinitionNode) === false
-      ) {
+      if (isNone(getLiveDirectiveNode(operationDefinitionNode))) {
         return false;
       }
     },
