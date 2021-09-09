@@ -1,5 +1,40 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.7.0
+
+### Minor Changes
+
+- e893ecc: Add support for the `@live(throttle:)` directive argument for negotiating a throttle between the server and the client. This is useful for preventing the server to spam the client for data that might be updating too frequently.
+
+  The `InMemoryLiveQueryStore` now accepts a `validateThrottleValue` option that can be used to validate the incoming throttle value sent from clients.
+
+  ```ts
+  const store = new InMemoryLiveQueryStore({
+    validateThrottleValue: (value /* value as sent by client */) => {
+      // value can either be null/undefined or a number
+      // returning a string from this function will treat the provided value as invalid
+      // and send an error back to the client.
+      if (value == null || value > 1000) {
+        return "Must provide throttle value in the range from 0-1000";
+      }
+      // returning a number will replace the user sent throttle value
+      if (value === 420) {
+        return 690;
+      }
+      // returning null or undefined will result in no throttle being used.
+      return null;
+    }
+  });
+  ```
+
+- 8e14fd2: improve ESM support by using export fields and .mjs file extensions
+
+### Patch Changes
+
+- Updated dependencies [e893ecc]
+- Updated dependencies [8e14fd2]
+  - @n1ru4l/graphql-live-query@0.8.0
+
 ## 0.6.6
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @n1ru4l/graphql-live-query
 
+## 0.8.0
+
+### Minor Changes
+
+- e893ecc: Add `throttle` argument for the `@live` directive for negotiating a throttle between the server and the client. This is useful for preventing the server to spam the client for data that might be updating too frequently.
+- 8e14fd2: improve ESM support by using export fields and .mjs file extensions
+
 ## 0.7.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.10.0
+
+### Minor Changes
+
+- 8e14fd2: improve ESM support by using export fields and .mjs file extensions
+
 ## 0.9.5
 
 ### Patch Changes
