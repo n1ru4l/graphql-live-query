@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query-patch
 
+## 0.5.0
+
+### Minor Changes
+
+- 8e14fd2: improve ESM support by using export fields and .mjs file extensions
+
 ## 0.4.0
 
 ### Minor Changes
