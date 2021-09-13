@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query
 
+## 0.8.1
+
+### Patch Changes
+
+- fbbee22: re-add `isLiveQueryOperationDefinitionNode` function
+
 ## 0.8.0
 
 ### Minor Changes

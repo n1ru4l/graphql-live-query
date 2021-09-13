@@ -1,5 +1,12 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies [fbbee22]
+  - @n1ru4l/graphql-live-query@0.8.1
+
 ## 0.7.0
 
 ### Minor Changes
