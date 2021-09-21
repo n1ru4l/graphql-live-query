@@ -2213,10 +2213,10 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/relay-runtime@*", "@types/relay-runtime@11.0.4":
-  version "11.0.4"
-  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-11.0.4.tgz#b22ac549b1c6790fb71b20acf3949d97c0cadf7e"
-  integrity sha512-dz3IuWmiIzrwQCbBeap1ispL8mvr6noRjQDeL7LLc4Y/kDJQWhfnwCIOkIt+ABNnrAtWZb8jK3b/oV6RGKXcfw==
+"@types/relay-runtime@*", "@types/relay-runtime@12.0.0":
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-12.0.0.tgz#0045cde65fff67c7c34c8cd1cff7bd61eb45c7f9"
+  integrity sha512-vICXIW4+CGP2te0uQDAaR93Dge4vnLBxECpHFWGBmj02b6CJqNiIWt/IWc+uwL8ljZ2IermfjTyd07HaZuO+VA==
 
 "@types/resolve@0.0.8":
   version "0.0.8"
