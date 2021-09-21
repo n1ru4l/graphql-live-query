@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "3.4.11",
+    "@apollo/client": "3.4.13",
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.0.0",
     "@n1ru4l/socket-io-graphql-client": "*",
