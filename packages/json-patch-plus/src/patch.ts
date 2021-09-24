@@ -4,7 +4,6 @@ type Context = {
   children?: Array<Context>;
   result: unknown;
   name?: string | number;
-  stopped: boolean;
   nested?: boolean;
 };
 
@@ -15,7 +14,6 @@ export function patch(params: { left: unknown; delta: unknown }): unknown {
     children: undefined,
     result: undefined,
     name: undefined,
-    stopped: false,
     nested: false,
   };
 
@@ -67,7 +65,6 @@ function nested_collectChildrenPatchFilter(context: Context) {
     }
   }
   context.result = context.left;
-  context.stopped = true;
 }
 
 function array_collectChildrenPatchFilter(context: Context) {
@@ -84,13 +81,11 @@ function array_collectChildrenPatchFilter(context: Context) {
     context.left[child.name!] = child.result;
   }
   context.result = context.left;
-  context.stopped = true;
 }
 
 function trivial_patchFilter(context: Context) {
   if (typeof context.delta === "undefined") {
     context.result = context.left;
-    context.stopped = true;
     return;
   }
   context.nested = !Array.isArray(context.delta);
@@ -99,17 +94,14 @@ function trivial_patchFilter(context: Context) {
   }
   if (context.delta.length === 1) {
     context.result = context.delta[0];
-    context.stopped = true;
     return;
   }
   if (context.delta.length === 2) {
     context.result = context.delta[1];
-    context.stopped = true;
     return;
   }
   if (context.delta.length === 3 && context.delta[2] === 0) {
     context.result = undefined;
-    context.stopped = true;
   }
 }
 
@@ -131,10 +123,8 @@ function nested_patchFilter(context: Context) {
       delta: context.delta[name],
       result: undefined,
       name,
-      stopped: false,
     });
   }
-  context.stopped = false;
 }
 
 const ARRAY_MOVE = 3;
@@ -231,15 +221,12 @@ function array_patchFilter(context: Context) {
         delta: modification.delta,
         name: modification.index,
         result: undefined,
-        stopped: false,
       });
     }
   }
 
   if (!context.children) {
     context.result = context.left;
-    context.stopped = true;
     return;
   }
-  context.stopped = true;
 }

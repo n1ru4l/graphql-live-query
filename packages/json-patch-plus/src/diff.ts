@@ -13,7 +13,6 @@ type Context = {
   rightType?: string;
   rightIsArray?: boolean;
   result: unknown;
-  stopped: boolean;
   children?: Array<Context>;
   name?: string | number;
   includePreviousValue: boolean;
@@ -46,7 +45,6 @@ export function diff(
 
   const context: Context = {
     result: undefined,
-    stopped: false,
     left: input.left,
     right: input.right,
     includePreviousValue,
@@ -85,14 +83,12 @@ export function diff(
 function trivialDiffFilter(context: Context) {
   if (context.left === context.right) {
     context.result = undefined;
-    context.stopped = true;
     return;
   }
 
   // Item was added
   if (typeof context.left === "undefined") {
     context.result = [context.right];
-    context.stopped = true;
     return;
   }
 
@@ -100,7 +96,6 @@ function trivialDiffFilter(context: Context) {
   if (typeof context.right === "undefined") {
     const previousValue = context.includePreviousValue ? context.left : null;
     context.result = [previousValue, 0, 0];
-    context.stopped = true;
     return;
   }
 
@@ -110,13 +105,11 @@ function trivialDiffFilter(context: Context) {
     const previousValue = context.includePreviousValue ? context.left : null;
 
     context.result = [previousValue, context.right];
-    context.stopped = true;
     return;
   }
   if (context.leftType === "boolean" || context.leftType === "number") {
     const previousValue = context.includePreviousValue ? context.left : null;
     context.result = [previousValue, context.right];
-    context.stopped = true;
     return;
   }
   if (context.leftType === "object") {
@@ -128,7 +121,6 @@ function trivialDiffFilter(context: Context) {
   if (context.leftIsArray !== context.rightIsArray) {
     const previousValue = context.includePreviousValue ? context.left : null;
     context.result = [previousValue, context.right];
-    context.stopped = true;
     return;
   }
 }
@@ -153,7 +145,6 @@ function nested_collectChildrenDiffFilter(context: Context) {
     result["_t"] = "a";
   }
   context.result = result;
-  context.stopped = true;
 }
 
 function nested_objectsDiffFilter(context: Context) {
@@ -176,7 +167,6 @@ function nested_objectsDiffFilter(context: Context) {
       left: left[name],
       right: right[name],
       result: undefined,
-      stopped: false,
       name,
       includePreviousValue: context.includePreviousValue,
       objectHash: context.objectHash,
@@ -196,7 +186,6 @@ function nested_objectsDiffFilter(context: Context) {
         left: undefined,
         right: right[name],
         result: undefined,
-        stopped: false,
         name,
         includePreviousValue: context.includePreviousValue,
         objectHash: context.objectHash,
@@ -208,7 +197,6 @@ function nested_objectsDiffFilter(context: Context) {
   if (!context.children || context.children.length === 0) {
     context.result = undefined;
   }
-  context.stopped = true;
 }
 
 export type MatchContext = {
@@ -271,7 +259,6 @@ function array_diffFilter(context: Context) {
       left: left[index],
       right: right[index],
       result: undefined,
-      stopped: false,
       name: index,
       includePreviousValue: context.includePreviousValue,
       objectHash: context.objectHash,
@@ -304,7 +291,6 @@ function array_diffFilter(context: Context) {
       left: left[index1],
       right: right[index2],
       result: undefined,
-      stopped: false,
       name: index2,
       includePreviousValue: context.includePreviousValue,
       objectHash: context.objectHash,
@@ -318,7 +304,6 @@ function array_diffFilter(context: Context) {
     if (len1 === len2) {
       // arrays are identical
       context.result = undefined;
-      context.stopped = true;
       return;
     }
     // trivial case, a block (1 or more consecutive items) was added
@@ -330,7 +315,6 @@ function array_diffFilter(context: Context) {
       result[index] = [array2[index]];
     }
     context.result = result;
-    context.stopped = true;
     return;
   }
   if (commonHead + commonTail === len2) {
@@ -347,7 +331,6 @@ function array_diffFilter(context: Context) {
       ];
     }
     context.result = result;
-    context.stopped = true;
     return;
   }
 
@@ -420,7 +403,6 @@ function array_diffFilter(context: Context) {
               left: left[index1],
               right: right[index2],
               result: undefined,
-              stopped: false,
               name: index2,
               includePreviousValue: context.includePreviousValue,
               objectHash: context.objectHash,
@@ -452,7 +434,6 @@ function array_diffFilter(context: Context) {
         left: left[index1],
         right: right[index2],
         result: undefined,
-        stopped: false,
         name: index2,
         includePreviousValue: context.includePreviousValue,
         objectHash: context.objectHash,
@@ -462,7 +443,6 @@ function array_diffFilter(context: Context) {
   }
 
   context.result = result;
-  context.stopped = true;
 }
 
 function arraysHaveMatchByRef(
