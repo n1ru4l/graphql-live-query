@@ -1,9 +1,9 @@
 import * as lcs from "./lcs";
+import type { Delta } from "./types";
 
-type Patch = unknown;
 type Input = unknown;
 
-type ObjectHashFunction = (object: object, index?: number) => string;
+export type ObjectHashFunction = (object: object, index?: number) => string;
 
 type Context = {
   left: Input;
@@ -40,7 +40,7 @@ export type DiffOptions = {
 export function diff(
   input: { left: Input; right: Input },
   options?: DiffOptions
-): Patch {
+): Delta {
   const includePreviousValue = options?.includePreviousValue ?? false;
   const objectHash = options?.objectHash;
   const matchByPosition = options?.matchByPosition;
@@ -78,7 +78,7 @@ export function diff(
 
   process(context);
 
-  return context.result;
+  return context.result as Delta;
 }
 
 // diff primitive values and non arrays
@@ -109,7 +109,11 @@ function trivialDiffFilter(context: Context) {
     context.result = [previousValue, context.right];
     return;
   }
-  if (context.leftType === "boolean" || context.leftType === "number") {
+  if (
+    context.leftType === "boolean" ||
+    context.leftType === "number" ||
+    context.leftType === "string"
+  ) {
     const previousValue = context.includePreviousValue ? context.left : null;
     context.result = [previousValue, context.right];
     return;
@@ -201,7 +205,7 @@ function nested_objectsDiffFilter(context: Context) {
   }
 }
 
-export type MatchContext = {
+type MatchContext = {
   objectHash?: ObjectHashFunction;
   matchByPosition: boolean | undefined;
   hashCache1?: Array<unknown>;

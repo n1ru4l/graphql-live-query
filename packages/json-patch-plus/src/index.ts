@@ -1,2 +1,3 @@
-export { diff } from "./diff";
-export { patch } from "./patch";
+export * from "./diff";
+export * from "./patch";
+export type { Delta } from "./types";

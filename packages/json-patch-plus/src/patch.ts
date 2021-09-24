@@ -1,13 +1,18 @@
+import type { Delta } from "./types";
+
 type Context = {
   left: any;
-  delta: any;
+  delta: Delta;
   children?: Array<Context>;
   result: unknown;
   name?: string | number;
   nested?: boolean;
 };
 
-export function patch(params: { left: unknown; delta: unknown }): unknown {
+export function patch<TLeft extends any>(params: {
+  left: TLeft;
+  delta: Delta;
+}): TLeft {
   const context: Context = {
     left: params.left,
     delta: params.delta,
@@ -39,7 +44,7 @@ export function patch(params: { left: unknown; delta: unknown }): unknown {
 
   process(context);
 
-  return context.result;
+  return context.result as TLeft;
 }
 
 function nested_collectChildrenPatchFilter(context: Context) {
