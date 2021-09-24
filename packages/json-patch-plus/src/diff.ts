@@ -1,4 +1,4 @@
-import * as lcs from "./utils/lcs";
+import * as lcs from "./lcs";
 
 type Patch = unknown;
 type Input = unknown;
@@ -22,8 +22,17 @@ type Context = {
 };
 
 export type DiffOptions = {
+  /**
+   * Whether the previous value should be included in the diff.
+   * This can drastically increase the patch size and should only be used for debugging
+   * or cases where you need to perform more advanced consistency checks.
+   * */
   includePreviousValue?: boolean;
+  /**
+   * A function for generating a identifier from an object in order to produce more performant list update patches.
+   */
   objectHash?: ObjectHashFunction;
+  /** Actually not sure what this does :) */
   matchByPosition?: boolean;
 };
 
@@ -155,14 +164,10 @@ function nested_objectsDiffFilter(context: Context) {
   const left = context.left as Record<string | number | symbol, unknown>;
   const right = context.right as Record<string | number | symbol, unknown>;
 
-  //   const propertyFilter = context.options.propertyFilter;
   for (const name in left) {
     if (!Object.prototype.hasOwnProperty.call(context.left, name)) {
       continue;
     }
-    // if (propertyFilter && !propertyFilter(name, context)) {
-    //   continue;
-    // }
 
     if (context.children === undefined) {
       context.children = [];
@@ -182,9 +187,7 @@ function nested_objectsDiffFilter(context: Context) {
     if (!Object.prototype.hasOwnProperty.call(context.right, name)) {
       continue;
     }
-    // if (propertyFilter && !propertyFilter(name, context)) {
-    //   continue;
-    // }
+
     if (typeof left[name] === "undefined") {
       if (context.children === undefined) {
         context.children = [];
@@ -337,7 +340,11 @@ function array_diffFilter(context: Context) {
     };
 
     for (index = commonHead; index < len1 - commonTail; index++) {
-      result[`_${index}`] = [array1[index], 0, 0];
+      result[`_${index}`] = [
+        context.includePreviousValue ? array1[index] : null,
+        0,
+        0,
+      ];
     }
     context.result = result;
     context.stopped = true;
@@ -359,7 +366,11 @@ function array_diffFilter(context: Context) {
   for (index = commonHead; index < len1 - commonTail; index++) {
     if (seq.indices1.indexOf(index - commonHead) < 0) {
       // removed
-      result[`_${index}`] = [array1[index], 0, 0];
+      result[`_${index}`] = [
+        context.includePreviousValue ? array1[index] : null,
+        0,
+        0,
+      ];
       removedItems.push(index);
     }
   }

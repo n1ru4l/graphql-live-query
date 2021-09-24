@@ -1,10 +1,8 @@
-/*
-
-LCS implementation that supports arrays or strings
-
-reference: http://en.wikipedia.org/wiki/Longest_common_subsequence_problem
-
-*/
+/**
+ * LCS implementation that supports arrays or strings
+ *
+ * reference: http://en.wikipedia.org/wiki/Longest_common_subsequence_problem
+ */
 
 export function defaultMatch(
   array1: Array<unknown>,
