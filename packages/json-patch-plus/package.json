@@ -1,0 +1,50 @@
+{
+  "name": "@n1ru4l/json-patch-plus",
+  "version": "0.0.0",
+  "author": "n1ru4l <laurinquast@googlemail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n1ru4l/graphql-live-queries.git",
+    "directory": "packages/json-patch-plus"
+  },
+  "bugs": {
+    "url": "https://github.com/n1ru4l/graphql-live-queries/issues"
+  },
+  "homepage": "https://github.com/n1ru4l/graphql-live-queries#readme",
+  "keywords": [
+    "json",
+    "patch",
+    "diff"
+  ],
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./*": {
+      "require": "./dist/*.js",
+      "import": "./dist/*.mjs"
+    }
+  },
+  "typings": "dist/index.d.ts",
+  "typescript": {
+    "definition": "dist/index.d.ts"
+  },
+  "scripts": {
+    "test": "jest",
+    "prepack": "bob prepack"
+  },
+  "buildOptions": {
+    "input": "./src/index.ts"
+  },
+  "publishConfig": {
+    "directory": "dist",
+    "access": "public"
+  }
+}
