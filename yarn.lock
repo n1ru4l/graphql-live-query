@@ -2291,10 +2291,10 @@
   resolved "https://registry.yarnpkg.com/@types/zen-observable/-/zen-observable-0.8.3.tgz#781d360c282436494b32fe7d9f7f8e64b3118aa3"
   integrity sha512-fbF6oTd4sGGy0xjHPKAt+eS2CrxJ3+6gQ3FGcBoIJR2TLAyCkCyI8JqZNy+FeON0AhVgNJoUumVoZQjBFUqHkw==
 
-"@urql/core@^2.1.4":
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/@urql/core/-/core-2.1.4.tgz#b1fb487e9b830360192b127a26f505994cef474a"
-  integrity sha512-OmlS9DpVZmP3+dk6iwevISkp4byHenfMlbSB7NB0xNLRSGSQ35/SCJqlynpGrcVg3LKQO/Y5fdBCbHhGanJQQQ==
+"@urql/core@^2.3.2":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@urql/core/-/core-2.3.2.tgz#27557cbac602225ff2ee509e3c40f763781f0272"
+  integrity sha512-Ei9VxtW0zgT4xT00aAXCbDYzyX9Oy6wUceosnCqu/3DD283GxXxGrflunfdIJEnLMgA/INGN1TdtpON7TA3yDQ==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.0"
     wonka "^4.0.14"
@@ -7907,12 +7907,12 @@ url-parse-lax@^3.0.0:
   dependencies:
     prepend-http "^2.0.0"
 
-urql@2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/urql/-/urql-2.0.4.tgz#8d6d9f98521c45afc56ca1373141a5cc767af49f"
-  integrity sha512-ARITb+l+DsGbK/y3mxQjbC4lw8Z4IqFfk4Va8Eg1rDpN1HhOkMTxFA/YvGZoQIU1re/SsARLe//TEBtsgH0/CQ==
+urql@2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/urql/-/urql-2.0.5.tgz#ab56bdc659fc0f4b3bc5b286359a354c74817bdb"
+  integrity sha512-UOl37CkNO1sfhw8jPihq+9NKUpTLnsRjpK7vmOVqPceqSO0rYXHOAEJp2TWDhyLjn2lYDlDlAfDaxNyK5m1FOA==
   dependencies:
-    "@urql/core" "^2.1.4"
+    "@urql/core" "^2.3.2"
     wonka "^4.0.14"
 
 utils-merge@1.0.1:
