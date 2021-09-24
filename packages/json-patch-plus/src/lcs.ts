@@ -33,22 +33,21 @@ export function lengthMatrix(
 ) {
   const len1 = array1.length;
   const len2 = array2.length;
-  let x, y;
 
   // initialize empty matrix of len1+1 x len2+1
   let matrix: Matrix = Object.assign([len1 + 1], {
     match,
   });
 
-  for (x = 0; x < len1 + 1; x++) {
+  for (let x = 0; x < len1 + 1; x++) {
     matrix[x] = [len2 + 1];
-    for (y = 0; y < len2 + 1; y++) {
+    for (let y = 0; y < len2 + 1; y++) {
       matrix[x][y] = 0;
     }
   }
   // save sequence lengths for each coordinate
-  for (x = 1; x < len1 + 1; x++) {
-    for (y = 1; y < len2 + 1; y++) {
+  for (let x = 1; x < len1 + 1; x++) {
+    for (let y = 1; y < len2 + 1; y++) {
       if (match(array1, array2, x - 1, y - 1, context)) {
         matrix[x][y] = matrix[x - 1][y - 1] + 1;
       } else {
@@ -119,10 +118,5 @@ export function get(
     match || defaultMatch,
     innerContext
   );
-  const result = backtrack(matrix, array1, array2, innerContext);
-  if (typeof array1 === "string" && typeof array2 === "string") {
-    // @ts-ignore
-    result.sequence = result.sequence.join("");
-  }
-  return result;
+  return backtrack(matrix, array1, array2, innerContext);
 }
