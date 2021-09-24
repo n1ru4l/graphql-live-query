@@ -15,10 +15,10 @@ it("produces patch for changed primitive type", () => {
       left: 1,
       right: 2,
     })
-  ).toEqual([1, 2]);
+  ).toEqual([null, 2]);
 });
 
-it("produces patch for changed primitive type (exclude previous value)", () => {
+it("produces patch for changed primitive type (include previous value)", () => {
   expect(
     diff(
       {
@@ -26,10 +26,10 @@ it("produces patch for changed primitive type (exclude previous value)", () => {
         right: 2,
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
-  ).toEqual([null, 2]);
+  ).toEqual([1, 2]);
 });
 
 it("produces patch for removed primitive type", () => {
@@ -39,7 +39,7 @@ it("produces patch for removed primitive type", () => {
       right: undefined,
     })
     // the third array member 0 indicates that the value got removed instead of replaced
-  ).toEqual([1, 0, 0]);
+  ).toEqual([null, 0, 0]);
 });
 
 it("produces patch for removed primitive type (exclude previous value)", () => {
@@ -50,11 +50,11 @@ it("produces patch for removed primitive type (exclude previous value)", () => {
         right: undefined,
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
     // the third array member 0 indicates that the value got removed instead of replaced
-  ).toEqual([null, 0, 0]);
+  ).toEqual([1, 0, 0]);
 });
 
 it("produces patch for added primitive type", () => {
@@ -81,10 +81,10 @@ it("produces patch for changed nested types", () => {
       left: { a: 1 },
       right: { a: 2 },
     })
-  ).toEqual({ a: [1, 2] });
+  ).toEqual({ a: [null, 2] });
 });
 
-it("produces patch for changed nested types (exclude previous value)", () => {
+it("produces patch for changed nested types (include previous value)", () => {
   expect(
     diff(
       {
@@ -92,10 +92,10 @@ it("produces patch for changed nested types (exclude previous value)", () => {
         right: { a: 2 },
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
-  ).toEqual({ a: [null, 2] });
+  ).toEqual({ a: [1, 2] });
 });
 
 it("produces patch for removed nested property", () => {
@@ -104,10 +104,10 @@ it("produces patch for removed nested property", () => {
       left: { a: 2 },
       right: {},
     })
-  ).toEqual({ a: [2, 0, 0] });
+  ).toEqual({ a: [null, 0, 0] });
 });
 
-it("produces patch for removed nested property (exclude previous value)", () => {
+it("produces patch for removed nested property (include previous value)", () => {
   expect(
     diff(
       {
@@ -115,10 +115,10 @@ it("produces patch for removed nested property (exclude previous value)", () => 
         right: {},
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
-  ).toEqual({ a: [null, 0, 0] });
+  ).toEqual({ a: [2, 0, 0] });
 });
 
 it("produces patch for added nested property", () => {
@@ -136,10 +136,10 @@ it("produces patch for changed deeply nested types", () => {
       left: { a: { a: 1 } },
       right: { a: { a: 2 } },
     })
-  ).toEqual({ a: { a: [1, 2] } });
+  ).toEqual({ a: { a: [null, 2] } });
 });
 
-it("produces patch for changed deeply nested types (exclude previous value)", () => {
+it("produces patch for changed deeply nested types (include previous value)", () => {
   expect(
     diff(
       {
@@ -147,10 +147,10 @@ it("produces patch for changed deeply nested types (exclude previous value)", ()
         right: { a: { a: 2 } },
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
-  ).toEqual({ a: { a: [null, 2] } });
+  ).toEqual({ a: { a: [1, 2] } });
 });
 
 it("produces patch for removed deeply nested property", () => {
@@ -159,10 +159,10 @@ it("produces patch for removed deeply nested property", () => {
       left: { a: { a: 2 } },
       right: {},
     })
-  ).toEqual({ a: [{ a: 2 }, 0, 0] });
+  ).toEqual({ a: [null, 0, 0] });
 });
 
-it("produces patch for removed deeply nested property (exclude previous value)", () => {
+it("produces patch for removed deeply nested property (include previous value)", () => {
   expect(
     diff(
       {
@@ -170,10 +170,10 @@ it("produces patch for removed deeply nested property (exclude previous value)",
         right: {},
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
-  ).toEqual({ a: [null, 0, 0] });
+  ).toEqual({ a: [{ a: 2 }, 0, 0] });
 });
 
 it("produces patch for added deeply nested property", () => {
@@ -206,14 +206,15 @@ it("produces a patch for deleted array items (first member)", () => {
     // _ + index of the item
     _0: [
       // the item that is modified
-      1,
+      null,
       // 0, 0 indicates that the item got deleted
-      0, 0,
+      0,
+      0,
     ],
   });
 });
 
-it("produces a patch for deleted array items (first member and exclude previous value)", () => {
+it("produces a patch for deleted array items (first member and include previous value)", () => {
   expect(
     diff(
       {
@@ -221,7 +222,7 @@ it("produces a patch for deleted array items (first member and exclude previous 
         right: [2],
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
   ).toEqual({
@@ -230,10 +231,9 @@ it("produces a patch for deleted array items (first member and exclude previous 
     // _ + index of the item
     _0: [
       // the item that is modified
-      null,
+      1,
       // 0, 0 indicates that the item got deleted
-      0,
-      0,
+      0, 0,
     ],
   });
 });
@@ -250,9 +250,10 @@ it("produces a patch for deleted array items (last member)", () => {
     // _ + index of the item
     _1: [
       // the item that is modified
-      2,
+      null,
       // 0, 0 indicates that the item got deleted
-      0, 0,
+      0,
+      0,
     ],
   });
 });
@@ -265,7 +266,7 @@ it("produces a patch for deleted array items (last member and exclude previous v
         right: [1],
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
   ).toEqual({
@@ -274,10 +275,9 @@ it("produces a patch for deleted array items (last member and exclude previous v
     // _ + index of the item
     _1: [
       // the item that is modified
-      null,
+      2,
       // 0, 0 indicates that the item got deleted
-      0,
-      0,
+      0, 0,
     ],
   });
 });
@@ -295,9 +295,10 @@ it("produces a patch for replaced array items", () => {
     "0": [2],
     _0: [
       // the item that is modified
-      1,
+      null,
       // 0, 0 indicates that the item got deleted
-      0, 0,
+      0,
+      0,
     ],
   });
 });
@@ -310,10 +311,10 @@ it("produces an inefficient patch for replaced array items without objectHash", 
     })
   ).toEqual({
     "0": {
-      a: [1, 2],
+      a: [null, 2],
     },
     "1": {
-      a: [2, 1],
+      a: [null, 1],
     },
     _t: "a",
   });
@@ -327,15 +328,15 @@ it("produces an inefficient patch for replaced array items without objectHash (e
         right: [{ a: 2 }, { a: 1 }],
       },
       {
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
   ).toEqual({
     "0": {
-      a: [null, 2],
+      a: [1, 2],
     },
     "1": {
-      a: [null, 1],
+      a: [2, 1],
     },
     _t: "a",
   });
@@ -356,9 +357,7 @@ it("produces a more efficient patch for replaced array items with objectHash", (
     // item index that is moved
     _1: [
       // item that is moved
-      {
-        id: 2,
-      },
+      null,
       // the new index where the item is moved
       0,
       // indicates that this is an array move operation
@@ -377,14 +376,14 @@ it("produces a more efficient patch for replaced array items with objectHash (ex
       },
       {
         objectHash: (item) => item["id"],
-        includePreviousValue: false,
+        includePreviousValue: true,
       }
     )
   ).toEqual({
     // item index that is moved
     _1: [
       // item that is moved
-      null,
+      { id: 2 },
       // the new index where the item is moved
       0,
       // indicates that this is an array move operation

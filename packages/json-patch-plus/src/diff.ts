@@ -22,24 +22,26 @@ type Context = {
 
 export type DiffOptions = {
   /**
-   * Whether the previous value should be included in the diff.
-   * This can drastically increase the patch size and should only be used for debugging
-   * or cases where you need to perform more advanced consistency checks.
-   * */
-  includePreviousValue?: boolean;
-  /**
    * A function for generating a identifier from an object in order to produce more performant list update patches.
    */
   objectHash?: ObjectHashFunction;
-  /** Actually not sure what this does :) */
+  /** Whether you wanna force matching by array position. (Note: You do not wanna do this. Please specify a objectHash function :). */
   matchByPosition?: boolean;
+  /**
+   * Whether the previous value should be included in the diff.
+   * This can drastically increase the patch size and should only be used for debugging
+   * or cases where you need to perform more advanced consistency checks.
+   *
+   * Default: `false`
+   * */
+  includePreviousValue?: boolean;
 };
 
 export function diff(
   input: { left: Input; right: Input },
   options?: DiffOptions
 ): Patch {
-  const includePreviousValue = options?.includePreviousValue ?? true;
+  const includePreviousValue = options?.includePreviousValue ?? false;
   const objectHash = options?.objectHash;
   const matchByPosition = options?.matchByPosition;
 
