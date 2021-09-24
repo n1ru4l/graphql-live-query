@@ -51,7 +51,7 @@ export function diff(
     nested_objectsDiffFilter(context);
     array_diffFilter(context);
 
-    if (context.children) {
+    if (context.children?.length) {
       for (const childrenContext of context.children) {
         process(childrenContext);
 
@@ -60,6 +60,9 @@ export function diff(
           (context.result as object)[childrenContext.name!] =
             childrenContext.result;
         }
+      }
+      if (context.result && context.leftIsArray) {
+        (context.result as any)._t = "a";
       }
     }
   }
@@ -223,15 +226,16 @@ function array_diffFilter(context: Context) {
     objectHash: context.objectHash,
     matchByPosition: context.matchByPosition,
   };
+
   let commonHead = 0;
   let commonTail = 0;
   let index;
   let index1;
   let index2;
-  let array1 = context.left as Array<unknown>;
-  let array2 = context.right as Array<unknown>;
-  let len1 = array1.length;
-  let len2 = array2.length;
+  const array1 = context.left as Array<unknown>;
+  const array2 = context.right as Array<unknown>;
+  const len1 = array1.length;
+  const len2 = array2.length;
 
   if (
     len1 > 0 &&
@@ -310,7 +314,7 @@ function array_diffFilter(context: Context) {
   if (commonHead + commonTail === len1) {
     if (len1 === len2) {
       // arrays are identical
-      context.result = undefined; // { _t: "a" };
+      context.result = undefined;
       context.stopped = true;
       return;
     }
