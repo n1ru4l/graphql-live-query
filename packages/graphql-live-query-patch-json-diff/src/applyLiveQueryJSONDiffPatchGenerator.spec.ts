@@ -90,7 +90,7 @@ it("publishes patches for live query results", async () => {
     value: {
       patch: {
         foo: {
-          bar: ["kek", "speck"],
+          bar: [null, "speck"],
         },
       },
       revision: 2,

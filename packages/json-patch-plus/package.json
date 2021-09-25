@@ -1,35 +1,25 @@
 {
-  "name": "@n1ru4l/graphql-live-query-patch-jsondiffpatch",
-  "version": "0.5.0",
+  "name": "@n1ru4l/json-patch-plus",
+  "version": "0.0.0",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/n1ru4l/graphql-live-queries.git",
-    "directory": "packages/graphql-live-query-patch-json-diff"
+    "directory": "packages/json-patch-plus"
   },
   "bugs": {
     "url": "https://github.com/n1ru4l/graphql-live-queries/issues"
   },
   "homepage": "https://github.com/n1ru4l/graphql-live-queries#readme",
   "keywords": [
-    "graphql",
-    "query",
-    "live",
-    "real-time"
+    "json",
+    "patch",
+    "diff"
   ],
-  "dependencies": {
-    "@n1ru4l/json-patch-plus": "^0.0.0",
-    "@n1ru4l/graphql-live-query-patch": "^0.5.0"
-  },
-  "devDependencies": {
-    "graphql": "15.4.0-experimental-stream-defer.1",
-    "@n1ru4l/graphql-live-query": "*",
-    "@n1ru4l/in-memory-live-query-store": "*"
-  },
-  "peerDependencies": {
-    "graphql": "^15.4.0"
-  },
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "exports": {
