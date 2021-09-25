@@ -9,8 +9,8 @@ import { diff, Delta, ObjectHashFunction } from "@n1ru4l/json-patch-plus";
  * generating more efficient list patches.
  */
 const objectHash: ObjectHashFunction = (object) => {
-  if (object["__typename"] != null && object["_id"] != null) {
-    return `${object["__typename"]}:${object["_id"]}`;
+  if (object["__typename"] != null && object["id"] != null) {
+    return `${object["__typename"]}:${object["id"]}`;
   } else if (object["id"] != null) {
     return object["id"];
   } else if (object["node"] != null) {
