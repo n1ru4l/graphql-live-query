@@ -15,7 +15,9 @@ Huge thanks to [@benjamine](https://github.com/benjamine), who did all the heavy
 - Only generate and apply patch deltas (no reversing and visualization)
 - Exclude unnecessary data from patch deltas (previous value is replaced with `null`)
 
-## Install
+For a full description of the delta format please refer to the [`jsondiffpatch` docs](https://github.com/benjamine/jsondiffpatch/tree/master/docs)
+
+## Install Instructions
 
 ```bash
 yarn install -E @n1ru4l/json-patch-plus
