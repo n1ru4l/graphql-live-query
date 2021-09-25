@@ -1,6 +1,6 @@
 {
   "name": "@n1ru4l/graphql-live-query-patch-jsondiffpatch",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
   "repository": {
@@ -19,7 +19,7 @@
     "real-time"
   ],
   "dependencies": {
-    "@n1ru4l/json-patch-plus": "^0.0.0",
+    "@n1ru4l/json-patch-plus": "^0.1.0",
     "@n1ru4l/graphql-live-query-patch": "^0.5.0"
   },
   "devDependencies": {
