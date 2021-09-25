@@ -1,5 +1,16 @@
 # @n1ru4l/graphql-live-query-patch-jsondiffpatch
 
+## 0.6.0
+
+### Minor Changes
+
+- 7e56721: Use `@n1ru4l/json-patch-plus` for smaller and more efficient patches
+
+### Patch Changes
+
+- Updated dependencies [7e56721]
+  - @n1ru4l/json-patch-plus@0.1.0
+
 ## 0.5.0
 
 ### Minor Changes
