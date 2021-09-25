@@ -6,7 +6,7 @@ Huge thanks to [@benjamine](https://github.com/benjamine), who did all the heavy
 
 `jsondiffpatch` is a replacement for [`json-patch`](https://datatracker.ietf.org/doc/html/rfc6902) that produces more efficient patches!
 
-`@n1ru4l/json-patch-plus` has the follow changes:
+`@n1ru4l/json-patch-plus` has the following changes:
 
 - Full ESM support
 - Remove Node.js runtime dependencies introduced through loggers
