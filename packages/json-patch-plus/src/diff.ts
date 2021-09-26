@@ -18,6 +18,7 @@ type Context = {
   includePreviousValue: boolean;
   objectHash?: ObjectHashFunction;
   matchByPosition?: boolean;
+  stopped: boolean;
 };
 
 export type DiffOptions = {
@@ -52,13 +53,24 @@ export function diff(
     includePreviousValue,
     objectHash,
     matchByPosition,
+    stopped: false,
   };
 
   function process(context: Context) {
-    nested_collectChildrenDiffFilter(context);
-    trivialDiffFilter(context);
-    nested_objectsDiffFilter(context);
-    array_diffFilter(context);
+    const steps = [
+      nested_collectChildrenDiffFilter,
+      trivialDiffFilter,
+      nested_objectsDiffFilter,
+      array_diffFilter,
+    ];
+
+    for (const step of steps) {
+      step(context);
+      if (context.stopped) {
+        context.stopped = false;
+        break;
+      }
+    }
 
     if (context.children?.length) {
       for (const childrenContext of context.children) {
@@ -85,12 +97,14 @@ export function diff(
 function trivialDiffFilter(context: Context) {
   if (context.left === context.right) {
     context.result = undefined;
+    context.stopped = true;
     return;
   }
 
   // Item was added
   if (typeof context.left === "undefined") {
     context.result = [context.right];
+    context.stopped = true;
     return;
   }
 
@@ -98,6 +112,8 @@ function trivialDiffFilter(context: Context) {
   if (typeof context.right === "undefined") {
     const previousValue = context.includePreviousValue ? context.left : null;
     context.result = [previousValue, 0, 0];
+    context.stopped = true;
+
     return;
   }
 
@@ -107,6 +123,7 @@ function trivialDiffFilter(context: Context) {
     const previousValue = context.includePreviousValue ? context.left : null;
 
     context.result = [previousValue, context.right];
+    context.stopped = true;
     return;
   }
   if (
@@ -116,6 +133,7 @@ function trivialDiffFilter(context: Context) {
   ) {
     const previousValue = context.includePreviousValue ? context.left : null;
     context.result = [previousValue, context.right];
+    context.stopped = true;
     return;
   }
   if (context.leftType === "object") {
@@ -127,6 +145,7 @@ function trivialDiffFilter(context: Context) {
   if (context.leftIsArray !== context.rightIsArray) {
     const previousValue = context.includePreviousValue ? context.left : null;
     context.result = [previousValue, context.right];
+    context.stopped = true;
     return;
   }
 }
@@ -151,6 +170,7 @@ function nested_collectChildrenDiffFilter(context: Context) {
     result["_t"] = "a";
   }
   context.result = result;
+  context.stopped = true;
 }
 
 function nested_objectsDiffFilter(context: Context) {
@@ -162,7 +182,7 @@ function nested_objectsDiffFilter(context: Context) {
   const right = context.right as Record<string | number | symbol, unknown>;
 
   for (const name in left) {
-    if (!Object.prototype.hasOwnProperty.call(context.left, name)) {
+    if (!Object.prototype.hasOwnProperty.call(left, name)) {
       continue;
     }
 
@@ -177,10 +197,11 @@ function nested_objectsDiffFilter(context: Context) {
       includePreviousValue: context.includePreviousValue,
       objectHash: context.objectHash,
       matchByPosition: context.matchByPosition,
+      stopped: false,
     });
   }
   for (const name in right) {
-    if (!Object.prototype.hasOwnProperty.call(context.right, name)) {
+    if (!Object.prototype.hasOwnProperty.call(right, name)) {
       continue;
     }
 
@@ -196,13 +217,17 @@ function nested_objectsDiffFilter(context: Context) {
         includePreviousValue: context.includePreviousValue,
         objectHash: context.objectHash,
         matchByPosition: context.matchByPosition,
+        stopped: false,
       });
     }
   }
 
   if (!context.children || context.children.length === 0) {
     context.result = undefined;
+    context.stopped = true;
+    return;
   }
+  context.stopped = true;
 }
 
 type MatchContext = {
@@ -269,6 +294,7 @@ function array_diffFilter(context: Context) {
       includePreviousValue: context.includePreviousValue,
       objectHash: context.objectHash,
       matchByPosition: context.matchByPosition,
+      stopped: false,
     });
     commonHead++;
   }
@@ -301,6 +327,7 @@ function array_diffFilter(context: Context) {
       includePreviousValue: context.includePreviousValue,
       objectHash: context.objectHash,
       matchByPosition: context.matchByPosition,
+      stopped: false,
     });
 
     commonTail++;
@@ -310,6 +337,7 @@ function array_diffFilter(context: Context) {
     if (len1 === len2) {
       // arrays are identical
       context.result = undefined;
+      context.stopped = true;
       return;
     }
     // trivial case, a block (1 or more consecutive items) was added
@@ -321,6 +349,7 @@ function array_diffFilter(context: Context) {
       result[index] = [array2[index]];
     }
     context.result = result;
+    context.stopped = true;
     return;
   }
   if (commonHead + commonTail === len2) {
@@ -337,6 +366,7 @@ function array_diffFilter(context: Context) {
       ];
     }
     context.result = result;
+    context.stopped = true;
     return;
   }
 
@@ -413,6 +443,7 @@ function array_diffFilter(context: Context) {
               includePreviousValue: context.includePreviousValue,
               objectHash: context.objectHash,
               matchByPosition: context.matchByPosition,
+              stopped: false,
             });
 
             removedItems.splice(removeItemIndex1, 1);
@@ -444,11 +475,13 @@ function array_diffFilter(context: Context) {
         includePreviousValue: context.includePreviousValue,
         objectHash: context.objectHash,
         matchByPosition: context.matchByPosition,
+        stopped: false,
       });
     }
   }
 
   context.result = result;
+  context.stopped = true;
 }
 
 function arraysHaveMatchByRef(
