@@ -35,6 +35,7 @@ export function patch<TLeft extends any>(params: {
 
         context.result =
           context.result ??
+          context.left ??
           (typeof childrenContext.name === "number" ? [] : {});
         (context.result as object)[childrenContext.name!] =
           childrenContext.result;

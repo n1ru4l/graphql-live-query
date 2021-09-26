@@ -313,3 +313,39 @@ it("applies efficient array delta (produced with objectHash function and no prev
     })
   ).toEqual([{ id: 2 }, { id: 1 }]);
 });
+
+it("patch with changes also keeps untouched properties", () => {
+  expect(
+    patch({
+      left: {
+        map: {
+          tokens: [
+            {
+              id: "c5f84966-eb80-4168-909d-7602a646434d",
+              x: 1,
+              y: 2,
+            },
+          ],
+        },
+      },
+      delta: {
+        map: {
+          tokens: {
+            0: { x: [null, 2], y: [null, 3] },
+            _t: "a",
+          },
+        },
+      },
+    })
+  ).toEqual({
+    map: {
+      tokens: [
+        {
+          id: "c5f84966-eb80-4168-909d-7602a646434d",
+          x: 2,
+          y: 3,
+        },
+      ],
+    },
+  });
+});
