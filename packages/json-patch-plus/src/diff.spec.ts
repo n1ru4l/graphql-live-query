@@ -392,3 +392,18 @@ it("produces a more efficient patch for replaced array items with objectHash (ex
     _t: "a",
   });
 });
+
+test("replace with null", () => {
+  expect(
+    diff({
+      left: {
+        map: { id: "2" },
+      },
+      right: {
+        map: null,
+      },
+    })
+  ).toEqual({
+    map: [null, null],
+  });
+});
