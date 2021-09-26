@@ -7,6 +7,7 @@ type Context = {
   result: unknown;
   name?: string | number;
   nested?: boolean;
+  stopped: boolean;
 };
 
 export function patch<TLeft extends any>(params: {
@@ -20,23 +21,31 @@ export function patch<TLeft extends any>(params: {
     result: undefined,
     name: undefined,
     nested: false,
+    stopped: false,
   };
 
   function process(context: Context) {
-    nested_collectChildrenPatchFilter(context);
-    array_collectChildrenPatchFilter(context);
-    trivial_patchFilter(context);
-    nested_patchFilter(context);
-    array_patchFilter(context);
+    const steps = [
+      nested_collectChildrenPatchFilter,
+      array_collectChildrenPatchFilter,
+      trivial_patchFilter,
+      nested_patchFilter,
+      array_patchFilter,
+    ];
+
+    for (const step of steps) {
+      step(context);
+      if (context.stopped) {
+        context.stopped = false;
+        break;
+      }
+    }
 
     if (context.children) {
       for (const childrenContext of context.children) {
         process(childrenContext);
 
-        context.result =
-          context.result ??
-          context.left ??
-          (typeof childrenContext.name === "number" ? [] : {});
+        context.result = context.result ?? context.left;
         (context.result as object)[childrenContext.name!] =
           childrenContext.result;
       }
@@ -71,6 +80,7 @@ function nested_collectChildrenPatchFilter(context: Context) {
     }
   }
   context.result = context.left;
+  context.stopped = true;
 }
 
 function array_collectChildrenPatchFilter(context: Context) {
@@ -87,6 +97,7 @@ function array_collectChildrenPatchFilter(context: Context) {
     context.left[child.name!] = child.result;
   }
   context.result = context.left;
+  context.stopped = true;
 }
 
 function trivial_patchFilter(context: Context) {
@@ -100,14 +111,17 @@ function trivial_patchFilter(context: Context) {
   }
   if (context.delta.length === 1) {
     context.result = context.delta[0];
+    context.stopped = true;
     return;
   }
   if (context.delta.length === 2) {
     context.result = context.delta[1];
+    context.stopped = true;
     return;
   }
   if (context.delta.length === 3 && context.delta[2] === 0) {
     context.result = undefined;
+    context.stopped = true;
   }
 }
 
@@ -129,8 +143,10 @@ function nested_patchFilter(context: Context) {
       delta: context.delta[name],
       result: undefined,
       name,
+      stopped: false,
     });
   }
+  context.stopped = true;
 }
 
 const ARRAY_MOVE = 3;
@@ -227,12 +243,14 @@ function array_patchFilter(context: Context) {
         delta: modification.delta,
         name: modification.index,
         result: undefined,
+        stopped: false,
       });
     }
   }
 
   if (!context.children) {
     context.result = context.left;
+    context.stopped = true;
     return;
   }
 }
