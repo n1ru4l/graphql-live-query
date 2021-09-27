@@ -1,5 +1,12 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.7.2
+
+### Patch Changes
+
+- 7b9acf6: Added '.js' file extension to GraphQL `getArgumentValues` import.
+  See: https://nodejs.org/docs/latest-v14.x/api/esm.html#esm_mandatory_file_extensions
+
 ## 0.7.1
 
 ### Patch Changes
