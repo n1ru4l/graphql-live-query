@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query-patch-json-patch
 
+## 0.5.1
+
+### Patch Changes
+
+- 30d2720: fix esm support
+
 ## 0.5.0
 
 ### Minor Changes
