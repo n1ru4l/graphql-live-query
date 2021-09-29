@@ -21,7 +21,7 @@
     "@types/relay-runtime": "12.0.0",
     "babel-plugin-relay": "12.0.0",
     "relay-compiler": "12.0.0",
-    "relay-compiler-language-typescript": "14.1.0",
+    "relay-compiler-language-typescript": "14.1.2",
     "relay-config": "12.0.0",
     "relay-runtime": "12.0.0",
     "socket.io-client": "4.2.0",
