@@ -1297,22 +1297,22 @@
     "@graphql-tools/utils" "^8.1.1"
     tslib "~2.3.0"
 
-"@graphql-codegen/gql-tag-operations-preset@1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/gql-tag-operations-preset/-/gql-tag-operations-preset-1.1.5.tgz#ccfebd72375e85df980a6055eaed40193f2f1e30"
-  integrity sha512-I5pwrAOU28+7fHyHgq+tHABvxJNvjG7i6AnSP7fX/QtJnxbbK7h7fhj1JhsVAwOsLL848FW4ZAuPnf26UABapQ==
+"@graphql-codegen/gql-tag-operations-preset@1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/gql-tag-operations-preset/-/gql-tag-operations-preset-1.1.6.tgz#bd629a4b8e83f468f5e90468e4ff5d3efae84a61"
+  integrity sha512-1zpg9U1JCduewm8pXhuh/hLFNQGPnOcqf9unvPJCKtn6HL7sHRjEXvTVlG0GwAi4+mEQbKnebc8QpSWio5MAlA==
   dependencies:
     "@graphql-codegen/add" "3.1.0"
-    "@graphql-codegen/gql-tag-operations" "1.1.4"
+    "@graphql-codegen/gql-tag-operations" "1.1.5"
     "@graphql-codegen/typed-document-node" "2.1.4"
     "@graphql-codegen/typescript" "2.2.2"
-    "@graphql-codegen/typescript-operations" "2.1.4"
+    "@graphql-codegen/typescript-operations" "2.1.5"
     tslib "2.3.1"
 
-"@graphql-codegen/gql-tag-operations@1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/gql-tag-operations/-/gql-tag-operations-1.1.4.tgz#6405d50f53ad061338f4be98711f5dd69f6d9e4e"
-  integrity sha512-eM6lVNrqck1tI1DDaTfG6IU81L+LzChJ22P10pNleP+L2SEVyPM/mnNrE68qXMinLNgzt5c3VHnsI+d62LrPFw==
+"@graphql-codegen/gql-tag-operations@1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/gql-tag-operations/-/gql-tag-operations-1.1.5.tgz#83e5c976ed7d59f26ab020cebcff2fbf00710531"
+  integrity sha512-7f9Q1GkdHvHM0azcouGk36Uns0FBkzuAOFzwWQZncSKqhvZpPl75O2L6xSn8SDpIP6jcpsfeEaPghYu7dcFDFg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.1.1"
     "@graphql-codegen/visitor-plugin-common" "2.2.1"
@@ -1343,10 +1343,10 @@
     change-case-all "1.0.14"
     tslib "~2.3.0"
 
-"@graphql-codegen/typescript-operations@2.1.4":
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-operations/-/typescript-operations-2.1.4.tgz#4cc093188abd4da573ee882b6a1c300523b69e97"
-  integrity sha512-IftToh41G1haeRZ4dJw0zG0MTkAS1JvdTrn3ZwVbzpXks98utC4X93qJnbd1h7rTAtZa0Kk6YS2F5OP/64ZWpg==
+"@graphql-codegen/typescript-operations@2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-operations/-/typescript-operations-2.1.5.tgz#e40e71cfd871276e741a2e732cb6d264f7656122"
+  integrity sha512-P3rYvlSTdeBesK12RbsU/oGu8XBnCjRwZtE+X+n8ebDl7vgPfhogBEkgouWiglh/psXmI3lUJTvq+DIHVdBE1g==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^2.1.1"
     "@graphql-codegen/typescript" "^2.2.2"
