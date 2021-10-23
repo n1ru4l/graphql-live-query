@@ -1,5 +1,22 @@
 # @n1ru4l/json-patch-plus
 
+## 0.1.3
+
+### Patch Changes
+
+- 108970b: Remove keys from the object instead of setting them to undefined.
+
+  ```ts
+  const result = patch({
+    left: { a: { a: 2 } },
+    delta: { a: [null, 0, 0] }
+  });
+  // Previously result was
+  // { a: undefined }
+  // Now it is
+  // {}
+  ```
+
 ## 0.1.2
 
 ### Patch Changes
