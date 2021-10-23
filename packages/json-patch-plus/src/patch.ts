@@ -4,7 +4,7 @@ type Context = {
   left: any;
   delta: Delta;
   children?: Array<Context>;
-  result: unknown;
+  result?: unknown;
   name?: string | number;
   nested?: boolean;
   stopped: boolean;
@@ -18,7 +18,6 @@ export function patch<TLeft extends any>(params: {
     left: params.left,
     delta: params.delta,
     children: undefined,
-    result: undefined,
     name: undefined,
     nested: false,
     stopped: false,
@@ -46,8 +45,12 @@ export function patch<TLeft extends any>(params: {
         process(childrenContext);
 
         context.result = context.result ?? context.left;
-        (context.result as object)[childrenContext.name!] =
-          childrenContext.result;
+        if ("result" in childrenContext === false) {
+          delete (context.result as object)[childrenContext.name!];
+        } else {
+          (context.result as object)[childrenContext.name!] =
+            childrenContext.result;
+        }
       }
     }
   }
@@ -65,11 +68,7 @@ function nested_collectChildrenPatchFilter(context: Context) {
     return;
   }
 
-  let length = context.children.length;
-  let child;
-
-  for (let index = 0; index < length; index++) {
-    child = context.children[index];
+  for (let child of context.children) {
     if (
       Object.prototype.hasOwnProperty.call(context.left, child.name!) &&
       child.result === undefined
@@ -120,7 +119,6 @@ function trivial_patchFilter(context: Context) {
     return;
   }
   if (context.delta.length === 3 && context.delta[2] === 0) {
-    context.result = undefined;
     context.stopped = true;
   }
 }
@@ -132,16 +130,14 @@ function nested_patchFilter(context: Context) {
   if (context.delta._t) {
     return;
   }
-  let name;
-  let child;
-  for (name in context.delta) {
+  for (let name in context.delta) {
     if (context.children === undefined) {
       context.children = [];
     }
+
     context.children.push({
       left: context.left[name],
       delta: context.delta[name],
-      result: undefined,
       name,
       stopped: false,
     });
@@ -242,7 +238,6 @@ function array_patchFilter(context: Context) {
         left: context.left[modification.index],
         delta: modification.delta,
         name: modification.index,
-        result: undefined,
         stopped: false,
       });
     }
