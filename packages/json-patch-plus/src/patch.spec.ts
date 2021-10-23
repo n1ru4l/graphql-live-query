@@ -6,7 +6,7 @@ it("applies a primitive delta (replace)", () => {
       left: 1,
       delta: [1, 2],
     })
-  ).toEqual(2);
+  ).toStrictEqual(2);
 });
 
 it("applies a primitive delta (replace and no previous value)", () => {
@@ -15,7 +15,7 @@ it("applies a primitive delta (replace and no previous value)", () => {
       left: 1,
       delta: [null, 2],
     })
-  ).toEqual(2);
+  ).toStrictEqual(2);
 });
 
 it("applies a primitive delta (remove)", () => {
@@ -25,7 +25,7 @@ it("applies a primitive delta (remove)", () => {
       delta: [1, 0, 0],
     })
     // the third array member 0 indicates that the value got removed instead of replaced
-  ).toEqual(undefined);
+  ).toStrictEqual(undefined);
 });
 
 it("applies a primitive delta (remove and no previous value)", () => {
@@ -35,7 +35,7 @@ it("applies a primitive delta (remove and no previous value)", () => {
       delta: [null, 0, 0],
     })
     // the third array member 0 indicates that the value got removed instead of replaced
-  ).toEqual(undefined);
+  ).toStrictEqual(undefined);
 });
 
 it("applies a primitive delta (add)", () => {
@@ -44,7 +44,7 @@ it("applies a primitive delta (add)", () => {
       left: undefined,
       delta: [1],
     })
-  ).toEqual(1);
+  ).toStrictEqual(1);
 });
 
 it("applies a nested delta (remove)", () => {
@@ -53,7 +53,7 @@ it("applies a nested delta (remove)", () => {
       left: { a: 2 },
       delta: { a: [2, 0, 0] },
     })
-  ).toEqual({});
+  ).toStrictEqual({});
 });
 
 it("applies a nested delta (remove and no previous value)", () => {
@@ -62,7 +62,7 @@ it("applies a nested delta (remove and no previous value)", () => {
       left: { a: 2 },
       delta: { a: [null, 0, 0] },
     })
-  ).toEqual({});
+  ).toStrictEqual({});
 });
 
 it("applies a nested delta (add)", () => {
@@ -71,7 +71,7 @@ it("applies a nested delta (add)", () => {
       left: {},
       delta: { a: [2] },
     })
-  ).toEqual({ a: 2 });
+  ).toStrictEqual({ a: 2 });
 });
 
 it("applies a deeply nested delta (replace)", () => {
@@ -80,7 +80,7 @@ it("applies a deeply nested delta (replace)", () => {
       left: { a: { a: 1 } },
       delta: { a: { a: [1, 2] } },
     })
-  ).toEqual({ a: { a: 2 } });
+  ).toStrictEqual({ a: { a: 2 } });
 });
 
 it("applies a deeply nested delta (replace and no previous value)", () => {
@@ -89,7 +89,7 @@ it("applies a deeply nested delta (replace and no previous value)", () => {
       left: { a: { a: 1 } },
       delta: { a: { a: [null, 2] } },
     })
-  ).toEqual({ a: { a: 2 } });
+  ).toStrictEqual({ a: { a: 2 } });
 });
 
 it("applies a deeply nested delta (remove)", () => {
@@ -98,7 +98,7 @@ it("applies a deeply nested delta (remove)", () => {
       left: { a: { a: 2 } },
       delta: { a: [{ a: 2 }, 0, 0] },
     })
-  ).toEqual({});
+  ).toStrictEqual({});
 });
 
 it("applies a deeply nested delta (remove and no previous value)", () => {
@@ -107,7 +107,7 @@ it("applies a deeply nested delta (remove and no previous value)", () => {
       left: { a: { a: 2 } },
       delta: { a: [null, 0, 0] },
     })
-  ).toEqual({});
+  ).toStrictEqual({});
 });
 
 it("applies a deeply nested delta (add)", () => {
@@ -116,7 +116,7 @@ it("applies a deeply nested delta (add)", () => {
       left: {},
       delta: { a: [{ a: 2 }] },
     })
-  ).toEqual({ a: { a: 2 } });
+  ).toStrictEqual({ a: { a: 2 } });
 });
 
 it("applies array delta (remove first member)", () => {
@@ -135,7 +135,7 @@ it("applies array delta (remove first member)", () => {
         ],
       },
     })
-  ).toEqual([2]);
+  ).toStrictEqual([2]);
 });
 
 it("applies array delta (remove first member and no previous value)", () => {
@@ -155,7 +155,7 @@ it("applies array delta (remove first member and no previous value)", () => {
         ],
       },
     })
-  ).toEqual([2]);
+  ).toStrictEqual([2]);
 });
 
 it("applies array delta (remove last member)", () => {
@@ -174,7 +174,7 @@ it("applies array delta (remove last member)", () => {
         ],
       },
     })
-  ).toEqual([1]);
+  ).toStrictEqual([1]);
 });
 
 it("applies array delta (remove last member and no previous value)", () => {
@@ -194,7 +194,7 @@ it("applies array delta (remove last member and no previous value)", () => {
         ],
       },
     })
-  ).toEqual([1]);
+  ).toStrictEqual([1]);
 });
 
 it("applies array delta (replace array member)", () => {
@@ -214,7 +214,7 @@ it("applies array delta (replace array member)", () => {
         ],
       },
     })
-  ).toEqual([2, 2]);
+  ).toStrictEqual([2, 2]);
 });
 
 it("applies array delta (replace array member and no previous value)", () => {
@@ -235,7 +235,7 @@ it("applies array delta (replace array member and no previous value)", () => {
         ],
       },
     })
-  ).toEqual([2, 2]);
+  ).toStrictEqual([2, 2]);
 });
 
 it("applies inefficient array delta", () => {
@@ -252,7 +252,7 @@ it("applies inefficient array delta", () => {
         _t: "a",
       },
     })
-  ).toEqual([{ a: 2 }, { a: 1 }]);
+  ).toStrictEqual([{ a: 2 }, { a: 1 }]);
 });
 
 it("applies inefficient array delta (no previous value)", () => {
@@ -269,7 +269,7 @@ it("applies inefficient array delta (no previous value)", () => {
         _t: "a",
       },
     })
-  ).toEqual([{ a: 2 }, { a: 1 }]);
+  ).toStrictEqual([{ a: 2 }, { a: 1 }]);
 });
 
 it("applies efficient array delta (produced with objectHash function)", () => {
@@ -291,7 +291,7 @@ it("applies efficient array delta (produced with objectHash function)", () => {
         _t: "a",
       },
     })
-  ).toEqual([{ id: 2 }, { id: 1 }]);
+  ).toStrictEqual([{ id: 2 }, { id: 1 }]);
 });
 
 it("applies efficient array delta (produced with objectHash function and no previous value)", () => {
@@ -311,7 +311,7 @@ it("applies efficient array delta (produced with objectHash function and no prev
         _t: "a",
       },
     })
-  ).toEqual([{ id: 2 }, { id: 1 }]);
+  ).toStrictEqual([{ id: 2 }, { id: 1 }]);
 });
 
 it("patch with changes also keeps untouched properties", () => {
@@ -337,7 +337,7 @@ it("patch with changes also keeps untouched properties", () => {
         },
       },
     })
-  ).toEqual({
+  ).toStrictEqual({
     map: {
       tokens: [
         {
