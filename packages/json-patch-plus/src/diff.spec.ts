@@ -6,7 +6,7 @@ it("produces no patch for unchanged primitive type", () => {
       left: 1,
       right: 1,
     })
-  ).toEqual(undefined);
+  ).toStrictEqual(undefined);
 });
 
 it("produces patch for changed primitive type", () => {
@@ -15,7 +15,7 @@ it("produces patch for changed primitive type", () => {
       left: 1,
       right: 2,
     })
-  ).toEqual([null, 2]);
+  ).toStrictEqual([null, 2]);
 });
 
 it("produces patch for changed primitive type (include previous value)", () => {
@@ -29,7 +29,7 @@ it("produces patch for changed primitive type (include previous value)", () => {
         includePreviousValue: true,
       }
     )
-  ).toEqual([1, 2]);
+  ).toStrictEqual([1, 2]);
 });
 
 it("produces patch for removed primitive type", () => {
@@ -39,7 +39,7 @@ it("produces patch for removed primitive type", () => {
       right: undefined,
     })
     // the third array member 0 indicates that the value got removed instead of replaced
-  ).toEqual([null, 0, 0]);
+  ).toStrictEqual([null, 0, 0]);
 });
 
 it("produces patch for removed primitive type (exclude previous value)", () => {
@@ -54,7 +54,7 @@ it("produces patch for removed primitive type (exclude previous value)", () => {
       }
     )
     // the third array member 0 indicates that the value got removed instead of replaced
-  ).toEqual([1, 0, 0]);
+  ).toStrictEqual([1, 0, 0]);
 });
 
 it("produces patch for added primitive type", () => {
@@ -63,7 +63,7 @@ it("produces patch for added primitive type", () => {
       left: undefined,
       right: 1,
     })
-  ).toEqual([1]);
+  ).toStrictEqual([1]);
 });
 
 it("produces no patch for identical nested types", () => {
@@ -72,7 +72,7 @@ it("produces no patch for identical nested types", () => {
       left: { a: 1 },
       right: { a: 1 },
     })
-  ).toEqual(undefined);
+  ).toStrictEqual(undefined);
 });
 
 it("produces patch for changed nested types", () => {
@@ -81,7 +81,7 @@ it("produces patch for changed nested types", () => {
       left: { a: 1 },
       right: { a: 2 },
     })
-  ).toEqual({ a: [null, 2] });
+  ).toStrictEqual({ a: [null, 2] });
 });
 
 it("produces patch for changed nested types (include previous value)", () => {
@@ -95,7 +95,7 @@ it("produces patch for changed nested types (include previous value)", () => {
         includePreviousValue: true,
       }
     )
-  ).toEqual({ a: [1, 2] });
+  ).toStrictEqual({ a: [1, 2] });
 });
 
 it("produces patch for removed nested property", () => {
@@ -104,7 +104,7 @@ it("produces patch for removed nested property", () => {
       left: { a: 2 },
       right: {},
     })
-  ).toEqual({ a: [null, 0, 0] });
+  ).toStrictEqual({ a: [null, 0, 0] });
 });
 
 it("produces patch for removed nested property (include previous value)", () => {
@@ -118,7 +118,7 @@ it("produces patch for removed nested property (include previous value)", () => 
         includePreviousValue: true,
       }
     )
-  ).toEqual({ a: [2, 0, 0] });
+  ).toStrictEqual({ a: [2, 0, 0] });
 });
 
 it("produces patch for added nested property", () => {
@@ -127,7 +127,7 @@ it("produces patch for added nested property", () => {
       left: {},
       right: { a: 2 },
     })
-  ).toEqual({ a: [2] });
+  ).toStrictEqual({ a: [2] });
 });
 
 it("produces patch for changed deeply nested types", () => {
@@ -136,7 +136,7 @@ it("produces patch for changed deeply nested types", () => {
       left: { a: { a: 1 } },
       right: { a: { a: 2 } },
     })
-  ).toEqual({ a: { a: [null, 2] } });
+  ).toStrictEqual({ a: { a: [null, 2] } });
 });
 
 it("produces patch for changed deeply nested types (include previous value)", () => {
@@ -150,7 +150,7 @@ it("produces patch for changed deeply nested types (include previous value)", ()
         includePreviousValue: true,
       }
     )
-  ).toEqual({ a: { a: [1, 2] } });
+  ).toStrictEqual({ a: { a: [1, 2] } });
 });
 
 it("produces patch for removed deeply nested property", () => {
@@ -159,7 +159,7 @@ it("produces patch for removed deeply nested property", () => {
       left: { a: { a: 2 } },
       right: {},
     })
-  ).toEqual({ a: [null, 0, 0] });
+  ).toStrictEqual({ a: [null, 0, 0] });
 });
 
 it("produces patch for removed deeply nested property (include previous value)", () => {
@@ -173,7 +173,7 @@ it("produces patch for removed deeply nested property (include previous value)",
         includePreviousValue: true,
       }
     )
-  ).toEqual({ a: [{ a: 2 }, 0, 0] });
+  ).toStrictEqual({ a: [{ a: 2 }, 0, 0] });
 });
 
 it("produces patch for added deeply nested property", () => {
@@ -182,7 +182,7 @@ it("produces patch for added deeply nested property", () => {
       left: {},
       right: { a: { a: 2 } },
     })
-  ).toEqual({ a: [{ a: 2 }] });
+  ).toStrictEqual({ a: [{ a: 2 }] });
 });
 
 it("produces no patch for unmoved array items", () => {
@@ -191,7 +191,7 @@ it("produces no patch for unmoved array items", () => {
       left: [1, 2],
       right: [1, 2],
     })
-  ).toEqual(undefined);
+  ).toStrictEqual(undefined);
 });
 
 it("produces a patch for deleted array items (first member)", () => {
@@ -200,7 +200,7 @@ it("produces a patch for deleted array items (first member)", () => {
       left: [1, 2],
       right: [2],
     })
-  ).toEqual({
+  ).toStrictEqual({
     // indicates that this is an array operation
     _t: "a",
     // _ + index of the item
@@ -225,7 +225,7 @@ it("produces a patch for deleted array items (first member and include previous 
         includePreviousValue: true,
       }
     )
-  ).toEqual({
+  ).toStrictEqual({
     // indicates that this is an array operation
     _t: "a",
     // _ + index of the item
@@ -244,7 +244,7 @@ it("produces a patch for deleted array items (last member)", () => {
       left: [1, 2],
       right: [1],
     })
-  ).toEqual({
+  ).toStrictEqual({
     // indicates that this is an array operation
     _t: "a",
     // _ + index of the item
@@ -269,7 +269,7 @@ it("produces a patch for deleted array items (last member and exclude previous v
         includePreviousValue: true,
       }
     )
-  ).toEqual({
+  ).toStrictEqual({
     // indicates that this is an array operation
     _t: "a",
     // _ + index of the item
@@ -288,7 +288,7 @@ it("produces a patch for replaced array items", () => {
       left: [1, 2],
       right: [2, 2],
     })
-  ).toEqual({
+  ).toStrictEqual({
     // indicates that this is an array operation
     _t: "a",
     // _ + index of the item
@@ -309,7 +309,7 @@ it("produces an inefficient patch for replaced array items without objectHash", 
       left: [{ a: 1 }, { a: 2 }],
       right: [{ a: 2 }, { a: 1 }],
     })
-  ).toEqual({
+  ).toStrictEqual({
     "0": {
       a: [null, 2],
     },
@@ -331,7 +331,7 @@ it("produces an inefficient patch for replaced array items without objectHash (e
         includePreviousValue: true,
       }
     )
-  ).toEqual({
+  ).toStrictEqual({
     "0": {
       a: [1, 2],
     },
@@ -353,7 +353,7 @@ it("produces a more efficient patch for replaced array items with objectHash", (
         objectHash: (item) => item["id"],
       }
     )
-  ).toEqual({
+  ).toStrictEqual({
     // item index that is moved
     _1: [
       // item that is moved
@@ -379,7 +379,7 @@ it("produces a more efficient patch for replaced array items with objectHash (ex
         includePreviousValue: true,
       }
     )
-  ).toEqual({
+  ).toStrictEqual({
     // item index that is moved
     _1: [
       // item that is moved
@@ -403,7 +403,7 @@ test("replace with null", () => {
         map: null,
       },
     })
-  ).toEqual({
+  ).toStrictEqual({
     map: [null, null],
   });
 });
