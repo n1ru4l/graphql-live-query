@@ -5,6 +5,7 @@ export type ExecutionParameter = {
   operation: string;
   operationName?: string | null;
   variables?: { [key: string]: any };
+  extensions?: { [key: string]: any };
 };
 
 export type SocketIOGraphQLClient<TExecutionResult = unknown> = {
@@ -66,13 +67,12 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
     operation,
     variables,
     operationName,
+    extensions,
   }: ExecutionParameter): AsyncIterableIterator<TExecutionResult> => {
     const operationId = currentOperationId;
     currentOperationId = currentOperationId + 1;
-    const {
-      asyncIterableIterator: iterator,
-      pushValue: publishValue,
-    } = makePushPullAsyncIterableIterator<TExecutionResult>();
+    const { asyncIterableIterator: iterator, pushValue: publishValue } =
+      makePushPullAsyncIterableIterator<TExecutionResult>();
 
     const record: OperationRecord<TExecutionResult> = {
       execute: () => {
@@ -81,6 +81,7 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
           operationName,
           operation,
           variables,
+          extensions,
         });
       },
       iterator,

@@ -41,6 +41,8 @@ export type GetParameterFunctionParameter = {
     variableValues: { [key: string]: any } | null;
     /* The name of the operation that should be executed. */
     operationName: string | null;
+    /** Additional extensions that can be used for authentication tokens etc. */
+    extensions: { [key: string]: any } | null;
   };
 };
 
@@ -86,6 +88,7 @@ type MessagePayload = {
   operation: DocumentSourceString | MaybeDocumentNode;
   variables: { [key: string]: any } | null;
   operationName: string | null;
+  extensions: { [key: string]: any } | null;
 };
 
 const decodeMessage = (message: unknown): MessagePayload | Error => {
@@ -93,6 +96,7 @@ const decodeMessage = (message: unknown): MessagePayload | Error => {
   let operation: DocumentSourceString | MaybeDocumentNode | null = null;
   let variables: { [key: string]: any } | null = null;
   let operationName: string | null = null;
+  let extensions: { [key: string]: any } | null = null;
 
   if (typeof message === "object" && message !== null) {
     const maybeId: unknown = (message as any).id;
@@ -129,11 +133,21 @@ const decodeMessage = (message: unknown): MessagePayload | Error => {
       );
     }
 
+    const maybeExtensions: unknown = (message as any).extensions ?? null;
+    if (typeof maybeExtensions === "object") {
+      extensions = maybeExtensions;
+    } else {
+      return new Error(
+        "Invalid message format. Field 'extensions' is invalid."
+      );
+    }
+
     return {
       id,
       operation,
       variables,
       operationName,
+      extensions,
     };
   }
 
@@ -214,6 +228,7 @@ export const registerSocketIOGraphQLServer = ({
         operation: source,
         variables: variableValues,
         operationName,
+        extensions,
       } = message;
 
       const {
@@ -230,6 +245,7 @@ export const registerSocketIOGraphQLServer = ({
           source,
           variableValues,
           operationName,
+          extensions,
         },
       });
 
