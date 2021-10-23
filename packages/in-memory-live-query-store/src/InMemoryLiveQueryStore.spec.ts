@@ -5,6 +5,7 @@ import {
   GraphQLSchema,
   GraphQLString,
   parse,
+  execute,
 } from "graphql";
 import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore";
 
@@ -791,4 +792,34 @@ it("can override the throttle interval by returning a number from validateThrott
   expect(values).toHaveLength(2);
   executionResult.return!();
   await done;
+});
+
+it("makeExecute calls the execute it is passed to resolve live queries", async () => {
+  const schema = createTestSchema();
+
+  const document = parse(/* GraphQL */ `
+    query foo @live {
+      foo
+    }
+  `);
+
+  const executePassedAtInitializationTime = jest.fn();
+  executePassedAtInitializationTime.mockImplementation((args) => execute(args));
+
+  const executePassedToMakeExecute = jest.fn();
+  executePassedToMakeExecute.mockImplementation((args) => execute(args));
+
+  const store = new InMemoryLiveQueryStore({
+    execute: executePassedAtInitializationTime,
+  });
+
+  const makeExecuteFn = store.makeExecute(executePassedToMakeExecute);
+
+  makeExecuteFn({
+    schema,
+    document,
+  });
+
+  expect(executePassedAtInitializationTime).not.toHaveBeenCalled();
+  expect(executePassedToMakeExecute).toHaveBeenCalled();
 });

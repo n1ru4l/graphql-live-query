@@ -309,6 +309,8 @@ export class InMemoryLiveQueryStore {
       let executionCounter = 0;
       let previousIdentifier = new Set<string>(rootFieldIdentifier);
 
+      const localExecuteFn = execute || this._execute;
+
       const record: StoreRecord = {
         iterator,
         pushValue,
@@ -335,7 +337,7 @@ export class InMemoryLiveQueryStore {
             }
           };
 
-          const result = this._execute({
+          const result = localExecuteFn({
             schema,
             document,
             operationName,
