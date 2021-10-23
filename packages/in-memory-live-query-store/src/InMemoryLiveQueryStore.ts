@@ -335,7 +335,7 @@ export class InMemoryLiveQueryStore {
             }
           };
 
-          const result = this._execute({
+          const result = execute({
             schema,
             document,
             operationName,
