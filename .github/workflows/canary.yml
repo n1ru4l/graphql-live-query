@@ -37,9 +37,9 @@ jobs:
           git config --global user.name "theguild-bot"
           echo "machine github.com login theguild-bot password ${{secrets.GH_API_TOKEN}}" > ~/.netrc
       - name: Setup NPM credentials
-        run: echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" >> ~/.npmrc
+        run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
         env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Cache Yarn
         uses: actions/cache@v2
         with:
@@ -53,7 +53,7 @@ jobs:
         id: canary
         uses: "kamilkisiela/release-canary@master"
         with:
-          npm-token: ${{ secrets.NPM_AUTH_TOKEN }}
+          npm-token: ${{ secrets.NPM_TOKEN }}
           npm-script: "yarn release:canary"
           changesets: true
         env:
