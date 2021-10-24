@@ -12,6 +12,7 @@ module.exports = {
   restoreMocks: true,
   reporters: ["default"],
   modulePathIgnorePatterns: ["dist", "test-assets", "test-files", "fixtures"],
+  testPathIgnorePatterns: ["packages/todo-example/end2end-tests"],
   moduleNameMapper: pathsToModuleNameMapper(tsconfig.compilerOptions.paths, {
     prefix: `${ROOT_DIR}/`,
   }),

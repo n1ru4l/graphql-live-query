@@ -10,7 +10,8 @@ import type { GraphiQLWidget as GraphiQLWidgetType } from "./GraphiQLWidget";
 import { createApolloClient } from "./createApolloClient";
 import { TodoApplication } from "./TodoApplication";
 
-const socket = io();
+let host = new URLSearchParams(window.location.search).get("host") ?? undefined;
+const socket = host ? io(host) : io();
 const networkInterface = createSocketIOGraphQLClient<FetchResult>(socket);
 const apolloClient = createApolloClient(networkInterface);
 

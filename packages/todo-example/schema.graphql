@@ -3,7 +3,17 @@
 """
 Instruction for establishing a live connection that is updated once the underlying data changes.
 """
-directive @live on QUERY
+directive @live(
+  """
+  Whether the query should be live or not.
+  """
+  if: Boolean = true
+
+  """
+  Propose a desired throttle interval ot the server in order to receive updates to at most once per "throttle" milliseconds. The server must not accept this value.
+  """
+  throttle: Int
+) on QUERY
 
 type Query {
   todos: [Todo!]!
