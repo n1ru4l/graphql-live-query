@@ -93,3 +93,31 @@ export const extractLiveQueryRootFieldCoordinates = (params: {
 
   return identifier;
 };
+
+/**
+ * Returns a Map whose keys are the root query type fields and values the corresponding arguments values.
+ */
+export const extractLiveQueryRootFieldArgumentValues = (params: {
+  documentNode: DocumentNode;
+  operationNode: OperationDefinitionNode;
+  typeInfo: TypeInfo;
+  variableValues?: Maybe<Record<string, unknown>>;
+}) => {
+  const info = new Map<string, ReturnType<typeof getArgumentValues>>();
+  visit(
+    params.documentNode,
+    visitWithTypeInfo(params.typeInfo, {
+      Field(fieldNode) {
+        const parentType = params.typeInfo.getParentType();
+        if (isSome(parentType) && parentType.name === "Query") {
+          const fieldDef = params.typeInfo.getFieldDef();
+          info.set(
+            fieldNode.name.value,
+            getArgumentValues(fieldDef, fieldNode, params.variableValues)
+          );
+        }
+      },
+    })
+  );
+  return info;
+};

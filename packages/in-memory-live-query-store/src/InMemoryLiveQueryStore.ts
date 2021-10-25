@@ -8,6 +8,7 @@ import {
   defaultFieldResolver,
   TypeInfo,
 } from "graphql";
+import { getArgumentValues } from "graphql/execution/values.js";
 import { mapSchema, MapperKind } from "@graphql-tools/utils";
 import {
   makePushPullAsyncIterableIterator,
@@ -18,7 +19,10 @@ import {
   LiveExecutionResult,
   getLiveDirectiveNode,
 } from "@n1ru4l/graphql-live-query";
-import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
+import {
+  extractLiveQueryRootFieldArgumentValues,
+  extractLiveQueryRootFieldCoordinates,
+} from "./extractLiveQueryRootFieldCoordinates";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
 import { runWith } from "./runWith";
 import { isNone, isSome, None, Maybe } from "./Maybe";
@@ -30,6 +34,7 @@ type StoreRecord = {
   iterator: AsyncIterableIterator<LiveExecutionResult>;
   pushValue: (value: LiveExecutionResult) => void;
   run: () => PromiseOrValue<void>;
+  fields: Map<string, ReturnType<typeof getArgumentValues>>;
 };
 
 type ResourceIdentifierCollectorFunction = (
@@ -309,6 +314,14 @@ export class InMemoryLiveQueryStore {
       let executionCounter = 0;
       let previousIdentifier = new Set<string>(rootFieldIdentifier);
 
+      // extracting the arguments values for each root query field (useful when invalidating by predicate)
+      const fields = extractLiveQueryRootFieldArgumentValues({
+        documentNode: document,
+        operationNode,
+        variableValues,
+        typeInfo,
+      });
+
       const record: StoreRecord = {
         iterator,
         pushValue,
@@ -398,6 +411,7 @@ export class InMemoryLiveQueryStore {
             }
           });
         },
+        fields,
       };
 
       // utils for throttle
