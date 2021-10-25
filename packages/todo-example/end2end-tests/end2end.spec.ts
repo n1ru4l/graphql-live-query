@@ -78,6 +78,8 @@ import * as path from "path";
       await page.goto(testPage);
       await page.type(".new-todo", "Do the laundry");
       await page.keyboard.press("\n");
+      // wait until there are two elements in the list
+      await page.waitForSelector(".todo-list li:nth-child(2)");
       const todos = await page.evaluate(() => {
         return Array.from(
           // @ts-ignore
