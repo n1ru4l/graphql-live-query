@@ -82,4 +82,19 @@ export class ResourceTracker<TRecord> {
 
     return records;
   }
+
+  /**
+   * Get all records that satisfy a specific predicate
+   */
+  getRecordsForPredicate(predicate: (record: TRecord) => boolean) {
+    const records = new Set<TRecord>();
+    for (const recordSet of this._trackedResources.values()) {
+      for (const record of recordSet) {
+        if (!records.has(record) && predicate(record)) {
+          records.add(record);
+        }
+      }
+    }
+    return records;
+  }
 }

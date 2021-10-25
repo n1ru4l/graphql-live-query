@@ -444,12 +444,19 @@ export class InMemoryLiveQueryStore {
    * Invalidate queries (and schedule their re-execution) via a resource identifier.
    * @param identifiers A single or list of resource identifiers that should be invalidated.
    */
-  async invalidate(identifiers: Array<string> | string) {
-    if (typeof identifiers === "string") {
-      identifiers = [identifiers];
-    }
+  async invalidate(
+    identifiers: Array<string> | string | ((record: StoreRecord) => boolean)
+  ) {
+    let records: Set<StoreRecord>;
 
-    const records = this._resourceTracker.getRecordsForIdentifiers(identifiers);
+    if (typeof identifiers === "function") {
+      records = this._resourceTracker.getRecordsForPredicate(identifiers);
+    } else {
+      if (typeof identifiers === "string") {
+        identifiers = [identifiers];
+      }
+      records = this._resourceTracker.getRecordsForIdentifiers(identifiers);
+    }
 
     for (const record of records) {
       record.run();
