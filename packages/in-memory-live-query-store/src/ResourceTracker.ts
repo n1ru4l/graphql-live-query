@@ -9,8 +9,10 @@ import { isNone } from "./Maybe";
  */
 export class ResourceTracker<TRecord> {
   private _trackedResources: Map<string, Set<TRecord>>;
+  private _allResources: Set<TRecord>;
   constructor() {
     this._trackedResources = new Map();
+    this._allResources = new Set();
   }
 
   /**
@@ -56,6 +58,7 @@ export class ResourceTracker<TRecord> {
    * @param identifiers The list of identifiers
    */
   register(record: TRecord, identifiers: Set<string>): void {
+    this._allResources.add(record);
     this.track(record, new Set(), identifiers);
   }
 
@@ -63,6 +66,7 @@ export class ResourceTracker<TRecord> {
    * Release a record that subscribes to a specific set of identifiers.
    */
   release(record: TRecord, identifiers: Set<string>): void {
+    this._allResources.delete(record);
     this.track(record, identifiers, new Set());
   }
 
@@ -88,11 +92,9 @@ export class ResourceTracker<TRecord> {
    */
   getRecordsForPredicate(predicate: (record: TRecord) => boolean) {
     const records = new Set<TRecord>();
-    for (const recordSet of this._trackedResources.values()) {
-      for (const record of recordSet) {
-        if (!records.has(record) && predicate(record)) {
-          records.add(record);
-        }
+    for (const record of this._allResources) {
+      if (predicate(record)) {
+        records.add(record);
       }
     }
     return records;
