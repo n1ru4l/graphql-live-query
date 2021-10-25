@@ -35,6 +35,7 @@ type StoreRecord = {
   pushValue: (value: LiveExecutionResult) => void;
   run: () => PromiseOrValue<void>;
   fields: Map<string, ReturnType<typeof getArgumentValues>>;
+  parameters: ExecutionArgs;
 };
 
 type ResourceIdentifierCollectorFunction = (
@@ -322,6 +323,16 @@ export class InMemoryLiveQueryStore {
         typeInfo,
       });
 
+      const executionParameters: ExecutionArgs = {
+        schema,
+        document,
+        operationName,
+        rootValue,
+        contextValue,
+        variableValues,
+        ...additionalArguments,
+      };
+
       const record: StoreRecord = {
         iterator,
         pushValue,
@@ -349,17 +360,12 @@ export class InMemoryLiveQueryStore {
           };
 
           const result = execute({
-            schema,
-            document,
-            operationName,
-            rootValue,
+            ...executionParameters,
             contextValue: {
-              [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
+              [ORIGINAL_CONTEXT_SYMBOL]: executionParameters.contextValue,
               collectResourceIdentifier,
               addResourceIdentifier,
             },
-            variableValues,
-            ...additionalArguments,
           });
 
           // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
@@ -412,6 +418,7 @@ export class InMemoryLiveQueryStore {
           });
         },
         fields,
+        parameters: executionParameters,
       };
 
       // utils for throttle
