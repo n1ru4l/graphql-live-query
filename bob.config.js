@@ -7,6 +7,7 @@ module.exports = {
     "@n1ru4l/todo-example-server",
     "@n1ru4l/todo-example-server-helix",
     "@n1ru4l/todo-example-server-ws",
+    "@n1ru4l/end2end-tests",
   ], // ignored packages
   base: "origin/main",
 };

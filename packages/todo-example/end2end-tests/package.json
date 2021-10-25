@@ -1,0 +1,10 @@
+{
+  "name": "@n1ru4l/end2end-tests",
+  "version": "0.0.0",
+  "private": "true",
+  "dependencies": {
+    "puppeteer": "10.4.0",
+    "fastify": "3.22.1",
+    "fastify-static": "4.4.2"
+  }
+}

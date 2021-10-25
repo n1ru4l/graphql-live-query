@@ -9,7 +9,8 @@ import { TodoApplication } from "./TodoApplication";
 import type { GraphiQLWidget as GraphiQLWidgetType } from "./GraphiQLWidget";
 import { createRelayEnvironment } from "./createRelayEnvironment";
 
-const socket = io();
+let host = new URLSearchParams(window.location.search).get("host") ?? undefined;
+const socket = host ? io(host) : io();
 const networkInterface = createSocketIOGraphQLClient<GraphQLResponse>(socket);
 const environment = createRelayEnvironment(networkInterface);
 

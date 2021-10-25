@@ -10,7 +10,8 @@ import type { GraphiQLWidget as GraphiQLWidgetType } from "./GraphiQLWidget";
 import { createUrqlClient } from "./createUrgqlClient";
 import { TodoApplication } from "./TodoApplication";
 
-const socket = io();
+let host = new URLSearchParams(window.location.search).get("host") ?? undefined;
+const socket = host ? io(host) : io();
 const networkInterface = createSocketIOGraphQLClient<ExecutionResult>(socket);
 const urqlClient = createUrqlClient(networkInterface);
 

@@ -40,3 +40,7 @@ jobs:
         run: |
           yarn workspace @n1ru4l/todo-example-client-urql build
           yarn workspace @n1ru4l/todo-example-client-urql ts:check
+
+      - name: End2End Tests
+        run: |
+          yarn test:end2end

@@ -7,7 +7,6 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "packages/example/*",
     "packages/todo-example/*"
   ],
   "devDependencies": {
@@ -36,6 +35,7 @@
     "build": "yarn ts:transpile && bob build",
     "watch-build": "tsc-watch --project tsconfig.build.json --onSuccess \"bob build\"",
     "test": "jest --no-watchman",
+    "test:end2end": "jest --no-watchman --config jest.end2end.config.js",
     "ts:transpile": "tsc --project tsconfig.build.json",
     "prerelease": "yarn build",
     "release": "changeset publish",
