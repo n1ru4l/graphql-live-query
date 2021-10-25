@@ -115,12 +115,10 @@ import * as path from "path";
       await page.waitForSelector(".todo-list label");
       await page.hover(".view");
       await page.click(".destroy");
-      const itemCount = await page.evaluate(() => {
+      await page.waitForFunction(
         // @ts-ignore
-        return Array.from(window.document.querySelectorAll(".todo-list label"))
-          .length;
-      });
-      expect(itemCount).toEqual(0);
+        () => !window.document.querySelector(".todo-list label")
+      );
     });
   });
 });
