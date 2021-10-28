@@ -24,6 +24,7 @@
     "lint-staged": "11.2.4",
     "patch-package": "6.4.7",
     "prettier": "2.4.1",
+    "semver": "7.3.5",
     "ts-jest": "27.0.7",
     "tsc-watch": "4.5.0",
     "typescript": "4.4.4"
@@ -41,7 +42,8 @@
     "release": "changeset publish",
     "postinstall": "patch-package",
     "prepare": "husky install",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "release:canary": "(node scripts/canary-release.js && yarn build && yarn changeset publish --tag alpha) || echo Skipping Canary..."
   },
   "lint-staged": {
     "**/*.{ts,tsx,graphql,yml,json}": [
