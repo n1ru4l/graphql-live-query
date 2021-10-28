@@ -95,6 +95,11 @@ import * as path from "path";
       await page.waitForSelector(".todo-list label");
 
       await page.click(".toggle");
+      await page.waitForFunction(
+        // @ts-ignore
+        () => window.document.querySelector(".toggle").checked === true
+      );
+
       let isChecked = await page.evaluate(() => {
         // @ts-ignore
         return window.document.querySelector(".toggle").checked;
