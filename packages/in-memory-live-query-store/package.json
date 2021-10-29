@@ -1,6 +1,6 @@
 {
   "name": "@n1ru4l/in-memory-live-query-store",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
   "repository": {
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@graphql-tools/utils": "^8.0.0",
-    "@n1ru4l/graphql-live-query": "0.8.1",
+    "@n1ru4l/graphql-live-query": "0.8.2",
     "@n1ru4l/push-pull-async-iterable-iterator": "^3.0.0"
   },
   "peerDependencies": {

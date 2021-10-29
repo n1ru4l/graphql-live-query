@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-server
 
+## 0.11.1
+
+### Patch Changes
+
+- 31ef74b: fix esm support for create-react-app and webpack
+
 ## 0.11.0
 
 ### Minor Changes

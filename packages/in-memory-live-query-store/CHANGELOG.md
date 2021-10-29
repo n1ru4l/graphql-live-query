@@ -1,5 +1,13 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.7.4
+
+### Patch Changes
+
+- 31ef74b: fix esm support for create-react-app and webpack
+- Updated dependencies [31ef74b]
+  - @n1ru4l/graphql-live-query@0.8.2
+
 ## 0.7.3
 
 ### Patch Changes
