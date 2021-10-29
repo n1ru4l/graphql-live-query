@@ -1,6 +1,6 @@
 {
   "name": "@n1ru4l/graphql-live-query-patch-json-patch",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": "n1ru4l <laurinquast@googlemail.com>",
   "license": "MIT",
   "repository": {
@@ -19,7 +19,7 @@
     "real-time"
   ],
   "dependencies": {
-    "@n1ru4l/graphql-live-query-patch": "^0.5.0",
+    "@n1ru4l/graphql-live-query-patch": "^0.5.1",
     "fast-json-patch": "3.1.0"
   },
   "devDependencies": {

@@ -1,5 +1,13 @@
 # @n1ru4l/graphql-live-query-patch-json-patch
 
+## 0.5.2
+
+### Patch Changes
+
+- 31ef74b: fix esm support for create-react-app and webpack
+- Updated dependencies [31ef74b]
+  - @n1ru4l/graphql-live-query-patch@0.5.1
+
 ## 0.5.1
 
 ### Patch Changes
