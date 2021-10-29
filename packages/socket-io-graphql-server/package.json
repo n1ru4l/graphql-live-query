@@ -33,15 +33,15 @@
     "socket.io": "^3.0.1 || ^4.0.0"
   },
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "module": "dist/esm/index.js",
   "exports": {
     ".": {
       "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "import": "./dist/esm/index.js"
     },
     "./*": {
       "require": "./dist/*.js",
-      "import": "./dist/*.mjs"
+      "import": "./dist/esm/*.js"
     }
   },
   "typings": "dist/index.d.ts",
