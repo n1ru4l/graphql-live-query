@@ -1229,10 +1229,10 @@
   dependencies:
     ajv "^6.12.6"
 
-"@graphiql/toolkit@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@graphiql/toolkit/-/toolkit-0.3.1.tgz#1fd78babb67bc2b88fd41965d658ad5c76332e08"
-  integrity sha512-Aiiv8i/xGExx9Kju47nAiL9GscDQFFnTL0o338TKSm3UBodExee59Sf+sCRRXU7jNnSzLmAA4TetvcfmjVsLXA==
+"@graphiql/toolkit@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@graphiql/toolkit/-/toolkit-0.3.2.tgz#551753436ada2bc27ea870b7668e5199a958ccfb"
+  integrity sha512-IweIT9VC8uDovg7kuCO9YqZcnIuWU8IGzrpUisXv6CUNK2Ed1ke8yERDTMmF/rjvLd2DeVZwM8iEOjEs4sUJQw==
   dependencies:
     "@n1ru4l/push-pull-async-iterable-iterator" "^3.0.0"
     graphql-ws "^4.9.0"
@@ -4659,12 +4659,12 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-graphiql@1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.4.4.tgz#a41b3472b715ed9e7e0050c6c21edda9c3521204"
-  integrity sha512-uauk+GnWZAWxAdksyq/NqJgg9UoNVnpn6qna3Gr0mmjy2hAjLjycdKmLyoTt/6ip9DPeJIvW4+CE3jaaKFYl5w==
+graphiql@1.4.5:
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-1.4.5.tgz#010b04091371ac4cc431873185d6e5f1a63a62ae"
+  integrity sha512-mQDFljIp/+1hhw40m8xvkFQyfTKvdlJ0q5DgA2ZS18zjDVbE6yZYg2AcsalG3oKv6/RJgNt+s3Gz6TGm31jr+A==
   dependencies:
-    "@graphiql/toolkit" "^0.3.1"
+    "@graphiql/toolkit" "^0.3.2"
     codemirror "^5.58.2"
     codemirror-graphql "^1.0.0"
     copy-to-clipboard "^3.2.0"
