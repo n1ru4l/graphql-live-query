@@ -5,7 +5,7 @@
   "dependencies": {},
   "devDependencies": {
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",
-    "@n1ru4l/push-pull-async-iterable-iterator": "3.0.0",
+    "@n1ru4l/push-pull-async-iterable-iterator": "3.1.0",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "12.1.2",
