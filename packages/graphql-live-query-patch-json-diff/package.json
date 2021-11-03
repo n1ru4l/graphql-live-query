@@ -23,7 +23,7 @@
     "@n1ru4l/graphql-live-query-patch": "^0.5.1"
   },
   "devDependencies": {
-    "graphql": "15.4.0-experimental-stream-defer.1",
+    "graphql": "15.7.2",
     "@n1ru4l/graphql-live-query": "*",
     "@n1ru4l/in-memory-live-query-store": "*"
   },

@@ -19,7 +19,7 @@
     "real-time"
   ],
   "devDependencies": {
-    "graphql": "15.4.0-experimental-stream-defer.1"
+    "graphql": "15.7.2"
   },
   "dependencies": {
     "@graphql-tools/utils": "^8.0.0",
