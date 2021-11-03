@@ -303,10 +303,11 @@ export const registerSocketIOGraphQLServer = ({
       };
 
       const asyncIteratorHandler = async (
-        result: AsyncIterableIterator<ExecutionResult> | ExecutionResult
+        result: AsyncIterable<any> | ExecutionResult
       ) => {
         if (isAsyncIterable(result)) {
-          subscriptions.set(id, () => result.return?.(null));
+          const asyncIterator = result[Symbol.asyncIterator]();
+          subscriptions.set(id, () => asyncIterator.return?.(null));
           for await (const subscriptionResult of result) {
             socket.emit("@graphql/result", { ...subscriptionResult, id });
           }
@@ -315,9 +316,7 @@ export const registerSocketIOGraphQLServer = ({
         }
       };
 
-      let executionResult: PromiseOrPlain<
-        ExecutionResult | AsyncIterableIterator<ExecutionResult>
-      >;
+      let executionResult: PromiseOrPlain<ExecutionResult | AsyncIterable<any>>;
 
       const mainOperation = getOperationAST(documentAst, operationName);
 

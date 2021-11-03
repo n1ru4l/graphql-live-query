@@ -228,7 +228,7 @@ export class InMemoryLiveQueryStore {
     (
       ...args: ExecutionParameter
     ): PromiseOrValue<
-      | AsyncIterableIterator<ExecutionResult | LiveExecutionResult>
+      | AsyncIterable<ExecutionResult<any> | LiveExecutionResult>
       | ExecutionResult
     > => {
       const {
@@ -349,9 +349,7 @@ export class InMemoryLiveQueryStore {
 
           // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
           // in case anyone forgot to add it we just panic and stop the execution :)
-          const handleAsyncIterator = (
-            iterator: AsyncIterable<ExecutionResult>
-          ) => {
+          const handleAsyncIterator = (iterator: AsyncIterable<any>) => {
             iterator[Symbol.asyncIterator]().return?.();
 
             record.pushValue({

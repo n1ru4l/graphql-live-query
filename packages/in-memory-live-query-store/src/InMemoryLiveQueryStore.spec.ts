@@ -36,7 +36,7 @@ function assertNoAsyncIterable(value: unknown) {
 
 const runAllPendingStuff = () => new Promise((res) => setImmediate(res));
 
-const getAllValues = async <T>(values: AsyncIterableIterator<T>) => {
+const getAllValues = async <T>(values: AsyncIterable<T>) => {
   const results: T[] = [];
 
   for await (const value of values) {
@@ -455,7 +455,8 @@ it("can handle missing NoLiveMixedWithDeferStreamRule", async () => {
 
   const executionResult = await store.execute({ schema, document });
   if (isAsyncIterable(executionResult)) {
-    const result = await executionResult.next();
+    const asyncIterator = executionResult[Symbol.asyncIterator]();
+    const result = await asyncIterator.next();
     expect(result).toMatchInlineSnapshot(`
       Object {
         "done": false,
@@ -509,7 +510,8 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
   store.invalidate("1");
 
   process.nextTick(() => {
-    executionResult.return?.();
+    const asyncIterator = executionResult[Symbol.asyncIterator]();
+    asyncIterator.return?.();
   });
 
   const values = await getAllValues(executionResult);
