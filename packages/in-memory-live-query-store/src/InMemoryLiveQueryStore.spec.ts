@@ -9,7 +9,9 @@ import {
 } from "graphql";
 import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore";
 
-const isAsyncIterable = (value: unknown): value is AsyncIterable<unknown> => {
+const isAsyncIterable = <T>(
+  value: T | AsyncIterable<T>
+): value is AsyncIterable<T> => {
   return (
     typeof value === "object" && value !== null && Symbol.asyncIterator in value
   );
@@ -65,7 +67,7 @@ const createTestSchema = (
     name: "Post",
     fields: {
       id: {
-        type: GraphQLNonNull(GraphQLID),
+        type: new GraphQLNonNull(GraphQLID),
       },
       title: {
         type: GraphQLString,
@@ -432,7 +434,7 @@ it("can be executed with polymorphic parameter type", () => {
     }
   `);
 
-  const executionResult = store.execute(schema, document);
+  const executionResult = store.execute({ schema, document });
   expect(executionResult).toEqual({
     data: {
       foo: "queried",
@@ -451,7 +453,7 @@ it("can handle missing NoLiveMixedWithDeferStreamRule", async () => {
     }
   `);
 
-  const executionResult = await store.execute(schema, document);
+  const executionResult = await store.execute({ schema, document });
   if (isAsyncIterable(executionResult)) {
     const result = await executionResult.next();
     expect(result).toMatchInlineSnapshot(`
@@ -479,7 +481,7 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
           type: GraphQLString,
           args: {
             id: {
-              type: GraphQLNonNull(GraphQLString),
+              type: new GraphQLNonNull(GraphQLString),
             },
           },
           extensions: {
@@ -498,7 +500,7 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
     }
   `);
   const store = new InMemoryLiveQueryStore();
-  const executionResult = await store.execute(schema, document);
+  const executionResult = await store.execute({ schema, document });
 
   if (!isAsyncIterable(executionResult)) {
     fail("should return AsyncIterable");
@@ -571,7 +573,7 @@ it("can set the id field name arbitrarily", async () => {
     name: "Post",
     fields: {
       [arbitraryIdName]: {
-        type: GraphQLNonNull(GraphQLID),
+        type: new GraphQLNonNull(GraphQLID),
       },
       title: {
         type: GraphQLString,

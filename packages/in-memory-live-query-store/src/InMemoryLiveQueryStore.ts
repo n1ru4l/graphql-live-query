@@ -9,10 +9,7 @@ import {
   TypeInfo,
 } from "graphql";
 import { mapSchema, MapperKind } from "@graphql-tools/utils";
-import {
-  makePushPullAsyncIterableIterator,
-  isAsyncIterable,
-} from "@n1ru4l/push-pull-async-iterable-iterator";
+import { makePushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   getLiveDirectiveArgumentValues,
   LiveExecutionResult,
@@ -66,11 +63,12 @@ const addResourceIdentifierCollectorToSchema = (
         const addResourceIdentifier: AddResourceIdentifierFunction =
           context.addResourceIdentifier;
         context = context[ORIGINAL_CONTEXT_SYMBOL];
-        const result = resolve(src, args, context, info);
+        const result = resolve(src, args, context, info) as any;
 
-        if (fieldConfig.extensions?.liveQuery?.collectResourceIdentifiers) {
+        const fieldConfigExtensions = fieldConfig.extensions as any | undefined;
+        if (fieldConfigExtensions?.liveQuery?.collectResourceIdentifiers) {
           addResourceIdentifier(
-            fieldConfig.extensions.liveQuery.collectResourceIdentifiers(
+            fieldConfigExtensions.liveQuery.collectResourceIdentifiers(
               src,
               args
             )
@@ -154,7 +152,7 @@ const getExecutionParameters = (params: ExecutionParameter): ExecutionArgs => {
     operationName,
     fieldResolver,
     typeResolver,
-  ] = params;
+  ] = params as any;
 
   return {
     schema,
@@ -371,6 +369,16 @@ export class InMemoryLiveQueryStore {
             });
 
             this._resourceTracker.release(record, previousIdentifier);
+          };
+
+          const isAsyncIterable = <T>(
+            value: T | AsyncIterable<T>
+          ): value is AsyncIterable<T> => {
+            return (
+              typeof value === "object" &&
+              value !== null &&
+              Symbol.asyncIterator in value
+            );
           };
 
           runWith(result, (result) => {

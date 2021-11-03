@@ -50,7 +50,7 @@ export const createApplyLiveQueryPatch = <PatchPayload = unknown>(
             mutableData as Record<string, unknown>,
             result.patch
           );
-          valueToPublish.data = mutableData;
+          valueToPublish.data = mutableData as Record<string, unknown>;
 
           lastRevision++;
         }

@@ -17,6 +17,6 @@ export const getLiveDirectiveArgumentValues = (
 
   return {
     isLive: values?.["if"] === true,
-    throttleValue: values?.["throttle"] ?? null,
+    throttleValue: (values?.["throttle"] ?? null) as Maybe<number>,
   };
 };
