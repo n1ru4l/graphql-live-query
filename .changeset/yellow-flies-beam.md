@@ -5,8 +5,6 @@
 "@n1ru4l/graphql-live-query-patch-json-patch": minor
 "@n1ru4l/in-memory-live-query-store": minor
 "@n1ru4l/socket-io-graphql-server": minor
-"@n1ru4l/todo-example-server-helix": minor
-"@n1ru4l/todo-example-server-ws": minor
 ---
 
 GraphQL v16 compatibility
