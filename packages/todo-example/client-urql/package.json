@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "urql": "2.0.5",
-    "graphql": "15.4.0-experimental-stream-defer.1"
+    "graphql": "16.0.1"
   },
   "devDependencies": {
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",

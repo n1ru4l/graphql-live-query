@@ -19,7 +19,7 @@
     "real-time"
   ],
   "devDependencies": {
-    "graphql": "15.4.0-experimental-stream-defer.1"
+    "graphql": "16.0.1"
   },
   "dependencies": {
     "@graphql-tools/utils": "^8.0.0",
@@ -27,7 +27,7 @@
     "@n1ru4l/push-pull-async-iterable-iterator": "^3.0.0"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0"
+    "graphql": "^15.4.0 || ^16.0.0"
   },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
