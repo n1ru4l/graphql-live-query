@@ -4,7 +4,7 @@
   "private": "true",
   "dependencies": {
     "puppeteer": "11.0.0",
-    "fastify": "3.22.1",
+    "fastify": "3.23.0",
     "fastify-static": "4.5.0"
   }
 }
