@@ -101,7 +101,7 @@ export type ValidateThrottleValueFunction = (
   throttleValue: Maybe<number>
 ) => Maybe<string | number>;
 
-type InMemoryLiveQueryStoreParameter = {
+export type InMemoryLiveQueryStoreParameter = {
   /**
    * Custom function for building resource identifiers.
    * By default resource identifiers are built by concatenating the Typename with the id separated by a color (`User:1`).
@@ -114,6 +114,8 @@ type InMemoryLiveQueryStoreParameter = {
    * Function which is used for executing the operations.
    *
    * Uses the `execute` exported from graphql be default.
+   *
+   * @deprecated Please use the InMemoryStore.createExecute method instead.
    * */
   execute?: typeof defaultExecute;
   /**
@@ -181,7 +183,7 @@ export class InMemoryLiveQueryStore {
         : process?.env?.NODE_ENV === "development");
   }
 
-  private getPatchedSchema(inputSchema: GraphQLSchema): SchemaCacheRecord {
+  private _getPatchedSchema(inputSchema: GraphQLSchema): SchemaCacheRecord {
     let data = this._schemaCache.get(inputSchema);
     if (isNone(data)) {
       const schema = addResourceIdentifierCollectorToSchema(
@@ -258,7 +260,7 @@ export class InMemoryLiveQueryStore {
         }
       }
 
-      const { schema, typeInfo } = this.getPatchedSchema(inputSchema);
+      const { schema, typeInfo } = this._getPatchedSchema(inputSchema);
 
       const rootFieldIdentifier = Array.from(
         extractLiveQueryRootFieldCoordinates({
@@ -399,6 +401,7 @@ export class InMemoryLiveQueryStore {
       return iterator;
     };
 
+  /** @deprecated Please use InMemoryLiveQueryStore.makeExecute instead. */
   execute = this.makeExecute(this._execute);
 
   /**
