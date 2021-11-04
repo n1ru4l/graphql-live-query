@@ -5,7 +5,7 @@ import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
 import { applyLiveQueryJSONPatchGenerator } from "@n1ru4l/graphql-live-query-patch-json-patch";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
-import { specifiedRules } from "graphql";
+import { specifiedRules, execute as defaultExecute } from "graphql";
 import { schema } from "./schema";
 import { flow } from "./util/flow";
 
@@ -50,8 +50,9 @@ export const createServer = async ({ port = 3001 }: { port?: number }) => {
     content: "foo",
     isCompleted: false,
   });
+
   const execute = flow(
-    liveQueryStore.execute,
+    liveQueryStore.makeExecute(defaultExecute),
     applyLiveQueryJSONPatchGenerator
   );
 

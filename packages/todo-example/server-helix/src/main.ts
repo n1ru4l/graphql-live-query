@@ -1,5 +1,5 @@
 import express from "express";
-import { specifiedRules } from "graphql";
+import { specifiedRules, execute as defaultExecute } from "graphql";
 import {
   getGraphQLParameters,
   processRequest,
@@ -11,6 +11,7 @@ import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
 import { schema } from "./schema";
 
 const liveQueryStore = new InMemoryLiveQueryStore();
+const execute = liveQueryStore.makeExecute(defaultExecute);
 const rootValue = {
   todos: new Map(),
 };
@@ -49,7 +50,7 @@ app.use("/", async (req, res) => {
         liveQueryStore,
       }),
       rootValueFactory: () => rootValue,
-      execute: liveQueryStore.execute,
+      execute,
     });
 
     if (result.type === "RESPONSE") {
