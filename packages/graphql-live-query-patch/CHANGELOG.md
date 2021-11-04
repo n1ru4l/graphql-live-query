@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query-patch
 
+## 0.6.0
+
+### Minor Changes
+
+- f555f2f: GraphQL v16 compatibility
+
 ## 0.5.1
 
 ### Patch Changes

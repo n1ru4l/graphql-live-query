@@ -1,5 +1,16 @@
 # @n1ru4l/graphql-live-query-patch-json-patch
 
+## 0.6.0
+
+### Minor Changes
+
+- f555f2f: GraphQL v16 compatibility
+
+### Patch Changes
+
+- Updated dependencies [f555f2f]
+  - @n1ru4l/graphql-live-query-patch@0.6.0
+
 ## 0.5.2
 
 ### Patch Changes

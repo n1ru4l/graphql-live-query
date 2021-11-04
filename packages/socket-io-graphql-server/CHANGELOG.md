@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-server
 
+## 0.12.0
+
+### Minor Changes
+
+- f555f2f: GraphQL v16 compatibility
+
 ## 0.11.1
 
 ### Patch Changes
