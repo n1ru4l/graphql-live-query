@@ -14,7 +14,7 @@ import {
   getOperationAST,
   OperationDefinitionNode,
 } from "graphql";
-import { isAsyncIterable } from "./isAsyncIterable";
+import { isAsyncIterableIterator } from "./isAsyncIterableIterator";
 import type { Server as IOServer, Socket as IOSocket } from "socket.io";
 
 export type PromiseOrPlain<T> = T | Promise<T>;
@@ -25,6 +25,8 @@ type MaybeDocumentNode = Record<string, unknown> | DocumentNode;
 const isDocumentNode = (input: MaybeDocumentNode): input is DocumentNode => {
   return input["kind"] === "Document" && Array.isArray(input["definitions"]);
 };
+
+type PromiseOrValue<T> = T | Promise<T>;
 
 export type ExecuteFunction = (
   args: ExecutionArgs
@@ -303,11 +305,10 @@ export const registerSocketIOGraphQLServer = ({
       };
 
       const asyncIteratorHandler = async (
-        result: AsyncIterable<any> | ExecutionResult
+        result: AsyncIterableIterator<ExecutionResult> | ExecutionResult
       ) => {
-        if (isAsyncIterable(result)) {
-          const asyncIterator = result[Symbol.asyncIterator]();
-          subscriptions.set(id, () => asyncIterator.return?.(null));
+        if (isAsyncIterableIterator(result)) {
+          subscriptions.set(id, () => result.return?.());
           for await (const subscriptionResult of result) {
             socket.emit("@graphql/result", { ...subscriptionResult, id });
           }
@@ -316,7 +317,10 @@ export const registerSocketIOGraphQLServer = ({
         }
       };
 
-      let executionResult: PromiseOrPlain<ExecutionResult | AsyncIterable<any>>;
+      // TODO: change AsyncIterableIterator to AsyncGenerator once we drop support for GraphQL.js 15
+      let executionResult: PromiseOrPlain<
+        ExecutionResult | AsyncIterableIterator<any>
+      >;
 
       const mainOperation = getOperationAST(documentAst, operationName);
 
@@ -332,7 +336,10 @@ export const registerSocketIOGraphQLServer = ({
               document: documentAst,
             });
           } else {
-            executionResult = execute(executionParameter);
+            // TODO: remove type-cast once we drop support for GraphQL.js 15
+            executionResult = execute(executionParameter) as PromiseOrValue<
+              ExecutionResult | AsyncIterableIterator<ExecutionResult>
+            >;
           }
         } catch (contextError) {
           console.error("Unexpected error occurred.", contextError);
@@ -344,7 +351,7 @@ export const registerSocketIOGraphQLServer = ({
 
       Promise.resolve(executionResult)
         .then((result) => {
-          if (isAsyncIterable(result)) {
+          if (isAsyncIterableIterator(result)) {
             return asyncIteratorHandler(result);
           } else {
             emitFinalResult(result);
