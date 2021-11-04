@@ -9,7 +9,10 @@ import {
   TypeInfo,
 } from "graphql";
 import { mapSchema, MapperKind } from "@graphql-tools/utils";
-import { makePushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
+import {
+  makePushPullAsyncIterableIterator,
+  isAsyncIterable,
+} from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   getLiveDirectiveArgumentValues,
   LiveExecutionResult,
@@ -316,12 +319,15 @@ export class InMemoryLiveQueryStore {
             },
             variableValues,
             ...additionalArguments,
-          });
+            // TODO: remove this type-cast once GraphQL.js 16-defer-stream with fixed return type got released
+          }) as LiveExecuteReturnType;
 
           // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
           // in case anyone forgot to add it we just panic and stop the execution :)
-          const handleAsyncIterator = (iterator: AsyncIterable<any>) => {
-            iterator[Symbol.asyncIterator]().return?.();
+          const handleAsyncIterator = (
+            iterator: AsyncIterableIterator<any>
+          ) => {
+            iterator.return?.();
 
             record.pushValue({
               errors: [
@@ -338,16 +344,6 @@ export class InMemoryLiveQueryStore {
             });
 
             this._resourceTracker.release(record, previousIdentifier);
-          };
-
-          const isAsyncIterable = <T>(
-            value: T | AsyncIterable<T>
-          ): value is AsyncIterable<T> => {
-            return (
-              typeof value === "object" &&
-              value !== null &&
-              Symbol.asyncIterator in value
-            );
           };
 
           runWith(result, (result) => {
