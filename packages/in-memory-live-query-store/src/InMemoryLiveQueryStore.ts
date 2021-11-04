@@ -147,6 +147,11 @@ type SchemaCacheRecord = {
   typeInfo: TypeInfo;
 };
 
+type LiveExecuteReturnType = PromiseOrValue<
+  // TODO: change this to AsyncGenerator once we drop support for GraphQL.js 15
+  AsyncIterableIterator<ExecutionResult | LiveExecutionResult> | ExecutionResult
+>;
+
 export class InMemoryLiveQueryStore {
   private _resourceTracker = new ResourceTracker<StoreRecord>();
   private _schemaCache = new WeakMap<GraphQLSchema, SchemaCacheRecord>();
@@ -194,12 +199,7 @@ export class InMemoryLiveQueryStore {
 
   makeExecute =
     (execute: typeof defaultExecute) =>
-    (
-      args: ExecutionArgs
-    ): PromiseOrValue<
-      | AsyncIterable<ExecutionResult<any> | LiveExecutionResult>
-      | ExecutionResult
-    > => {
+    (args: ExecutionArgs): LiveExecuteReturnType => {
       const {
         schema: inputSchema,
         document,
@@ -221,7 +221,7 @@ export class InMemoryLiveQueryStore {
           variableValues,
           operationName,
           ...additionalArguments,
-        });
+        }) as LiveExecuteReturnType;
 
       if (isNone(operationNode)) {
         return fallbackToDefaultExecute();
