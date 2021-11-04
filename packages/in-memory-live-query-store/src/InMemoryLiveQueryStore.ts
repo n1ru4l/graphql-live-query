@@ -135,37 +135,6 @@ type InMemoryLiveQueryStoreParameter = {
   validateThrottleValue?: ValidateThrottleValueFunction;
 };
 
-// TODO: Investigate why parameters does not return a union...
-type ExecutionParameter = Parameters<typeof defaultExecute> | [ExecutionArgs];
-
-/* Utility for getting the parameters for the union parameter input type as a object. */
-const getExecutionParameters = (params: ExecutionParameter): ExecutionArgs => {
-  if (params.length === 1) {
-    return params[0];
-  }
-  const [
-    schema,
-    document,
-    rootValue,
-    contextValue,
-    variableValues,
-    operationName,
-    fieldResolver,
-    typeResolver,
-  ] = params as any;
-
-  return {
-    schema,
-    document,
-    rootValue,
-    contextValue,
-    variableValues,
-    operationName,
-    fieldResolver,
-    typeResolver,
-  };
-};
-
 const nextTick =
   (typeof process === "object" && typeof process.nextTick === "function"
     ? process.nextTick
@@ -226,7 +195,7 @@ export class InMemoryLiveQueryStore {
   makeExecute =
     (execute: typeof defaultExecute) =>
     (
-      ...args: ExecutionParameter
+      args: ExecutionArgs
     ): PromiseOrValue<
       | AsyncIterable<ExecutionResult<any> | LiveExecutionResult>
       | ExecutionResult
@@ -239,7 +208,7 @@ export class InMemoryLiveQueryStore {
         variableValues,
         operationName,
         ...additionalArguments
-      } = getExecutionParameters(args);
+      } = args;
 
       const operationNode = getOperationAST(document, operationName);
 
