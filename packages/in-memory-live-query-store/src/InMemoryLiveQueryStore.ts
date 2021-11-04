@@ -66,11 +66,12 @@ const addResourceIdentifierCollectorToSchema = (
         const addResourceIdentifier: AddResourceIdentifierFunction =
           context.addResourceIdentifier;
         context = context[ORIGINAL_CONTEXT_SYMBOL];
-        const result = resolve(src, args, context, info);
+        const result = resolve(src, args, context, info) as any;
 
-        if (fieldConfig.extensions?.liveQuery?.collectResourceIdentifiers) {
+        const fieldConfigExtensions = fieldConfig.extensions as any | undefined;
+        if (fieldConfigExtensions?.liveQuery?.collectResourceIdentifiers) {
           addResourceIdentifier(
-            fieldConfig.extensions.liveQuery.collectResourceIdentifiers(
+            fieldConfigExtensions.liveQuery.collectResourceIdentifiers(
               src,
               args
             )
@@ -103,7 +104,7 @@ export type ValidateThrottleValueFunction = (
   throttleValue: Maybe<number>
 ) => Maybe<string | number>;
 
-type InMemoryLiveQueryStoreParameter = {
+export type InMemoryLiveQueryStoreParameter = {
   /**
    * Custom function for building resource identifiers.
    * By default resource identifiers are built by concatenating the Typename with the id separated by a color (`User:1`).
@@ -116,6 +117,8 @@ type InMemoryLiveQueryStoreParameter = {
    * Function which is used for executing the operations.
    *
    * Uses the `execute` exported from graphql be default.
+   *
+   * @deprecated Please use the InMemoryStore.createExecute method instead.
    * */
   execute?: typeof defaultExecute;
   /**
@@ -137,37 +140,6 @@ type InMemoryLiveQueryStoreParameter = {
   validateThrottleValue?: ValidateThrottleValueFunction;
 };
 
-// TODO: Investigate why parameters does not return a union...
-type ExecutionParameter = Parameters<typeof defaultExecute> | [ExecutionArgs];
-
-/* Utility for getting the parameters for the union parameter input type as a object. */
-const getExecutionParameters = (params: ExecutionParameter): ExecutionArgs => {
-  if (params.length === 1) {
-    return params[0];
-  }
-  const [
-    schema,
-    document,
-    rootValue,
-    contextValue,
-    variableValues,
-    operationName,
-    fieldResolver,
-    typeResolver,
-  ] = params;
-
-  return {
-    schema,
-    document,
-    rootValue,
-    contextValue,
-    variableValues,
-    operationName,
-    fieldResolver,
-    typeResolver,
-  };
-};
-
 const nextTick =
   (typeof process === "object" && typeof process.nextTick === "function"
     ? process.nextTick
@@ -179,6 +151,11 @@ type SchemaCacheRecord = {
   schema: GraphQLSchema;
   typeInfo: TypeInfo;
 };
+
+type LiveExecuteReturnType = PromiseOrValue<
+  // TODO: change this to AsyncGenerator once we drop support for GraphQL.js 15
+  AsyncIterableIterator<ExecutionResult | LiveExecutionResult> | ExecutionResult
+>;
 
 export class InMemoryLiveQueryStore {
   private _resourceTracker = new ResourceTracker<StoreRecord>();
@@ -209,7 +186,7 @@ export class InMemoryLiveQueryStore {
         : process?.env?.NODE_ENV === "development");
   }
 
-  private getPatchedSchema(inputSchema: GraphQLSchema): SchemaCacheRecord {
+  private _getPatchedSchema(inputSchema: GraphQLSchema): SchemaCacheRecord {
     let data = this._schemaCache.get(inputSchema);
     if (isNone(data)) {
       const schema = addResourceIdentifierCollectorToSchema(
@@ -227,12 +204,7 @@ export class InMemoryLiveQueryStore {
 
   makeExecute =
     (execute: typeof defaultExecute) =>
-    (
-      ...args: ExecutionParameter
-    ): PromiseOrValue<
-      | AsyncIterableIterator<ExecutionResult | LiveExecutionResult>
-      | ExecutionResult
-    > => {
+    (args: ExecutionArgs): LiveExecuteReturnType => {
       const {
         schema: inputSchema,
         document,
@@ -241,7 +213,7 @@ export class InMemoryLiveQueryStore {
         variableValues,
         operationName,
         ...additionalArguments
-      } = getExecutionParameters(args);
+      } = args;
 
       const operationNode = getOperationAST(document, operationName);
 
@@ -254,7 +226,7 @@ export class InMemoryLiveQueryStore {
           variableValues,
           operationName,
           ...additionalArguments,
-        });
+        }) as LiveExecuteReturnType;
 
       if (isNone(operationNode)) {
         return fallbackToDefaultExecute();
@@ -291,7 +263,7 @@ export class InMemoryLiveQueryStore {
         }
       }
 
-      const { schema, typeInfo } = this.getPatchedSchema(inputSchema);
+      const { schema, typeInfo } = this._getPatchedSchema(inputSchema);
 
       const rootFieldIdentifier = Array.from(
         extractLiveQueryRootFieldCoordinates({
@@ -347,14 +319,15 @@ export class InMemoryLiveQueryStore {
             },
             variableValues,
             ...additionalArguments,
-          });
+            // TODO: remove this type-cast once GraphQL.js 16-defer-stream with fixed return type got released
+          }) as LiveExecuteReturnType;
 
           // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
           // in case anyone forgot to add it we just panic and stop the execution :)
           const handleAsyncIterator = (
-            iterator: AsyncIterable<ExecutionResult>
+            iterator: AsyncIterableIterator<any>
           ) => {
-            iterator[Symbol.asyncIterator]().return?.();
+            iterator.return?.();
 
             record.pushValue({
               errors: [
@@ -424,6 +397,7 @@ export class InMemoryLiveQueryStore {
       return iterator;
     };
 
+  /** @deprecated Please use InMemoryLiveQueryStore.makeExecute instead. */
   execute = this.makeExecute(this._execute);
 
   /**

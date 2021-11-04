@@ -8,7 +8,7 @@
     "@n1ru4l/push-pull-async-iterable-iterator": "3.1.0",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@app/gql": "link:./src/gql",
-    "graphql": "15.4.0-experimental-stream-defer.1"
+    "graphql": "16.0.0-experimental-stream-defer.5"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.2.2",

@@ -7,13 +7,8 @@ import {
   parse,
   execute,
 } from "graphql";
+import { isAsyncIterable } from "@graphql-tools/utils";
 import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore";
-
-const isAsyncIterable = (value: unknown): value is AsyncIterable<unknown> => {
-  return (
-    typeof value === "object" && value !== null && Symbol.asyncIterator in value
-  );
-};
 
 function assertAsyncIterable(
   value: unknown
@@ -34,7 +29,7 @@ function assertNoAsyncIterable(value: unknown) {
 
 const runAllPendingStuff = () => new Promise((res) => setImmediate(res));
 
-const getAllValues = async <T>(values: AsyncIterableIterator<T>) => {
+const getAllValues = async <T>(values: AsyncIterable<T>) => {
   const results: T[] = [];
 
   for await (const value of values) {
@@ -65,7 +60,7 @@ const createTestSchema = (
     name: "Post",
     fields: {
       id: {
-        type: GraphQLNonNull(GraphQLID),
+        type: new GraphQLNonNull(GraphQLID),
       },
       title: {
         type: GraphQLString,
@@ -432,7 +427,7 @@ it("can be executed with polymorphic parameter type", () => {
     }
   `);
 
-  const executionResult = store.execute(schema, document);
+  const executionResult = store.execute({ schema, document });
   expect(executionResult).toEqual({
     data: {
       foo: "queried",
@@ -451,9 +446,10 @@ it("can handle missing NoLiveMixedWithDeferStreamRule", async () => {
     }
   `);
 
-  const executionResult = await store.execute(schema, document);
+  const executionResult = await store.execute({ schema, document });
   if (isAsyncIterable(executionResult)) {
-    const result = await executionResult.next();
+    const asyncIterator = executionResult[Symbol.asyncIterator]();
+    const result = await asyncIterator.next();
     expect(result).toMatchInlineSnapshot(`
       Object {
         "done": false,
@@ -479,7 +475,7 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
           type: GraphQLString,
           args: {
             id: {
-              type: GraphQLNonNull(GraphQLString),
+              type: new GraphQLNonNull(GraphQLString),
             },
           },
           extensions: {
@@ -498,7 +494,7 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
     }
   `);
   const store = new InMemoryLiveQueryStore();
-  const executionResult = await store.execute(schema, document);
+  const executionResult = await store.execute({ schema, document });
 
   if (!isAsyncIterable(executionResult)) {
     fail("should return AsyncIterable");
@@ -507,7 +503,8 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
   store.invalidate("1");
 
   process.nextTick(() => {
-    executionResult.return?.();
+    const asyncIterator = executionResult[Symbol.asyncIterator]();
+    asyncIterator.return?.();
   });
 
   const values = await getAllValues(executionResult);
@@ -571,7 +568,7 @@ it("can set the id field name arbitrarily", async () => {
     name: "Post",
     fields: {
       [arbitraryIdName]: {
-        type: GraphQLNonNull(GraphQLID),
+        type: new GraphQLNonNull(GraphQLID),
       },
       title: {
         type: GraphQLString,

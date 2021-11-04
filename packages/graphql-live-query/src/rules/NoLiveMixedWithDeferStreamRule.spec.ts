@@ -33,7 +33,7 @@ const createSchema = () => {
         resolve: () => null,
       },
       users: {
-        type: GraphQLList(GraphQLUserType),
+        type: new GraphQLList(GraphQLUserType),
         resolve: () => null,
       },
     },
