@@ -7,15 +7,8 @@ import {
   parse,
   execute,
 } from "graphql";
+import { isAsyncIterable } from "@graphql-tools/utils";
 import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore";
-
-const isAsyncIterable = <T>(
-  value: T | AsyncIterable<T>
-): value is AsyncIterable<T> => {
-  return (
-    typeof value === "object" && value !== null && Symbol.asyncIterator in value
-  );
-};
 
 function assertAsyncIterable(
   value: unknown
