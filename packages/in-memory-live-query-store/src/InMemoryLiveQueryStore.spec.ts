@@ -5,7 +5,8 @@ import {
   GraphQLSchema,
   GraphQLString,
   parse,
-  execute,
+  execute as executeImplementation,
+  GraphQLList,
 } from "graphql";
 import { isAsyncIterable } from "@graphql-tools/utils";
 import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore";
@@ -47,6 +48,10 @@ const createTestSchema = (
       id: string;
       title: string;
     };
+    posts?: Array<{
+      id: string;
+      title: string;
+    }>;
   } = {
     query: "queried",
     mutation: "mutated",
@@ -54,6 +59,7 @@ const createTestSchema = (
       id: "1",
       title: "lel",
     },
+    posts: [],
   }
 ) => {
   const GraphQLPostType = new GraphQLObjectType({
@@ -82,6 +88,18 @@ const createTestSchema = (
           },
         },
         resolve: () => mutableSource.post,
+      },
+      posts: {
+        type: new GraphQLList(GraphQLPostType),
+        args: {
+          needle: {
+            type: GraphQLString,
+          },
+          whereAuthorId: {
+            type: GraphQLID,
+          },
+        },
+        resolve: () => mutableSource.posts,
       },
     },
   });
@@ -797,10 +815,14 @@ it("makeExecute calls the execute it is passed to resolve live queries", async (
   `);
 
   const executePassedAtInitializationTime = jest.fn();
-  executePassedAtInitializationTime.mockImplementation((args) => execute(args));
+  executePassedAtInitializationTime.mockImplementation((args) =>
+    executeImplementation(args)
+  );
 
   const executePassedToMakeExecute = jest.fn();
-  executePassedToMakeExecute.mockImplementation((args) => execute(args));
+  executePassedToMakeExecute.mockImplementation((args) =>
+    executeImplementation(args)
+  );
 
   const store = new InMemoryLiveQueryStore({
     execute: executePassedAtInitializationTime,
@@ -819,4 +841,119 @@ it("makeExecute calls the execute it is passed to resolve live queries", async (
   expect(executePassedAtInitializationTime).not.toHaveBeenCalled();
   expect(executePassedToMakeExecute).toHaveBeenCalled();
   await result.return?.();
+});
+
+it("index via custom index field of type string", async () => {
+  const schema = createTestSchema();
+
+  const store = new InMemoryLiveQueryStore({
+    includeIdentifierExtension: true,
+    indexBy: [
+      {
+        field: "Query.posts",
+        args: ["needle"],
+      },
+    ],
+  });
+
+  const execute = store.makeExecute(executeImplementation);
+
+  const document = parse(/* GraphQL */ `
+    query @live {
+      posts(needle: "brrrrrrt") {
+        id
+        title
+      }
+    }
+  `);
+
+  const executionResult = execute({ document, schema });
+  assertAsyncIterable(executionResult);
+  let result = await executionResult.next();
+  expect(result.value).toEqual({
+    data: {
+      posts: [],
+    },
+    extensions: {
+      liveResourceIdentifier: ["Query.posts", 'Query.posts(needle:"brrrrrrt")'],
+    },
+    isLive: true,
+  });
+});
+
+it("index via custom index field with string value", async () => {
+  const schema = createTestSchema();
+
+  const store = new InMemoryLiveQueryStore({
+    includeIdentifierExtension: true,
+    indexBy: [
+      {
+        field: "Query.posts",
+        args: [["needle", "sup"]],
+      },
+    ],
+  });
+  const execute = store.makeExecute(executeImplementation);
+
+  const document = parse(/* GraphQL */ `
+    query @live {
+      posts(needle: "sup") {
+        id
+        title
+      }
+    }
+  `);
+
+  const executionResult = execute({ document, schema });
+  assertAsyncIterable(executionResult);
+  let result = await executionResult.next();
+  expect(result.value).toEqual({
+    data: {
+      posts: [],
+    },
+    extensions: {
+      liveResourceIdentifier: ["Query.posts", 'Query.posts(needle:"sup")'],
+    },
+    isLive: true,
+  });
+});
+
+it("index via custom compound index", async () => {
+  const schema = createTestSchema();
+
+  const store = new InMemoryLiveQueryStore({
+    includeIdentifierExtension: true,
+    indexBy: [
+      {
+        field: "Query.posts",
+        args: ["whereAuthorId", "needle"],
+      },
+    ],
+  });
+  const execute = store.makeExecute(executeImplementation);
+
+  const document = parse(/* GraphQL */ `
+    query @live {
+      posts(needle: "sup", whereAuthorId: "3") {
+        id
+        title
+      }
+    }
+  `);
+
+  const executionResult = execute({ document, schema });
+  assertAsyncIterable(executionResult);
+  let result = await executionResult.next();
+  expect(result.value).toEqual({
+    data: {
+      posts: [],
+    },
+    extensions: {
+      liveResourceIdentifier: [
+        "Query.posts",
+        'Query.posts(whereAuthorId:"3",needle:"sup")',
+      ],
+    },
+    isLive: true,
+  });
 });

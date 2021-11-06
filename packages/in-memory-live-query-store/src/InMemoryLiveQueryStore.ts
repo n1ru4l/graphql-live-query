@@ -36,6 +36,19 @@ type AddResourceIdentifierFunction = (
 
 const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
 
+type ArgumentName = string;
+type ArgumentValue = string;
+type IndexConfiguration = Array<
+  ArgumentName | [arg: ArgumentName, value: ArgumentValue]
+>;
+
+type LiveQueryContextValue = {
+  [ORIGINAL_CONTEXT_SYMBOL]: unknown;
+  collectResourceIdentifier: ResourceIdentifierCollectorFunction;
+  addResourceIdentifier: AddResourceIdentifierFunction;
+  indices: Map<string, Array<IndexConfiguration>> | null;
+};
+
 const addResourceIdentifierCollectorToSchema = (
   schema: GraphQLSchema,
   idFieldName: string
@@ -53,16 +66,17 @@ const addResourceIdentifierCollectorToSchema = (
           return resolve(src, args, context, info);
         }
 
-        const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
-          context.collectResourceIdentifier;
-        const addResourceIdentifier: AddResourceIdentifierFunction =
-          context.addResourceIdentifier;
-        context = context[ORIGINAL_CONTEXT_SYMBOL];
-        const result = resolve(src, args, context, info) as any;
+        const liveQueyContext = context as LiveQueryContextValue;
+        const result = resolve(
+          src,
+          args,
+          liveQueyContext[ORIGINAL_CONTEXT_SYMBOL],
+          info
+        ) as any;
 
         const fieldConfigExtensions = fieldConfig.extensions as any | undefined;
         if (fieldConfigExtensions?.liveQuery?.collectResourceIdentifiers) {
-          addResourceIdentifier(
+          liveQueyContext.addResourceIdentifier(
             fieldConfigExtensions.liveQuery.collectResourceIdentifiers(
               src,
               args
@@ -70,9 +84,33 @@ const addResourceIdentifierCollectorToSchema = (
           );
         }
 
+        const fieldCoordinate = `${typename}.${fieldName}`;
+        const indicesForCoordinate =
+          liveQueyContext.indices?.get(fieldCoordinate);
+
+        if (indicesForCoordinate) {
+          for (const index of indicesForCoordinate) {
+            let parts: Array<string> = [];
+            for (const part of index) {
+              if (Array.isArray(part)) {
+                if (args[part[0]] === part[1]) {
+                  parts.push(`${part[0]}:"${args[part[0]]}"`);
+                }
+              } else if (args[part] !== undefined) {
+                parts.push(`${part}:"${args[part]}"`);
+              }
+            }
+            if (parts.length) {
+              liveQueyContext.addResourceIdentifier(
+                `${fieldCoordinate}(${parts.join(",")})`
+              );
+            }
+          }
+        }
+
         if (isIDField) {
           runWith(result, (id: string) =>
-            collectResourceIdentifier({ typename, id })
+            liveQueyContext.collectResourceIdentifier({ typename, id })
           );
         }
         return result;
@@ -130,6 +168,10 @@ export type InMemoryLiveQueryStoreParameter = {
    * Return null or undefined for disabling throttle completely.
    */
   validateThrottleValue?: ValidateThrottleValueFunction;
+  /**
+   * Specify which fields should be indexed for specific invalidations.
+   */
+  indexBy?: Array<{ field: string; args: IndexConfiguration }>;
 };
 
 type SchemaCacheRecord = {
@@ -150,6 +192,7 @@ export class InMemoryLiveQueryStore {
   private _includeIdentifierExtension = false;
   private _idFieldName = "id";
   private _validateThrottleValue: Maybe<ValidateThrottleValueFunction>;
+  private _indices: Map<string, Array<IndexConfiguration>> | null = null;
 
   constructor(params?: InMemoryLiveQueryStoreParameter) {
     if (params?.buildResourceIdentifier) {
@@ -163,6 +206,17 @@ export class InMemoryLiveQueryStore {
     }
     if (params?.validateThrottleValue) {
       this._validateThrottleValue = params.validateThrottleValue;
+    }
+    if (params?.indexBy) {
+      this._indices = new Map();
+      for (const { field, args } of params.indexBy) {
+        let indices = this._indices.get(field);
+        if (!indices) {
+          indices = [];
+          this._indices.set(field, indices);
+        }
+        indices.push(args);
+      }
     }
     this._includeIdentifierExtension =
       params?.includeIdentifierExtension ??
@@ -306,16 +360,19 @@ export class InMemoryLiveQueryStore {
             }
           };
 
+          const context: LiveQueryContextValue = {
+            [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
+            collectResourceIdentifier,
+            addResourceIdentifier,
+            indices: this._indices,
+          };
+
           const result = execute({
             schema,
             document,
             operationName,
             rootValue,
-            contextValue: {
-              [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
-              collectResourceIdentifier,
-              addResourceIdentifier,
-            },
+            contextValue: context,
             variableValues,
             ...additionalArguments,
             // TODO: remove this type-cast once GraphQL.js 16-defer-stream with fixed return type got released
