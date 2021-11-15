@@ -11,7 +11,7 @@
     "graphql": "16.0.0-experimental-stream-defer.5"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.2.2",
+    "@graphql-codegen/cli": "2.3.0",
     "@graphql-codegen/gql-tag-operations-preset": "1.2.1",
     "@testing-library/jest-dom": "5.15.0",
     "@testing-library/react": "12.1.2",
