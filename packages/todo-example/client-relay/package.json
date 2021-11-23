@@ -7,7 +7,7 @@
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.1.0",
     "@n1ru4l/socket-io-graphql-client": "*",
-    "@testing-library/jest-dom": "5.15.0",
+    "@testing-library/jest-dom": "5.15.1",
     "@testing-library/react": "12.1.2",
     "@testing-library/user-event": "13.5.0",
     "@types/classnames": "2.3.0",
