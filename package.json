@@ -23,7 +23,7 @@
     "jest": "27.3.1",
     "lint-staged": "11.2.6",
     "patch-package": "6.4.7",
-    "prettier": "2.4.1",
+    "prettier": "2.5.0",
     "semver": "7.3.5",
     "ts-jest": "27.0.7",
     "tsc-watch": "4.5.0",
