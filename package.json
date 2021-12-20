@@ -13,7 +13,7 @@
     "@babel/core": "7.16.5",
     "@babel/preset-env": "7.16.5",
     "@babel/preset-typescript": "7.16.5",
-    "@changesets/cli": "2.18.1",
+    "@changesets/cli": "2.19.0",
     "@types/jest": "27.0.3",
     "babel-jest": "27.4.5",
     "bob-the-bundler": "1.5.1",
