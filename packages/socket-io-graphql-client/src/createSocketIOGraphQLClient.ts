@@ -1,5 +1,8 @@
 import type { Socket as IOSocket } from "socket.io-client";
-import { makePushPullAsyncIterableIterator } from "@n1ru4l/push-pull-async-iterable-iterator";
+import {
+  makePushPullAsyncIterableIterator,
+  withHandlers,
+} from "@n1ru4l/push-pull-async-iterable-iterator";
 
 export type ExecutionParameter = {
   operation: string;
@@ -71,8 +74,19 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
   }: ExecutionParameter): AsyncIterableIterator<TExecutionResult> => {
     const operationId = currentOperationId;
     currentOperationId = currentOperationId + 1;
-    const { asyncIterableIterator: iterator, pushValue: publishValue } =
+    const { asyncIterableIterator: source, pushValue: publishValue } =
       makePushPullAsyncIterableIterator<TExecutionResult>();
+
+    const stream = withHandlers(source, () => {
+      if (operations.delete(operationId) === false) {
+        return;
+      }
+
+      socket.emit("@graphql/unsubscribe", {
+        id: operationId,
+      });
+      source.return();
+    });
 
     const record: OperationRecord<TExecutionResult> = {
       execute: () => {
@@ -84,7 +98,7 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
           extensions,
         });
       },
-      iterator,
+      iterator: stream,
       publishValue,
     };
 
@@ -94,20 +108,7 @@ export const createSocketIOGraphQLClient = <TExecutionResult = unknown>(
       record.execute();
     }
 
-    const originalReturn = iterator.return!;
-    iterator.return = () => {
-      if (operations.delete(operationId) === false) {
-        return Promise.resolve({ done: true, value: undefined });
-      }
-
-      socket.emit("@graphql/unsubscribe", {
-        id: operationId,
-      });
-
-      return originalReturn();
-    };
-
-    return iterator;
+    return stream;
   };
 
   return {

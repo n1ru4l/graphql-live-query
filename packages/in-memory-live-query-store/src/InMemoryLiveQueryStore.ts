@@ -12,6 +12,7 @@ import { mapSchema, MapperKind } from "@graphql-tools/utils";
 import {
   makePushPullAsyncIterableIterator,
   isAsyncIterable,
+  withHandlers,
 } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   getLiveDirectiveArgumentValues,
@@ -274,7 +275,7 @@ export class InMemoryLiveQueryStore {
         })
       );
 
-      const { asyncIterableIterator: iterator, pushValue } =
+      const { asyncIterableIterator: source, pushValue } =
         makePushPullAsyncIterableIterator<LiveExecutionResult>();
 
       // keep track that current execution is the latest in order to prevent race-conditions :)
@@ -282,7 +283,7 @@ export class InMemoryLiveQueryStore {
       let previousIdentifier = new Set<string>(rootFieldIdentifier);
 
       const record: StoreRecord = {
-        iterator,
+        iterator: source,
         pushValue,
         run: () => {
           executionCounter = executionCounter + 1;
@@ -382,19 +383,18 @@ export class InMemoryLiveQueryStore {
         cancelThrottle = cancel;
       }
 
+      // attach cleanup
+      record.iterator = withHandlers(source, () => {
+        source.return();
+        cancelThrottle?.();
+        this._resourceTracker.release(record, previousIdentifier);
+      });
+
       this._resourceTracker.register(record, previousIdentifier);
       // Execute initial query
       record.run();
 
-      // TODO: figure out how we can do this stuff without monkey-patching the iterator
-      const originalReturn = iterator.return!.bind(iterator);
-      iterator.return = () => {
-        cancelThrottle?.();
-        this._resourceTracker.release(record, previousIdentifier);
-        return originalReturn();
-      };
-
-      return iterator;
+      return record.iterator;
     };
 
   /** @deprecated Please use InMemoryLiveQueryStore.makeExecute instead. */
