@@ -99,3 +99,34 @@ it("applies patch results", async () => {
     value: undefined,
   });
 });
+
+it("source.return is called for cleanup", async () => {
+  let isCalled = false;
+  let counter = 0;
+  const source: AsyncGenerator<Record<string, unknown>> = {
+    [Symbol.asyncIterator]() {
+      return source;
+    },
+    return() {
+      isCalled = true;
+      return Promise.resolve({ done: true, value: false });
+    },
+    async next() {
+      counter++;
+      if (counter > 1) {
+        return Promise.resolve({ done: true, value: undefined });
+      }
+      return Promise.resolve({ done: false, value: {} });
+    },
+    async throw() {
+      throw new Error("Noop.");
+    },
+  };
+
+  const stream = applyLiveQueryJSONDiffPatch(source);
+
+  await stream.next();
+  await stream.return();
+
+  expect(isCalled).toEqual(true);
+});
