@@ -8,11 +8,8 @@ import {
   defaultFieldResolver,
   TypeInfo,
 } from "graphql";
-import { mapSchema, MapperKind } from "@graphql-tools/utils";
-import {
-  makePushPullAsyncIterableIterator,
-  isAsyncIterable,
-} from "@n1ru4l/push-pull-async-iterable-iterator";
+import { mapSchema, MapperKind, isAsyncIterable } from "@graphql-tools/utils";
+import { Repeater } from "@repeaterjs/repeater";
 import {
   getLiveDirectiveArgumentValues,
   LiveExecutionResult,
@@ -26,11 +23,6 @@ import { ResourceTracker } from "./ResourceTracker";
 import { throttle } from "./throttle";
 
 type PromiseOrValue<T> = T | Promise<T>;
-type StoreRecord = {
-  iterator: AsyncIterableIterator<LiveExecutionResult>;
-  pushValue: (value: LiveExecutionResult) => void;
-  run: () => PromiseOrValue<void>;
-};
 
 type ResourceIdentifierCollectorFunction = (
   parameter: Readonly<{
@@ -140,13 +132,6 @@ export type InMemoryLiveQueryStoreParameter = {
   validateThrottleValue?: ValidateThrottleValueFunction;
 };
 
-const nextTick =
-  (typeof process === "object" && typeof process.nextTick === "function"
-    ? process.nextTick
-    : undefined) ??
-  setImmediate ??
-  setTimeout;
-
 type SchemaCacheRecord = {
   schema: GraphQLSchema;
   typeInfo: TypeInfo;
@@ -158,7 +143,7 @@ type LiveExecuteReturnType = PromiseOrValue<
 >;
 
 export class InMemoryLiveQueryStore {
-  private _resourceTracker = new ResourceTracker<StoreRecord>();
+  private _resourceTracker = new ResourceTracker<() => void>();
   private _schemaCache = new WeakMap<GraphQLSchema, SchemaCacheRecord>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
   private _execute = defaultExecute;
@@ -274,23 +259,37 @@ export class InMemoryLiveQueryStore {
         })
       );
 
-      const { asyncIterableIterator: iterator, pushValue } =
-        makePushPullAsyncIterableIterator<LiveExecutionResult>();
+      const context = this;
 
-      // keep track that current execution is the latest in order to prevent race-conditions :)
-      let executionCounter = 0;
-      let previousIdentifier = new Set<string>(rootFieldIdentifier);
+      return new Repeater<
+        ExecutionResult | LiveExecutionResult | ExecutionResult
+      >(async function liveQueryRepeater(push, onStop) {
+        // utils for throttle
+        let cancelThrottle: Function | undefined;
+        let run: () => void;
 
-      const record: StoreRecord = {
-        iterator,
-        pushValue,
-        run: () => {
+        let executionCounter = 0;
+        let previousIdentifier = new Set<string>(rootFieldIdentifier);
+
+        function scheduleRun() {
+          run();
+        }
+
+        function dispose() {
+          cancelThrottle?.();
+          context._resourceTracker.release(scheduleRun, previousIdentifier);
+        }
+
+        onStop.then(dispose);
+
+        run = function run() {
           executionCounter = executionCounter + 1;
           const counter = executionCounter;
+
           const newIdentifier = new Set(rootFieldIdentifier);
           const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
             (parameter) =>
-              newIdentifier.add(this._buildResourceIdentifier(parameter));
+              newIdentifier.add(context._buildResourceIdentifier(parameter));
 
           const addResourceIdentifier: AddResourceIdentifierFunction = (
             values
@@ -322,79 +321,46 @@ export class InMemoryLiveQueryStore {
             // TODO: remove this type-cast once GraphQL.js 16-defer-stream with fixed return type got released
           }) as LiveExecuteReturnType;
 
-          // result cannot be a AsyncIterableIterator if the `NoLiveMixedWithDeferStreamRule` was used.
-          // in case anyone forgot to add it we just panic and stop the execution :)
-          const handleAsyncIterator = (
-            iterator: AsyncIterableIterator<any>
-          ) => {
-            iterator.return?.();
-
-            record.pushValue({
-              errors: [
-                new GraphQLError(
-                  `"execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.`
-                ),
-              ],
-            });
-
-            // delay to next tick to ensure the error is delivered to listeners.
-            // TODO: figure out whether there is a better way for doing this.
-            nextTick(() => {
-              record.iterator.return!();
-            });
-
-            this._resourceTracker.release(record, previousIdentifier);
-          };
-
           runWith(result, (result) => {
             if (isAsyncIterable(result)) {
-              handleAsyncIterator(result);
+              onStop(
+                new Error(
+                  `"execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.`
+                )
+              );
               return;
             }
             if (counter === executionCounter) {
-              this._resourceTracker.track(
-                record,
+              context._resourceTracker.track(
+                scheduleRun,
                 previousIdentifier,
                 newIdentifier
               );
               previousIdentifier = newIdentifier;
               const liveResult: LiveExecutionResult = result;
               liveResult.isLive = true;
-              if (this._includeIdentifierExtension === true) {
+              if (context._includeIdentifierExtension === true) {
                 if (!liveResult.extensions) {
                   liveResult.extensions = {};
                 }
                 liveResult.extensions.liveResourceIdentifier =
                   Array.from(newIdentifier);
               }
-              record.pushValue(liveResult);
+
+              push(liveResult);
             }
           });
-        },
-      };
+        };
 
-      // utils for throttle
-      let cancelThrottle: Function | undefined;
+        if (isSome(throttleValue)) {
+          const throttled = throttle(run, throttleValue);
+          run = throttled.run;
+          cancelThrottle = throttled.cancel;
+        }
 
-      if (isSome(throttleValue)) {
-        const { run, cancel } = throttle(record.run, throttleValue);
-        record.run = run;
-        cancelThrottle = cancel;
-      }
-
-      this._resourceTracker.register(record, previousIdentifier);
-      // Execute initial query
-      record.run();
-
-      // TODO: figure out how we can do this stuff without monkey-patching the iterator
-      const originalReturn = iterator.return!.bind(iterator);
-      iterator.return = () => {
-        cancelThrottle?.();
-        this._resourceTracker.release(record, previousIdentifier);
-        return originalReturn();
-      };
-
-      return iterator;
+        context._resourceTracker.register(scheduleRun, previousIdentifier);
+        scheduleRun();
+      });
     };
 
   /** @deprecated Please use InMemoryLiveQueryStore.makeExecute instead. */
@@ -411,8 +377,8 @@ export class InMemoryLiveQueryStore {
 
     const records = this._resourceTracker.getRecordsForIdentifiers(identifiers);
 
-    for (const record of records) {
-      record.run();
+    for (const run of records) {
+      run();
     }
   }
 }

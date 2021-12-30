@@ -1,4 +1,5 @@
-import type { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
+import { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
+import { Repeater } from "@repeaterjs/repeater";
 import type { ExecutionResult } from "graphql";
 import type { ExecutionPatchResult } from "./ExecutionPatchResult";
 import type { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
@@ -14,54 +15,59 @@ export type GeneratePatchFunction<PatchPayload = unknown> = (
   current: Record<string, unknown>
 ) => PatchPayload | typeof noDiffSymbol;
 
-export const createLiveQueryPatchGenerator = <PatchPayload = unknown>(
-  generatePatch: GeneratePatchFunction<PatchPayload>
-) =>
-  async function* liveQueryPatchGenerator(
-    asyncIterator: AsyncIterableIterator<LiveExecutionResult>
-  ): AsyncIterableIterator<
-    ExecutionLivePatchResult | ExecutionResult | ExecutionPatchResult
-  > {
-    let previousValue: LiveExecutionResult["data"] | null = null;
-    let revision = 1;
+export const createLiveQueryPatchGenerator =
+  <PatchPayload = unknown>(
+    generatePatch: GeneratePatchFunction<PatchPayload>
+  ) =>
+  (source: AsyncIterableIterator<LiveExecutionResult>) =>
+    new Repeater<
+      ExecutionLivePatchResult | ExecutionResult | ExecutionPatchResult
+    >(async (push, stop) => {
+      const iterator = source[Symbol.asyncIterator]();
+      stop.then(() => iterator.return?.());
 
-    for await (const value of asyncIterator) {
-      // if it is not live we simply forward everything :)
-      if (!value.isLive) {
-        yield value;
-        yield* asyncIterator;
-        continue;
-      }
+      let previousValue: LiveExecutionResult["data"] | null = null;
+      let revision = 1;
 
-      const valueToPublish: ExecutionLivePatchResult = {};
+      let next: IteratorResult<LiveExecutionResult, void>;
 
-      if (previousValue) {
-        const currentValue = value.data ?? {};
-        const patch = generatePatch(previousValue, currentValue);
-        previousValue = currentValue;
-
-        if (patch === noDiffSymbol) {
+      while ((next = await iterator.next()).done === false) {
+        // if it is not live we simply forward everything :)
+        if (!next.value.isLive) {
+          await push(next.value);
           continue;
         }
 
-        valueToPublish.patch = patch;
-        revision++;
-      } else {
-        previousValue = value.data ?? {};
-        if ("data" in value) {
-          valueToPublish.data = previousValue;
+        const valueToPublish: ExecutionLivePatchResult = {};
+        if (previousValue) {
+          const currentValue = next.value.data ?? {};
+          const patch = generatePatch(previousValue, currentValue);
+          previousValue = currentValue;
+
+          if (patch === noDiffSymbol) {
+            continue;
+          }
+
+          valueToPublish.patch = patch;
+          revision++;
+        } else {
+          previousValue = next.value.data ?? {};
+          if ("data" in next.value) {
+            valueToPublish.data = previousValue;
+          }
         }
+
+        if ("errors" in next.value) {
+          valueToPublish.errors = next.value.errors;
+        }
+        if ("extensions" in next.value) {
+          valueToPublish.extensions = next.value.extensions;
+        }
+
+        valueToPublish.revision = revision;
+
+        await push(valueToPublish);
       }
 
-      if ("errors" in value) {
-        valueToPublish.errors = value.errors;
-      }
-      if ("extensions" in value) {
-        valueToPublish.extensions = value.extensions;
-      }
-
-      valueToPublish.revision = revision;
-
-      yield valueToPublish;
-    }
-  };
+      stop();
+    });

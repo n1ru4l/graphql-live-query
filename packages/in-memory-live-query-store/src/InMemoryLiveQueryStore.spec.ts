@@ -237,7 +237,6 @@ it("returns a AsyncIterable that publishes a query result.", async () => {
   });
 
   assertAsyncIterable(executionResult);
-
   const result = await executionResult.next();
   expect(result).toEqual({
     done: false,
@@ -449,17 +448,14 @@ it("can handle missing NoLiveMixedWithDeferStreamRule", async () => {
   const executionResult = await store.execute({ schema, document });
   if (isAsyncIterable(executionResult)) {
     const asyncIterator = executionResult[Symbol.asyncIterator]();
-    const result = await asyncIterator.next();
-    expect(result).toMatchInlineSnapshot(`
-      Object {
-        "done": false,
-        "value": Object {
-          "errors": Array [
-            [GraphQLError: "execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.],
-          ],
-        },
-      }
-    `);
+    try {
+      await asyncIterator.next();
+      fail("Should throw.");
+    } catch (err) {
+      expect(err).toMatchInlineSnapshot(
+        `[Error: "execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.]`
+      );
+    }
 
     return;
   }
@@ -496,19 +492,19 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
   const store = new InMemoryLiveQueryStore();
   const executionResult = await store.execute({ schema, document });
 
-  if (!isAsyncIterable(executionResult)) {
-    fail("should return AsyncIterable");
-  }
+  assertAsyncIterable(executionResult);
+
+  const asyncIterator = executionResult[Symbol.asyncIterator]();
+
+  const values = getAllValues(executionResult);
 
   store.invalidate("1");
 
-  process.nextTick(() => {
-    const asyncIterator = executionResult[Symbol.asyncIterator]();
+  setImmediate(() => {
     asyncIterator.return?.();
   });
 
-  const values = await getAllValues(executionResult);
-  expect(values).toHaveLength(2);
+  expect(await values).toHaveLength(2);
 });
 
 it("adds the resource identifiers as a extension field.", async () => {
@@ -812,11 +808,15 @@ it("makeExecute calls the execute it is passed to resolve live queries", async (
 
   const makeExecuteFn = store.makeExecute(executePassedToMakeExecute);
 
-  makeExecuteFn({
+  const result = await makeExecuteFn({
     schema,
     document,
   });
 
+  assertAsyncIterable(result);
+  await result.next();
+
   expect(executePassedAtInitializationTime).not.toHaveBeenCalled();
   expect(executePassedToMakeExecute).toHaveBeenCalled();
+  await result.return?.();
 });

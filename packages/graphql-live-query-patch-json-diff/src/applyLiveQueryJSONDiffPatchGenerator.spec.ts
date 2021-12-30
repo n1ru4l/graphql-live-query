@@ -125,7 +125,6 @@ it("doesn't publish empty patches for data that hasn't changed", async () => {
   }
 
   const stream = liveQueryJSONDiffPatchGenerator(source());
-
   let value = await stream.next();
   expect(value).toEqual({
     value: {
@@ -138,6 +137,7 @@ it("doesn't publish empty patches for data that hasn't changed", async () => {
     },
     done: false,
   });
+
   value = await stream.next();
 
   expect(value).toEqual({

@@ -1,3 +1,4 @@
+import { Repeater } from "@repeaterjs/repeater";
 import { ExecutionResult } from "graphql";
 import { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
 
@@ -9,65 +10,66 @@ export type ApplyPatchFunction<PatchPayload = unknown> = (
 /**
  * Create a middleware generator function for applying live query patches on the client.
  */
-export const createApplyLiveQueryPatch = <PatchPayload = unknown>(
-  /* Function which is used for generating the patches */
-  applyPatch: ApplyPatchFunction<PatchPayload>
-) => {
-  return async function* applyLiveQueryPatch<
-    TExecutionResult = Record<string, unknown>
-  >(
-    asyncIterable: AsyncIterableIterator<TExecutionResult>
-  ): AsyncIterableIterator<TExecutionResult> {
-    let mutableData: ExecutionResult | null = null;
-    let lastRevision = 0;
+export const createApplyLiveQueryPatch =
+  <PatchPayload = unknown>(
+    /* Function which is used for generating the patches */
+    applyPatch: ApplyPatchFunction<PatchPayload>
+  ) =>
+  <TExecutionResult = Record<string, unknown>>(
+    source: AsyncIterable<TExecutionResult>
+  ) =>
+    new Repeater<TExecutionResult>(async (push, stop) => {
+      const iterator = source[Symbol.asyncIterator]();
+      stop.then(() => iterator.return?.());
+      let mutableData: ExecutionResult | null = null;
+      let lastRevision = 0;
+      let next: IteratorResult<ExecutionLivePatchResult<PatchPayload>>;
 
-    for await (const result of asyncIterable as AsyncIterableIterator<
-      ExecutionLivePatchResult<PatchPayload>
-    >) {
-      // no revision means this is no live query patch.
-      if ("revision" in result && result.revision) {
-        const valueToPublish: ExecutionLivePatchResult = {};
+      while ((next = await iterator.next()).done === false) {
+        // no revision means this is no live query patch.
+        if ("revision" in next.value && next.value.revision) {
+          const valueToPublish: ExecutionLivePatchResult = {};
 
-        if (result.revision === 1) {
-          if (!result.data) {
-            throw new Error("Missing data.");
-          }
-          valueToPublish.data = result.data;
-          mutableData = result.data;
-          lastRevision = 1;
-        } else {
-          if (!mutableData) {
-            throw new Error("No previousData available.");
-          }
-          if (!result.patch) {
-            throw new Error("Missing patch.");
-          }
-          if (lastRevision + 1 !== result.revision) {
-            throw new Error("Wrong revision received.");
+          if (next.value.revision === 1) {
+            if (!next.value.data) {
+              throw new Error("Missing data.");
+            }
+            valueToPublish.data = next.value.data;
+            mutableData = next.value.data;
+            lastRevision = 1;
+          } else {
+            if (!mutableData) {
+              throw new Error("No previousData available.");
+            }
+            if (!next.value.patch) {
+              throw new Error("Missing patch.");
+            }
+            if (lastRevision + 1 !== next.value.revision) {
+              throw new Error("Wrong revision received.");
+            }
+
+            mutableData = applyPatch(
+              mutableData as Record<string, unknown>,
+              next.value.patch
+            );
+            valueToPublish.data = mutableData as Record<string, unknown>;
+
+            lastRevision++;
           }
 
-          mutableData = applyPatch(
-            mutableData as Record<string, unknown>,
-            result.patch
-          );
-          valueToPublish.data = mutableData as Record<string, unknown>;
+          if (next.value.extensions) {
+            valueToPublish.extensions = next.value.extensions;
+          }
+          if (next.value.errors) {
+            valueToPublish.errors = next.value.errors;
+          }
 
-          lastRevision++;
+          await push(valueToPublish as TExecutionResult);
+          continue;
         }
 
-        if (result.extensions) {
-          valueToPublish.extensions = result.extensions;
-        }
-        if (result.errors) {
-          valueToPublish.errors = result.errors;
-        }
-
-        yield valueToPublish as TExecutionResult;
-        continue;
+        await push(next.value as TExecutionResult);
       }
 
-      yield result as TExecutionResult;
-      yield* asyncIterable;
-    }
-  };
-};
+      stop();
+    });
