@@ -1,5 +1,72 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.9.0
+
+### Minor Changes
+
+- 727e806: The source returned from execute is now lazy and will only start emitting values once it is consumed. This prevents memory leaks.
+
+  **BREAKING**: If the wrapped `execute` function returns a stream (e.g. because you forgot to add the `NoLiveMixedWithDeferStreamRule` validation rule) it causes the `execute` function to reject instead of publishing a ExecutionResult error payload. This change has been made in order to treat the error as unexpected and not leak any implementation details to the clients.
+
+- aee5d58: Allow setting custom invalidation indices.
+
+  Until now doing granular or very specific index invalidations wasn't possible. Thus invalidation might not have been efficient enough, as either too many or too few live query operation "subscriptions" got invalidated.
+
+  The new `indexBy` configuration option for the `InMemoryLiveQueryStore`, allows configuring specific indices suitable for the consumed GraphQL schema, resulting more granular and efficient invalidations.
+
+  **Invalidate by single field with arguments:**
+
+  ```ts
+  const store = new InMemoryLiveQueryStore({
+    includeIdentifierExtension: true,
+    indexBy: [
+      {
+        field: "Query.posts",
+        args: ["needle"]
+      }
+    ]
+  });
+
+  const execute = store.makeExecute(executeImplementation);
+
+  const document = parse(/* GraphQL */ `
+    query @live {
+      posts(needle: "skrrrrt") {
+        id
+        title
+      }
+    }
+  `);
+
+  const executionResult = execute({ document, schema });
+
+  let result = await executionResult.next();
+  expect(result.value).toEqual({
+    data: {
+      posts: []
+    },
+    extensions: {
+      liveResourceIdentifier: ["Query.posts", 'Query.posts(needle:"skrrrrt")']
+    },
+    isLive: true
+  });
+  ```
+
+  **Invalidation by single field with specific arguments:**
+
+  ```ts
+  const store = new InMemoryLiveQueryStore({
+    includeIdentifierExtension: true,
+    indexBy: [
+      {
+        field: "Query.posts",
+        // index will only be used if the needle argument value equals "brrrrt"
+        args: [["needle", "brrrrt"]]
+      }
+    ]
+  });
+  ```
+
 ## 0.8.0
 
 ### Minor Changes

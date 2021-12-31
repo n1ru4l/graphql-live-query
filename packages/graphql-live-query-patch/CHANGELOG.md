@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query-patch
 
+## 0.6.1
+
+### Patch Changes
+
+- 727e806: fix memory leak cause by AsyncIterables not being disposed properly.
+
 ## 0.6.0
 
 ### Minor Changes
