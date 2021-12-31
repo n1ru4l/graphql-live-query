@@ -34,7 +34,20 @@ type AddResourceIdentifierFunction = (
   values: string | Iterable<string> | None
 ) => void;
 
-const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
+const originalContextSymbol = Symbol("originalContext");
+
+type ArgumentName = string;
+type ArgumentValue = string;
+type IndexConfiguration = Array<
+  ArgumentName | [arg: ArgumentName, value: ArgumentValue]
+>;
+
+type LiveQueryContextValue = {
+  [originalContextSymbol]: unknown;
+  collectResourceIdentifier: ResourceIdentifierCollectorFunction;
+  addResourceIdentifier: AddResourceIdentifierFunction;
+  indices: Map<string, Array<IndexConfiguration>> | null;
+};
 
 const addResourceIdentifierCollectorToSchema = (
   schema: GraphQLSchema,
@@ -49,20 +62,21 @@ const addResourceIdentifierCollectorToSchema = (
       let resolve = fieldConfig.resolve ?? defaultFieldResolver;
 
       newFieldConfig.resolve = (src, args, context, info) => {
-        if (!context || ORIGINAL_CONTEXT_SYMBOL in context === false) {
+        if (!context || originalContextSymbol in context === false) {
           return resolve(src, args, context, info);
         }
 
-        const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
-          context.collectResourceIdentifier;
-        const addResourceIdentifier: AddResourceIdentifierFunction =
-          context.addResourceIdentifier;
-        context = context[ORIGINAL_CONTEXT_SYMBOL];
-        const result = resolve(src, args, context, info) as any;
+        const liveQueyContext = context as LiveQueryContextValue;
+        const result = resolve(
+          src,
+          args,
+          liveQueyContext[originalContextSymbol],
+          info
+        ) as any;
 
         const fieldConfigExtensions = fieldConfig.extensions as any | undefined;
         if (fieldConfigExtensions?.liveQuery?.collectResourceIdentifiers) {
-          addResourceIdentifier(
+          liveQueyContext.addResourceIdentifier(
             fieldConfigExtensions.liveQuery.collectResourceIdentifiers(
               src,
               args
@@ -70,9 +84,33 @@ const addResourceIdentifierCollectorToSchema = (
           );
         }
 
+        const fieldCoordinate = `${typename}.${fieldName}`;
+        const indicesForCoordinate =
+          liveQueyContext.indices?.get(fieldCoordinate);
+
+        if (indicesForCoordinate) {
+          for (const index of indicesForCoordinate) {
+            let parts: Array<string> = [];
+            for (const part of index) {
+              if (Array.isArray(part)) {
+                if (args[part[0]] === part[1]) {
+                  parts.push(`${part[0]}:"${args[part[0]]}"`);
+                }
+              } else if (args[part] !== undefined) {
+                parts.push(`${part}:"${args[part]}"`);
+              }
+            }
+            if (parts.length) {
+              liveQueyContext.addResourceIdentifier(
+                `${fieldCoordinate}(${parts.join(",")})`
+              );
+            }
+          }
+        }
+
         if (isIDField) {
           runWith(result, (id: string) =>
-            collectResourceIdentifier({ typename, id })
+            liveQueyContext.collectResourceIdentifier({ typename, id })
           );
         }
         return result;
@@ -130,6 +168,10 @@ export type InMemoryLiveQueryStoreParameter = {
    * Return null or undefined for disabling throttle completely.
    */
   validateThrottleValue?: ValidateThrottleValueFunction;
+  /**
+   * Specify which fields should be indexed for specific invalidations.
+   */
+  indexBy?: Array<{ field: string; args: IndexConfiguration }>;
 };
 
 type SchemaCacheRecord = {
@@ -150,6 +192,7 @@ export class InMemoryLiveQueryStore {
   private _includeIdentifierExtension = false;
   private _idFieldName = "id";
   private _validateThrottleValue: Maybe<ValidateThrottleValueFunction>;
+  private _indices: Map<string, Array<IndexConfiguration>> | null = null;
 
   constructor(params?: InMemoryLiveQueryStoreParameter) {
     if (params?.buildResourceIdentifier) {
@@ -163,6 +206,17 @@ export class InMemoryLiveQueryStore {
     }
     if (params?.validateThrottleValue) {
       this._validateThrottleValue = params.validateThrottleValue;
+    }
+    if (params?.indexBy) {
+      this._indices = new Map();
+      for (const { field, args } of params.indexBy) {
+        let indices = this._indices.get(field);
+        if (!indices) {
+          indices = [];
+          this._indices.set(field, indices);
+        }
+        indices.push(args);
+      }
     }
     this._includeIdentifierExtension =
       params?.includeIdentifierExtension ??
@@ -259,7 +313,7 @@ export class InMemoryLiveQueryStore {
         })
       );
 
-      const context = this;
+      const liveQueryStore = this;
 
       return new Repeater<
         ExecutionResult | LiveExecutionResult | ExecutionResult
@@ -277,7 +331,10 @@ export class InMemoryLiveQueryStore {
 
         function dispose() {
           cancelThrottle?.();
-          context._resourceTracker.release(scheduleRun, previousIdentifier);
+          liveQueryStore._resourceTracker.release(
+            scheduleRun,
+            previousIdentifier
+          );
         }
 
         onStop.then(dispose);
@@ -289,7 +346,9 @@ export class InMemoryLiveQueryStore {
           const newIdentifier = new Set(rootFieldIdentifier);
           const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
             (parameter) =>
-              newIdentifier.add(context._buildResourceIdentifier(parameter));
+              newIdentifier.add(
+                liveQueryStore._buildResourceIdentifier(parameter)
+              );
 
           const addResourceIdentifier: AddResourceIdentifierFunction = (
             values
@@ -306,16 +365,19 @@ export class InMemoryLiveQueryStore {
             }
           };
 
+          const context: LiveQueryContextValue = {
+            [originalContextSymbol]: contextValue,
+            collectResourceIdentifier,
+            addResourceIdentifier,
+            indices: liveQueryStore._indices,
+          };
+
           const result = execute({
             schema,
             document,
             operationName,
             rootValue,
-            contextValue: {
-              [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
-              collectResourceIdentifier,
-              addResourceIdentifier,
-            },
+            contextValue: context,
             variableValues,
             ...additionalArguments,
             // TODO: remove this type-cast once GraphQL.js 16-defer-stream with fixed return type got released
@@ -323,6 +385,7 @@ export class InMemoryLiveQueryStore {
 
           runWith(result, (result) => {
             if (isAsyncIterable(result)) {
+              result.return?.();
               onStop(
                 new Error(
                   `"execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.`
@@ -331,7 +394,7 @@ export class InMemoryLiveQueryStore {
               return;
             }
             if (counter === executionCounter) {
-              context._resourceTracker.track(
+              liveQueryStore._resourceTracker.track(
                 scheduleRun,
                 previousIdentifier,
                 newIdentifier
@@ -339,7 +402,7 @@ export class InMemoryLiveQueryStore {
               previousIdentifier = newIdentifier;
               const liveResult: LiveExecutionResult = result;
               liveResult.isLive = true;
-              if (context._includeIdentifierExtension === true) {
+              if (liveQueryStore._includeIdentifierExtension === true) {
                 if (!liveResult.extensions) {
                   liveResult.extensions = {};
                 }
@@ -358,8 +421,11 @@ export class InMemoryLiveQueryStore {
           cancelThrottle = throttled.cancel;
         }
 
-        context._resourceTracker.register(scheduleRun, previousIdentifier);
-        scheduleRun();
+        liveQueryStore._resourceTracker.register(
+          scheduleRun,
+          previousIdentifier
+        );
+        run();
       });
     };
 

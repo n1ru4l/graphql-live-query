@@ -4,7 +4,7 @@ import { isNone } from "./Maybe";
  * ResourceTracker is a ad hoc system for tracking events associated with a record.
  * In case the set of events change, the list can be updated by calling the `track`
  * method again with the previous and new event identifiers.
- * A set of all records that subscribe to a sepecific event can be retrieved with
+ * A set of all records that subscribe to a specific event can be retrieved with
  * the `getRecordsForIdentifiers` method.
  */
 export class ResourceTracker<TRecord> {
