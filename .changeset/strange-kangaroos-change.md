@@ -2,13 +2,13 @@
 "@n1ru4l/in-memory-live-query-store": minor
 ---
 
-Allow setting custom indices that can be used for invalidation.
+Allow setting custom invalidation indices.
 
-Until now library users had less flexibility on how they can invalidate the live query operations as the index conditions were not configurable. Thus invalidation might not have been efficient enough (more operations got invalidated than actually affected).
+Until now doing granular or very specific index invalidations wasn't possible. Thus invalidation might not have been efficient enough, as either too many or too few live query operation "subscriptions" got invalidated.
 
-The new `indexBy` configuration option for the `InMemoryLiveQueryStore`, allows configuring specific indices suitable for the consumed GraphQL schema, which allows more granular and efficient invalidations.
+The new `indexBy` configuration option for the `InMemoryLiveQueryStore`, allows configuring specific indices suitable for the consumed GraphQL schema, resulting more granular and efficient invalidations.
 
-Invalidate by single field with arguments:
+**Invalidate by single field with arguments:**
 
 ```ts
 const store = new InMemoryLiveQueryStore({
@@ -46,7 +46,7 @@ expect(result.value).toEqual({
 });
 ```
 
-Invalidation by single field with specific arguments:
+**Invalidation by single field with specific arguments:**
 
 ```ts
 const store = new InMemoryLiveQueryStore({
