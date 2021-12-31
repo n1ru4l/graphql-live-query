@@ -385,6 +385,7 @@ export class InMemoryLiveQueryStore {
 
           runWith(result, (result) => {
             if (isAsyncIterable(result)) {
+              result.return?.();
               onStop(
                 new Error(
                   `"execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.`
