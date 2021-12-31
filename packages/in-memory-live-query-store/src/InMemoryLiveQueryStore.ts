@@ -34,7 +34,7 @@ type AddResourceIdentifierFunction = (
   values: string | Iterable<string> | None
 ) => void;
 
-const ORIGINAL_CONTEXT_SYMBOL = Symbol("ORIGINAL_CONTEXT");
+const originalContextSymbol = Symbol("originalContext");
 
 type ArgumentName = string;
 type ArgumentValue = string;
@@ -43,7 +43,7 @@ type IndexConfiguration = Array<
 >;
 
 type LiveQueryContextValue = {
-  [ORIGINAL_CONTEXT_SYMBOL]: unknown;
+  [originalContextSymbol]: unknown;
   collectResourceIdentifier: ResourceIdentifierCollectorFunction;
   addResourceIdentifier: AddResourceIdentifierFunction;
   indices: Map<string, Array<IndexConfiguration>> | null;
@@ -62,7 +62,7 @@ const addResourceIdentifierCollectorToSchema = (
       let resolve = fieldConfig.resolve ?? defaultFieldResolver;
 
       newFieldConfig.resolve = (src, args, context, info) => {
-        if (!context || ORIGINAL_CONTEXT_SYMBOL in context === false) {
+        if (!context || originalContextSymbol in context === false) {
           return resolve(src, args, context, info);
         }
 
@@ -70,7 +70,7 @@ const addResourceIdentifierCollectorToSchema = (
         const result = resolve(
           src,
           args,
-          liveQueyContext[ORIGINAL_CONTEXT_SYMBOL],
+          liveQueyContext[originalContextSymbol],
           info
         ) as any;
 
@@ -313,7 +313,7 @@ export class InMemoryLiveQueryStore {
         })
       );
 
-      const context = this;
+      const liveQueryStore = this;
 
       return new Repeater<
         ExecutionResult | LiveExecutionResult | ExecutionResult
@@ -331,7 +331,10 @@ export class InMemoryLiveQueryStore {
 
         function dispose() {
           cancelThrottle?.();
-          context._resourceTracker.release(scheduleRun, previousIdentifier);
+          liveQueryStore._resourceTracker.release(
+            scheduleRun,
+            previousIdentifier
+          );
         }
 
         onStop.then(dispose);
@@ -343,7 +346,9 @@ export class InMemoryLiveQueryStore {
           const newIdentifier = new Set(rootFieldIdentifier);
           const collectResourceIdentifier: ResourceIdentifierCollectorFunction =
             (parameter) =>
-              newIdentifier.add(context._buildResourceIdentifier(parameter));
+              newIdentifier.add(
+                liveQueryStore._buildResourceIdentifier(parameter)
+              );
 
           const addResourceIdentifier: AddResourceIdentifierFunction = (
             values
@@ -361,10 +366,10 @@ export class InMemoryLiveQueryStore {
           };
 
           const context: LiveQueryContextValue = {
-            [ORIGINAL_CONTEXT_SYMBOL]: contextValue,
+            [originalContextSymbol]: contextValue,
             collectResourceIdentifier,
             addResourceIdentifier,
-            indices: this._indices,
+            indices: liveQueryStore._indices,
           };
 
           const result = execute({
@@ -388,7 +393,7 @@ export class InMemoryLiveQueryStore {
               return;
             }
             if (counter === executionCounter) {
-              context._resourceTracker.track(
+              liveQueryStore._resourceTracker.track(
                 scheduleRun,
                 previousIdentifier,
                 newIdentifier
@@ -396,7 +401,7 @@ export class InMemoryLiveQueryStore {
               previousIdentifier = newIdentifier;
               const liveResult: LiveExecutionResult = result;
               liveResult.isLive = true;
-              if (context._includeIdentifierExtension === true) {
+              if (liveQueryStore._includeIdentifierExtension === true) {
                 if (!liveResult.extensions) {
                   liveResult.extensions = {};
                 }
@@ -415,8 +420,11 @@ export class InMemoryLiveQueryStore {
           cancelThrottle = throttled.cancel;
         }
 
-        context._resourceTracker.register(scheduleRun, previousIdentifier);
-        scheduleRun();
+        liveQueryStore._resourceTracker.register(
+          scheduleRun,
+          previousIdentifier
+        );
+        run();
       });
     };
 
