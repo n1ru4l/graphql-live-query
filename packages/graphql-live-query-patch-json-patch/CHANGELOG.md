@@ -1,5 +1,13 @@
 # @n1ru4l/graphql-live-query-patch-json-patch
 
+## 0.6.1
+
+### Patch Changes
+
+- 727e806: unpin `fast-json-patch` dependency.
+- Updated dependencies [727e806]
+  - @n1ru4l/graphql-live-query-patch@0.6.1
+
 ## 0.6.0
 
 ### Minor Changes
