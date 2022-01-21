@@ -11,7 +11,7 @@
   "devDependencies": {
     "@types/node": "16.11.19",
     "ts-node-dev": "1.1.8",
-    "typescript": "4.5.4"
+    "typescript": "4.5.5"
   },
   "scripts": {
     "write:schema": "ts-node scripts/write-graphql-schema.ts",
