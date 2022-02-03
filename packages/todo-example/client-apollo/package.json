@@ -13,7 +13,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "2.5.0",
     "@graphql-codegen/gql-tag-operations-preset": "1.2.3",
-    "@testing-library/jest-dom": "5.16.1",
+    "@testing-library/jest-dom": "5.16.2",
     "@testing-library/react": "12.1.2",
     "@testing-library/user-event": "13.5.0",
     "@types/classnames": "2.3.0",
