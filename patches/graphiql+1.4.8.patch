@@ -1,0 +1,22 @@
+diff --git a/node_modules/graphiql/esm/components/GraphiQL.js b/node_modules/graphiql/esm/components/GraphiQL.js
+index e9e8cf8..2e3aed0 100644
+--- a/node_modules/graphiql/esm/components/GraphiQL.js
++++ b/node_modules/graphiql/esm/components/GraphiQL.js
+@@ -108,7 +108,7 @@ var __values = (this && this.__values) || function(o) {
+     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+ };
+ import React from 'react';
+-import { buildClientSchema, parse, print, visit, GraphQLError, formatError as formatGraphQLError, } from 'graphql';
++import { buildClientSchema, parse, print, visit, GraphQLError, } from 'graphql';
+ import copyToClipboard from 'copy-to-clipboard';
+ import { getFragmentDependenciesForAST } from 'graphql-language-service-utils';
+ import { ExecuteButton } from './ExecuteButton';
+@@ -148,7 +148,7 @@ var stringify = function (obj) { return JSON.stringify(obj, null, 2); };
+ var formatSingleError = function (error) { return (__assign(__assign({}, error), { message: error.message, stack: error.stack })); };
+ var handleSingleError = function (error) {
+     if (error instanceof GraphQLError) {
+-        return formatGraphQLError(error);
++        return error.toJSON()
+     }
+     if (error instanceof Error) {
+         return formatSingleError(error);
