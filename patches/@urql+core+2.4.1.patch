@@ -1,0 +1,35 @@
+diff --git a/node_modules/@urql/core/dist/bda9b693.mjs b/node_modules/@urql/core/dist/bda9b693.mjs
+index 80025d5..4ac9115 100644
+--- a/node_modules/@urql/core/dist/bda9b693.mjs
++++ b/node_modules/@urql/core/dist/bda9b693.mjs
+@@ -1,10 +1,10 @@
+-import { GraphQLError as e } from "graphql/error/GraphQLError.mjs";
++import { GraphQLError as e } from "graphql/error/GraphQLError";
+ 
+-import { Kind as r } from "graphql/language/kinds.mjs";
++import { Kind as r } from "graphql/language/kinds";
+ 
+-import { parse as t } from "graphql/language/parser.mjs";
++import { parse as t } from "graphql/language/parser";
+ 
+-import { print as n } from "graphql/language/printer.mjs";
++import { print as n } from "graphql/language/printer";
+ 
+ import { make as o } from "wonka";
+ 
+diff --git a/node_modules/@urql/core/dist/urql-core.mjs b/node_modules/@urql/core/dist/urql-core.mjs
+index 155e4fd..fc0e4e0 100644
+--- a/node_modules/@urql/core/dist/urql-core.mjs
++++ b/node_modules/@urql/core/dist/urql-core.mjs
+@@ -1,8 +1,8 @@
+-import { visit as e } from "graphql/language/visitor.mjs";
++import { visit as e } from "graphql/language/visitor";
+ 
+-import { Kind as r } from "graphql/language/kinds.mjs";
++import { Kind as r } from "graphql/language/kinds";
+ 
+-import { print as n } from "graphql/language/printer.mjs";
++import { print as n } from "graphql/language/printer";
+ 
+ import { k as t, _ as o, s as u, C as c, m as s, a as p, b as l, c as d, d as v, e as y, g as k, f as g } from "./bda9b693.mjs";
+ 
