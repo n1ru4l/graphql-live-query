@@ -7,7 +7,7 @@ import {
   visitWithTypeInfo,
   visit,
 } from "graphql";
-import { getArgumentValues } from "graphql/execution/values";
+import { getArgumentValues } from "@graphql-tools/utils";
 import { isNone, isSome, Maybe } from "./Maybe";
 
 type MaybeOperationDefinitionNode = OperationDefinitionNode | null;
@@ -76,7 +76,7 @@ export const extractLiveQueryRootFieldCoordinates = (params: {
                   const values = getArgumentValues(
                     fieldDef,
                     fieldNode,
-                    params.variableValues
+                    params.variableValues ?? undefined
                   );
                   identifier.add(
                     `Query.${fieldNode.name.value}(${arg.name}:"${values["id"]}")`
