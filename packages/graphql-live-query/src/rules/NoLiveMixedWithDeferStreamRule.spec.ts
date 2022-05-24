@@ -10,7 +10,18 @@ import {
   GraphQLID,
   GraphQLList,
   specifiedDirectives,
+  extendSchema,
 } from "graphql";
+
+const deferAST = parse(/* GraphQL */ `
+  directive @defer(
+    label: String
+    if: Boolean
+  ) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+`);
+const streamAST = parse(/* GraphQL */ `
+  directive @stream(label: String, initialCount: Int = 0, if: Boolean) on FIELD
+`);
 
 const createSchema = () => {
   const GraphQLUserType = new GraphQLObjectType({
@@ -78,7 +89,7 @@ test("validation passes with usage of @live", () => {
 });
 
 test("validation passes with usage of @stream", () => {
-  const schema = createSchema();
+  const schema = extendSchema(createSchema(), streamAST);
   const document = parse(/* GraphQL */ `
     query foo {
       users @stream(initialCount: 1) {
@@ -94,7 +105,7 @@ test("validation passes with usage of @stream", () => {
 });
 
 test("validation passes with usage of @defer", () => {
-  const schema = createSchema();
+  const schema = extendSchema(createSchema(), deferAST);
   const document = parse(/* GraphQL */ `
     query foo {
       user {
@@ -113,7 +124,7 @@ test("validation passes with usage of @defer", () => {
 });
 
 test("validation fails with @live and @defer on the same operation", () => {
-  const schema = createSchema();
+  const schema = extendSchema(createSchema(), deferAST);
   const document = parse(/* GraphQL */ `
     query foo @live {
       user {
@@ -136,7 +147,7 @@ test("validation fails with @live and @defer on the same operation", () => {
 });
 
 test("validation fails with @live and @stream on the same operation", () => {
-  const schema = createSchema();
+  const schema = extendSchema(createSchema(), streamAST);
   const document = parse(/* GraphQL */ `
     query foo @live {
       users @stream(initialCount: 1) {
@@ -157,7 +168,7 @@ test("validation fails with @live and @stream on the same operation", () => {
 });
 
 test("validation passes with @live and @defer on different operations in the same document", () => {
-  const schema = createSchema();
+  const schema = extendSchema(createSchema(), streamAST);
   const document = parse(/* GraphQL */ `
     query foo @live {
       users {

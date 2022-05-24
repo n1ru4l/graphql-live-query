@@ -1,5 +1,5 @@
 const { resolve } = require("path");
-const { pathsToModuleNameMapper } = require("ts-jest/utils");
+const { pathsToModuleNameMapper } = require("ts-jest");
 
 const ROOT_DIR = __dirname;
 const TSCONFIG = resolve(ROOT_DIR, "tsconfig.json");
@@ -13,7 +13,8 @@ module.exports = ({ dirname, projectMode = true }) => {
     ...(CI || !projectMode
       ? {}
       : { displayName: pkg.name.replace("@graphql-codegen/", "") }),
-    transform: { "^.+\\.tsx?$": "ts-jest" },
+    transform: { "^.+\\.[jt]sx?$": "babel-jest" },
+    transformIgnorePatterns: ["node_modules/(?!graphql)"],
     testEnvironment: "node",
     rootDir: dirname,
     globals: {

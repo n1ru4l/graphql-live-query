@@ -1,5 +1,5 @@
 const { resolve } = require("path");
-const { pathsToModuleNameMapper } = require("ts-jest/utils");
+const { pathsToModuleNameMapper } = require("ts-jest");
 const CI = !!process.env.CI;
 
 const ROOT_DIR = __dirname;
@@ -8,6 +8,8 @@ const tsconfig = require(TSCONFIG);
 
 module.exports = {
   testEnvironment: "node",
+  transform: { "^.+\\.[jt]sx?$": "babel-jest" },
+  transformIgnorePatterns: ["node_modules/(?!graphql)"],
   rootDir: ROOT_DIR,
   restoreMocks: true,
   reporters: ["default"],

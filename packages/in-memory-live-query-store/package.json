@@ -19,7 +19,8 @@
     "real-time"
   ],
   "devDependencies": {
-    "graphql": "16.0.0-experimental-stream-defer.5"
+    "graphql": "16.0.0-experimental-stream-defer.5",
+    "jest-time-helpers": "0.1.0"
   },
   "dependencies": {
     "@graphql-tools/utils": "^8.5.2",
@@ -27,7 +28,7 @@
     "@repeaterjs/repeater": "^3.0.4"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0 || ^16.0.0"
+    "graphql": "^15.4.0 || ^16.0.0 || ^17.0.0"
   },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",

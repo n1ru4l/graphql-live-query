@@ -28,7 +28,7 @@
     "@n1ru4l/in-memory-live-query-store": "*"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0 || ^16.0.0"
+    "graphql": "^15.4.0 || ^16.0.0 || ^17.0.0"
   },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",

@@ -5,11 +5,16 @@ import {
   GraphQLSchema,
   GraphQLString,
   parse,
-  execute as executeImplementation,
+  execute as defaultExecuteImplementation,
   GraphQLList,
+  ExecutionArgs,
 } from "graphql";
 import { isAsyncIterable } from "@graphql-tools/utils";
+import { GraphQLLiveDirective } from "@n1ru4l/graphql-live-query";
+import { setupFakeTimers, sleep, sleepUntil } from "jest-time-helpers";
 import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore";
+
+const { setTime } = setupFakeTimers();
 
 function assertAsyncIterable(
   value: unknown
@@ -27,8 +32,6 @@ function assertNoAsyncIterable(value: unknown) {
     );
   }
 }
-
-const runAllPendingStuff = () => new Promise((res) => setImmediate(res));
 
 const getAllValues = async <T>(values: AsyncIterable<T>) => {
   const results: T[] = [];
@@ -113,35 +116,20 @@ const createTestSchema = (
     },
   });
 
-  return new GraphQLSchema({ query: Query, mutation: Mutation });
+  return new GraphQLSchema({
+    query: Query,
+    mutation: Mutation,
+    directives: [GraphQLLiveDirective],
+  });
 };
 
-const tock = (() => {
-  let spy: jest.SpyInstance<number, []> = jest.fn();
-  let mockedTime = 0;
-
-  return {
-    useFakeTime(time = 0) {
-      mockedTime = time;
-      spy.mockRestore();
-      spy = jest.spyOn(Date, "now").mockReturnValue(mockedTime);
-      jest.useFakeTimers("legacy");
-    },
-
-    advanceTime(time = 0) {
-      mockedTime = mockedTime + time;
-      spy.mockReturnValue(mockedTime);
-      jest.advanceTimersByTime(time);
-    },
-
-    useRealTime() {
-      spy.mockRestore();
-      jest.useRealTimers();
-    },
-  };
-})();
-
-afterEach(tock.useRealTime);
+function execute(
+  store: InMemoryLiveQueryStore,
+  params: ExecutionArgs,
+  executeImplementation = defaultExecuteImplementation
+) {
+  return store.makeExecute(executeImplementation)(params);
+}
 
 describe("conformance with default `graphql-js` exports", () => {
   // The tests ins here a snapshot tests to ensure consistent behavior with the default GraphQL functions
@@ -155,7 +143,7 @@ describe("conformance with default `graphql-js` exports", () => {
         foo
       }
     `);
-    const result = store.execute({
+    const result = execute(store, {
       document,
       schema,
     });
@@ -176,7 +164,7 @@ describe("conformance with default `graphql-js` exports", () => {
       }
     `);
 
-    const result = store.execute({
+    const result = execute(store, {
       document,
       schema,
     });
@@ -197,7 +185,7 @@ describe("conformance with default `graphql-js` exports", () => {
       }
     `);
 
-    const result = store.execute({
+    const result = execute(store, {
       document,
       schema,
     });
@@ -224,7 +212,7 @@ describe("conformance with default `graphql-js` exports", () => {
       }
     `);
 
-    const result = store.execute({
+    const result = execute(store, {
       document,
       schema,
     });
@@ -249,7 +237,7 @@ it("returns a AsyncIterable that publishes a query result.", async () => {
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -278,7 +266,7 @@ it("returns a AsyncIterable that publishes a query result after the schema coord
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -325,7 +313,7 @@ it("returns a AsyncIterable that publishes a query result after the resource ide
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -383,7 +371,7 @@ it("does not publish when a old resource identifier is invalidated", async () =>
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -444,7 +432,7 @@ it("can be executed with polymorphic parameter type", () => {
     }
   `);
 
-  const executionResult = store.execute({ schema, document });
+  const executionResult = execute(store, { schema, document });
   expect(executionResult).toEqual({
     data: {
       foo: "queried",
@@ -452,32 +440,45 @@ it("can be executed with polymorphic parameter type", () => {
   });
 });
 
-it("can handle missing NoLiveMixedWithDeferStreamRule", async () => {
-  const schema = createTestSchema();
-  const store = new InMemoryLiveQueryStore();
-  const document = parse(/* GraphQL */ `
-    query @live {
-      ... on Query @defer(label: "kek") {
-        foo
+it("can handle missing NoLiveMixedWithDeferStreamRule", (done) => {
+  (async () => {
+    const schema = createTestSchema();
+    async function* fakeExecute() {
+      yield { data: null };
+    }
+
+    const store = new InMemoryLiveQueryStore();
+    const document = parse(/* GraphQL */ `
+      query @live {
+        ... on Query @defer(label: "kek") {
+          foo
+        }
       }
-    }
-  `);
+    `);
 
-  const executionResult = await store.execute({ schema, document });
-  if (isAsyncIterable(executionResult)) {
-    const asyncIterator = executionResult[Symbol.asyncIterator]();
-    try {
-      await asyncIterator.next();
-      fail("Should throw.");
-    } catch (err) {
-      expect(err).toMatchInlineSnapshot(
-        `[Error: "execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.]`
-      );
-    }
+    const executionResult = await execute(
+      store,
+      { schema, document },
+      fakeExecute as any
+    );
 
-    return;
-  }
-  fail("Should return AsyncIterable");
+    if (isAsyncIterable(executionResult)) {
+      const asyncIterator = executionResult[Symbol.asyncIterator]();
+      try {
+        const res = await asyncIterator.next();
+        done("Should throw");
+        return;
+      } catch (err) {
+        expect(err).toMatchInlineSnapshot(
+          `[Error: "execute" returned a AsyncIterator instead of a MaybePromise<ExecutionResult>. The "NoLiveMixedWithDeferStreamRule" rule might have been skipped.]`
+        );
+      }
+
+      done();
+      return;
+    }
+    done("Should return AsyncIterable");
+  })();
 });
 
 it("can collect additional resource identifiers with 'extensions.liveQuery.collectResourceIdentifiers'", async () => {
@@ -508,7 +509,7 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
     }
   `);
   const store = new InMemoryLiveQueryStore();
-  const executionResult = await store.execute({ schema, document });
+  const executionResult = await execute(store, { schema, document });
 
   assertAsyncIterable(executionResult);
 
@@ -518,9 +519,8 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
 
   store.invalidate("1");
 
-  setImmediate(() => {
-    asyncIterator.return?.();
-  });
+  await sleep(0);
+  asyncIterator.return?.();
 
   expect(await values).toHaveLength(2);
 });
@@ -539,7 +539,7 @@ it("adds the resource identifiers as a extension field.", async () => {
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -624,7 +624,7 @@ it("can set the id field name arbitrarily", async () => {
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -644,8 +644,6 @@ it("can set the id field name arbitrarily", async () => {
 });
 
 it("can throttle and prevent multiple publishes", async () => {
-  tock.useFakeTime(Date.now());
-
   const schema = createTestSchema();
 
   const document = parse(/* GraphQL */ `
@@ -656,7 +654,7 @@ it("can throttle and prevent multiple publishes", async () => {
 
   const store = new InMemoryLiveQueryStore();
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -675,16 +673,14 @@ it("can throttle and prevent multiple publishes", async () => {
   store.invalidate("Query.foo");
   store.invalidate("Query.foo");
 
-  await runAllPendingStuff();
-  // only one value should be published
-  expect(values).toHaveLength(1);
   executionResult.return!();
   await done;
+  // only one value should have be published
+  expect(values).toHaveLength(1);
 });
 
 it("can throttle and publish new values after the throttle interval", async () => {
-  tock.useFakeTime(Date.now());
-
+  setTime(1000);
   const schema = createTestSchema();
 
   const document = parse(/* GraphQL */ `
@@ -695,7 +691,7 @@ it("can throttle and publish new values after the throttle interval", async () =
 
   const store = new InMemoryLiveQueryStore();
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -709,10 +705,13 @@ it("can throttle and publish new values after the throttle interval", async () =
     }
   })();
   store.invalidate("Query.foo");
-  await runAllPendingStuff();
+
+  await sleep(0);
   expect(values).toHaveLength(1);
-  tock.advanceTime(100);
-  await runAllPendingStuff();
+
+  setTime(1100);
+  await sleep(0);
+
   expect(values).toHaveLength(2);
   executionResult.return!();
   await done;
@@ -733,7 +732,7 @@ it("can prevent execution by returning a string from validateThrottle", async ()
     },
   });
 
-  let executionResult = store.execute({
+  let executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -742,7 +741,7 @@ it("can prevent execution by returning a string from validateThrottle", async ()
   });
   assertAsyncIterable(executionResult);
 
-  executionResult = store.execute({
+  executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -760,8 +759,7 @@ it("can prevent execution by returning a string from validateThrottle", async ()
 });
 
 it("can override the throttle interval by returning a number from validateThrottle", async () => {
-  tock.useFakeTime(Date.now());
-
+  setTime(1000);
   const schema = createTestSchema();
 
   const document = parse(/* GraphQL */ `
@@ -777,7 +775,7 @@ it("can override the throttle interval by returning a number from validateThrott
     },
   });
 
-  let executionResult = store.execute({
+  let executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -792,55 +790,19 @@ it("can override the throttle interval by returning a number from validateThrott
       values.push(value);
     }
   })();
+
   store.invalidate("Query.foo");
-  await runAllPendingStuff();
+  await sleep(0);
   expect(values).toHaveLength(1);
-  tock.advanceTime(420);
-  await runAllPendingStuff();
+  setTime(1420);
+  await sleep(0);
   expect(values).toHaveLength(1);
-  tock.advanceTime(690);
-  await runAllPendingStuff();
+  setTime(1420 + 690);
+  await sleep(0);
+
   expect(values).toHaveLength(2);
   executionResult.return!();
   await done;
-});
-
-it("makeExecute calls the execute it is passed to resolve live queries", async () => {
-  const schema = createTestSchema();
-
-  const document = parse(/* GraphQL */ `
-    query foo @live {
-      foo
-    }
-  `);
-
-  const executePassedAtInitializationTime = jest.fn();
-  executePassedAtInitializationTime.mockImplementation((args) =>
-    executeImplementation(args)
-  );
-
-  const executePassedToMakeExecute = jest.fn();
-  executePassedToMakeExecute.mockImplementation((args) =>
-    executeImplementation(args)
-  );
-
-  const store = new InMemoryLiveQueryStore({
-    execute: executePassedAtInitializationTime,
-  });
-
-  const makeExecuteFn = store.makeExecute(executePassedToMakeExecute);
-
-  const result = await makeExecuteFn({
-    schema,
-    document,
-  });
-
-  assertAsyncIterable(result);
-  await result.next();
-
-  expect(executePassedAtInitializationTime).not.toHaveBeenCalled();
-  expect(executePassedToMakeExecute).toHaveBeenCalled();
-  await result.return?.();
 });
 
 it("index via custom index field of type string", async () => {
@@ -856,8 +818,6 @@ it("index via custom index field of type string", async () => {
     ],
   });
 
-  const execute = store.makeExecute(executeImplementation);
-
   const document = parse(/* GraphQL */ `
     query @live {
       posts(needle: "brrrrrrt") {
@@ -867,7 +827,7 @@ it("index via custom index field of type string", async () => {
     }
   `);
 
-  const executionResult = execute({ document, schema });
+  const executionResult = execute(store, { document, schema });
   assertAsyncIterable(executionResult);
   let result = await executionResult.next();
   expect(result.value).toEqual({
@@ -893,7 +853,6 @@ it("index via custom index field with string value", async () => {
       },
     ],
   });
-  const execute = store.makeExecute(executeImplementation);
 
   const document = parse(/* GraphQL */ `
     query @live {
@@ -904,7 +863,7 @@ it("index via custom index field with string value", async () => {
     }
   `);
 
-  const executionResult = execute({ document, schema });
+  const executionResult = execute(store, { document, schema });
   assertAsyncIterable(executionResult);
   let result = await executionResult.next();
   expect(result.value).toEqual({
@@ -930,7 +889,6 @@ it("index via custom compound index", async () => {
       },
     ],
   });
-  const execute = store.makeExecute(executeImplementation);
 
   const document = parse(/* GraphQL */ `
     query @live {
@@ -941,7 +899,7 @@ it("index via custom compound index", async () => {
     }
   `);
 
-  const executionResult = execute({ document, schema });
+  const executionResult = execute(store, { document, schema });
   assertAsyncIterable(executionResult);
   let result = await executionResult.next();
   expect(result.value).toEqual({

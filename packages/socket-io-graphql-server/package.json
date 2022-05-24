@@ -29,7 +29,7 @@
     "socket.io": "4.4.1"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0 || ^16.0.0",
+    "graphql": "^15.4.0 || ^16.0.0 || ^17.0.0",
     "socket.io": "^3.0.1 || ^4.0.0"
   },
   "main": "dist/index.js",

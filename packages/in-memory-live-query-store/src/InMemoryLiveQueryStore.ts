@@ -144,14 +144,6 @@ export type InMemoryLiveQueryStoreParameter = {
    * */
   buildResourceIdentifier?: BuildResourceIdentifierFunction;
   /**
-   * Function which is used for executing the operations.
-   *
-   * Uses the `execute` exported from graphql be default.
-   *
-   * @deprecated Please use the InMemoryStore.createExecute method instead.
-   * */
-  execute?: typeof defaultExecute;
-  /**
    * Whether the extensions should include a list of all resource identifiers for the latest operation result.
    * Any of those can be used for invalidating and re-scheduling the operation execution.
    *
@@ -184,6 +176,9 @@ type LiveExecuteReturnType = PromiseOrValue<
   AsyncIterableIterator<ExecutionResult | LiveExecutionResult> | ExecutionResult
 >;
 
+export const isDevelopmentNodeEnvironment =
+  globalThis.process?.env?.NODE_ENV === "development";
+
 export class InMemoryLiveQueryStore {
   private _resourceTracker = new ResourceTracker<() => void>();
   private _schemaCache = new WeakMap<GraphQLSchema, SchemaCacheRecord>();
@@ -198,9 +193,7 @@ export class InMemoryLiveQueryStore {
     if (params?.buildResourceIdentifier) {
       this._buildResourceIdentifier = params.buildResourceIdentifier;
     }
-    if (params?.execute) {
-      this._execute = params.execute;
-    }
+
     if (params?.idFieldName) {
       this._idFieldName = params.idFieldName;
     }
@@ -219,10 +212,7 @@ export class InMemoryLiveQueryStore {
       }
     }
     this._includeIdentifierExtension =
-      params?.includeIdentifierExtension ??
-      (typeof process === "undefined"
-        ? false
-        : process?.env?.NODE_ENV === "development");
+      params?.includeIdentifierExtension ?? isDevelopmentNodeEnvironment;
   }
 
   private _getPatchedSchema(inputSchema: GraphQLSchema): SchemaCacheRecord {
@@ -292,9 +282,9 @@ export class InMemoryLiveQueryStore {
         if (typeof maybeErrorOrNewThrottleValue === "string") {
           return {
             errors: [
-              new GraphQLError(maybeErrorOrNewThrottleValue, [
-                liveDirectiveNode,
-              ]),
+              new GraphQLError(maybeErrorOrNewThrottleValue, {
+                nodes: [liveDirectiveNode],
+              }),
             ],
           };
         } else {
@@ -428,10 +418,6 @@ export class InMemoryLiveQueryStore {
         run();
       });
     };
-
-  /** @deprecated Please use InMemoryLiveQueryStore.makeExecute instead. */
-  execute = this.makeExecute(this._execute);
-
   /**
    * Invalidate queries (and schedule their re-execution) via a resource identifier.
    * @param identifiers A single or list of resource identifiers that should be invalidated.
