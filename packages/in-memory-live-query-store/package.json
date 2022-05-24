@@ -28,7 +28,7 @@
     "@repeaterjs/repeater": "^3.0.4"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0 || ^16.0.0 || ^17.0.0"
+    "graphql": "^16.5.0 || ^17.0.0"
   },
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
