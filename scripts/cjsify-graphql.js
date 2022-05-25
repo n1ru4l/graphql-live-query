@@ -21,12 +21,19 @@ const fileExists = (path) => {
 
 console.log("Need some graphql commonjs?");
 
+const pkgJSON = JSON.parse(fs.readFileSync(pkgJSONPath, "utf-8"));
+
+const [major] = pkgJSON.version.split(".").map((value) => Number(value));
+if (major < 17) {
+  console.log("this graphql version supports commonjs. all good.");
+  process.exit(0);
+}
+
 if (fileExists(oldPkgJSONPath)) {
   console.log("already applied everything. all good.");
   process.exit(0);
 }
 
-const pkgJSON = JSON.parse(fs.readFileSync(pkgJSONPath, "utf-8"));
 fs.copyFileSync(pkgJSONPath, oldPkgJSONPath);
 
 for (const [exportName, exportPathName] of Object.entries(pkgJSON.exports)) {

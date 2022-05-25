@@ -8,6 +8,11 @@ jobs:
   ci:
     name: CI
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        graphql_version:
+          - "16"
+          - "17.0.0-alpha.1"
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
@@ -15,10 +20,13 @@ jobs:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
 
-      - name: Setup Node.js 14.x
+      - name: Setup Node.js 16.x
         uses: actions/setup-node@master
         with:
-          node-version: 14.x
+          node-version: 16.x
+
+      - name: Use GraphQL v${{matrix.graphql_version}}
+        run: node ./scripts/match-graphql.js ${{matrix.graphql_version}}
 
       - name: Install Dependencies
         run: yarn

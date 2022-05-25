@@ -8,7 +8,6 @@ const tsconfig = require(TSCONFIG);
 
 module.exports = {
   transform: { "^.+\\.[jt]sx?$": "babel-jest" },
-  transformIgnorePatterns: ["node_modules/(?!graphql)"],
   testEnvironment: "node",
   rootDir: ROOT_DIR,
   restoreMocks: true,
