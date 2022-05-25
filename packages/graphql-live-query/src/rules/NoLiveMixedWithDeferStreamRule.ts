@@ -18,7 +18,9 @@ export const NoLiveMixedWithDeferStreamRule: ValidationRule = (context) => {
         context.reportError(
           new GraphQLError(
             `Cannot mix "@${directiveNode.name.value}" with "@live".`,
-            directiveNode.name
+            {
+              nodes: directiveNode.name,
+            }
           )
         );
       }
