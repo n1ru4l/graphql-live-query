@@ -5,8 +5,9 @@ import {
   GraphQLSchema,
   GraphQLString,
   parse,
-  execute as executeImplementation,
+  execute as defaultExecuteImplementation,
   GraphQLList,
+  ExecutionArgs,
 } from "graphql";
 import { isAsyncIterable } from "@graphql-tools/utils";
 import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore";
@@ -26,6 +27,14 @@ function assertNoAsyncIterable(value: unknown) {
       `result should NOT be an AsyncIterable. Got ${typeof value}.`
     );
   }
+}
+
+function execute(
+  store: InMemoryLiveQueryStore,
+  params: ExecutionArgs,
+  executeImplementation = defaultExecuteImplementation
+) {
+  return store.makeExecute(executeImplementation)(params);
 }
 
 const runAllPendingStuff = () => new Promise((res) => setImmediate(res));
@@ -155,7 +164,7 @@ describe("conformance with default `graphql-js` exports", () => {
         foo
       }
     `);
-    const result = store.execute({
+    const result = execute(store, {
       document,
       schema,
     });
@@ -176,7 +185,7 @@ describe("conformance with default `graphql-js` exports", () => {
       }
     `);
 
-    const result = store.execute({
+    const result = execute(store, {
       document,
       schema,
     });
@@ -197,7 +206,7 @@ describe("conformance with default `graphql-js` exports", () => {
       }
     `);
 
-    const result = store.execute({
+    const result = execute(store, {
       document,
       schema,
     });
@@ -224,7 +233,7 @@ describe("conformance with default `graphql-js` exports", () => {
       }
     `);
 
-    const result = store.execute({
+    const result = execute(store, {
       document,
       schema,
     });
@@ -249,7 +258,7 @@ it("returns a AsyncIterable that publishes a query result.", async () => {
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -278,7 +287,7 @@ it("returns a AsyncIterable that publishes a query result after the schema coord
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -325,7 +334,7 @@ it("returns a AsyncIterable that publishes a query result after the resource ide
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -383,7 +392,7 @@ it("does not publish when a old resource identifier is invalidated", async () =>
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -444,7 +453,7 @@ it("can be executed with polymorphic parameter type", () => {
     }
   `);
 
-  const executionResult = store.execute({ schema, document });
+  const executionResult = execute(store, { schema, document });
   expect(executionResult).toEqual({
     data: {
       foo: "queried",
@@ -463,7 +472,7 @@ it("can handle missing NoLiveMixedWithDeferStreamRule", async () => {
     }
   `);
 
-  const executionResult = await store.execute({ schema, document });
+  const executionResult = await execute(store, { schema, document });
   if (isAsyncIterable(executionResult)) {
     const asyncIterator = executionResult[Symbol.asyncIterator]();
     try {
@@ -508,7 +517,7 @@ it("can collect additional resource identifiers with 'extensions.liveQuery.colle
     }
   `);
   const store = new InMemoryLiveQueryStore();
-  const executionResult = await store.execute({ schema, document });
+  const executionResult = await execute(store, { schema, document });
 
   assertAsyncIterable(executionResult);
 
@@ -539,7 +548,7 @@ it("adds the resource identifiers as a extension field.", async () => {
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -624,7 +633,7 @@ it("can set the id field name arbitrarily", async () => {
     }
   `);
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -656,7 +665,7 @@ it("can throttle and prevent multiple publishes", async () => {
 
   const store = new InMemoryLiveQueryStore();
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -695,7 +704,7 @@ it("can throttle and publish new values after the throttle interval", async () =
 
   const store = new InMemoryLiveQueryStore();
 
-  const executionResult = store.execute({
+  const executionResult = execute(store, {
     schema,
     document,
   });
@@ -733,7 +742,7 @@ it("can prevent execution by returning a string from validateThrottle", async ()
     },
   });
 
-  let executionResult = store.execute({
+  let executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -742,7 +751,7 @@ it("can prevent execution by returning a string from validateThrottle", async ()
   });
   assertAsyncIterable(executionResult);
 
-  executionResult = store.execute({
+  executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -777,7 +786,7 @@ it("can override the throttle interval by returning a number from validateThrott
     },
   });
 
-  let executionResult = store.execute({
+  let executionResult = execute(store, {
     schema,
     document,
     variableValues: {
@@ -816,17 +825,15 @@ it("makeExecute calls the execute it is passed to resolve live queries", async (
 
   const executePassedAtInitializationTime = jest.fn();
   executePassedAtInitializationTime.mockImplementation((args) =>
-    executeImplementation(args)
+    defaultExecuteImplementation(args)
   );
 
   const executePassedToMakeExecute = jest.fn();
   executePassedToMakeExecute.mockImplementation((args) =>
-    executeImplementation(args)
+    defaultExecuteImplementation(args)
   );
 
-  const store = new InMemoryLiveQueryStore({
-    execute: executePassedAtInitializationTime,
-  });
+  const store = new InMemoryLiveQueryStore();
 
   const makeExecuteFn = store.makeExecute(executePassedToMakeExecute);
 
@@ -856,7 +863,7 @@ it("index via custom index field of type string", async () => {
     ],
   });
 
-  const execute = store.makeExecute(executeImplementation);
+  const execute = store.makeExecute(defaultExecuteImplementation);
 
   const document = parse(/* GraphQL */ `
     query @live {
@@ -893,7 +900,7 @@ it("index via custom index field with string value", async () => {
       },
     ],
   });
-  const execute = store.makeExecute(executeImplementation);
+  const execute = store.makeExecute(defaultExecuteImplementation);
 
   const document = parse(/* GraphQL */ `
     query @live {
@@ -930,7 +937,7 @@ it("index via custom compound index", async () => {
       },
     ],
   });
-  const execute = store.makeExecute(executeImplementation);
+  const execute = store.makeExecute(defaultExecuteImplementation);
 
   const document = parse(/* GraphQL */ `
     query @live {
