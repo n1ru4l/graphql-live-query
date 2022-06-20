@@ -144,14 +144,6 @@ export type InMemoryLiveQueryStoreParameter = {
    * */
   buildResourceIdentifier?: BuildResourceIdentifierFunction;
   /**
-   * Function which is used for executing the operations.
-   *
-   * Uses the `execute` exported from graphql be default.
-   *
-   * @deprecated Please use the InMemoryStore.createExecute method instead.
-   * */
-  execute?: typeof defaultExecute;
-  /**
    * Whether the extensions should include a list of all resource identifiers for the latest operation result.
    * Any of those can be used for invalidating and re-scheduling the operation execution.
    *
@@ -188,7 +180,6 @@ export class InMemoryLiveQueryStore {
   private _resourceTracker = new ResourceTracker<() => void>();
   private _schemaCache = new WeakMap<GraphQLSchema, SchemaCacheRecord>();
   private _buildResourceIdentifier = defaultResourceIdentifierNormalizer;
-  private _execute = defaultExecute;
   private _includeIdentifierExtension = false;
   private _idFieldName = "id";
   private _validateThrottleValue: Maybe<ValidateThrottleValueFunction>;
@@ -197,9 +188,6 @@ export class InMemoryLiveQueryStore {
   constructor(params?: InMemoryLiveQueryStoreParameter) {
     if (params?.buildResourceIdentifier) {
       this._buildResourceIdentifier = params.buildResourceIdentifier;
-    }
-    if (params?.execute) {
-      this._execute = params.execute;
     }
     if (params?.idFieldName) {
       this._idFieldName = params.idFieldName;
@@ -329,15 +317,13 @@ export class InMemoryLiveQueryStore {
           run();
         }
 
-        function dispose() {
+        onStop.then(function dispose() {
           cancelThrottle?.();
           liveQueryStore._resourceTracker.release(
             scheduleRun,
             previousIdentifier
           );
-        }
-
-        onStop.then(dispose);
+        });
 
         run = function run() {
           executionCounter = executionCounter + 1;
@@ -428,9 +414,6 @@ export class InMemoryLiveQueryStore {
         run();
       });
     };
-
-  /** @deprecated Please use InMemoryLiveQueryStore.makeExecute instead. */
-  execute = this.makeExecute(this._execute);
 
   /**
    * Invalidate queries (and schedule their re-execution) via a resource identifier.
