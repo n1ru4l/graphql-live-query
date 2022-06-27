@@ -29,5 +29,5 @@ jobs:
       - name: "Test Packages"
         run: yarn test
 
-      - name: "Test ESM Support"
-        run: node scripts/test-esm.mjs
+      - name: "Test ESM & CJS integrity"
+        run: yarn bob check

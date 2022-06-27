@@ -1,5 +1,5 @@
-import { NoLiveMixedWithDeferStreamRule } from "./NoLiveMixedWithDeferStreamRule";
-import { GraphQLLiveDirective } from "../GraphQLLiveDirective";
+import { NoLiveMixedWithDeferStreamRule } from "./NoLiveMixedWithDeferStreamRule.js";
+import { GraphQLLiveDirective } from "../GraphQLLiveDirective.js";
 import {
   validate,
   parse,

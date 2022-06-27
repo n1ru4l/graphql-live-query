@@ -1,6 +1,6 @@
 import { ExecutionResult } from "graphql";
 import { LiveExecutionResult } from "packages/graphql-live-query/src";
-import { liveQueryJSONPatchGenerator } from "./liveQueryJSONPatchGenerator";
+import { liveQueryJSONPatchGenerator } from "./liveQueryJSONPatchGenerator.js";
 
 it("passes through non live query values", async () => {
   async function* source() {

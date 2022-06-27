@@ -14,7 +14,7 @@ import {
   getOperationAST,
   OperationDefinitionNode,
 } from "graphql";
-import { isAsyncIterableIterator } from "./isAsyncIterableIterator";
+import { isAsyncIterableIterator } from "./isAsyncIterableIterator.js";
 import type { Server as IOServer, Socket as IOSocket } from "socket.io";
 
 export type PromiseOrPlain<T> = T | Promise<T>;

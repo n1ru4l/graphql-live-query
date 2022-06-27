@@ -20,21 +20,28 @@
   "devDependencies": {},
   "dependencies": {},
   "peerDependencies": {},
-  "main": "dist/index.js",
+  "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/esm/index.js"
+      "require": {
+        "types": "./dist/typings/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      },
+      "import": {
+        "types": "./dist/typings/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "default": {
+        "types": "./dist/typings/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
     },
-    "./*": {
-      "require": "./dist/*.js",
-      "import": "./dist/esm/*.js"
-    }
+    "./package.json": "./package.json"
   },
-  "typings": "dist/index.d.ts",
+  "typings": "dist/typings/index.d.ts",
   "typescript": {
-    "definition": "dist/index.d.ts"
+    "definition": "dist/typings/index.d.ts"
   },
   "scripts": {
     "test": "jest",
@@ -46,5 +53,6 @@
   "publishConfig": {
     "directory": "dist",
     "access": "public"
-  }
+  },
+  "type": "module"
 }

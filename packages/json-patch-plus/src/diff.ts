@@ -1,5 +1,5 @@
-import * as lcs from "./lcs";
-import type { Delta } from "./types";
+import * as lcs from "./lcs.js";
+import type { Delta } from "./types.js";
 
 type Input = unknown;
 

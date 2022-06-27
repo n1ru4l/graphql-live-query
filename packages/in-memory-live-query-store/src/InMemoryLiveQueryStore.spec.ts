@@ -10,7 +10,7 @@ import {
   ExecutionArgs,
 } from "graphql";
 import { isAsyncIterable } from "@graphql-tools/utils";
-import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore";
+import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore.js";
 
 function assertAsyncIterable(
   value: unknown

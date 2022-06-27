@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
 import { ValidationRule } from "graphql";
-import { getLiveDirectiveNode } from "../getLiveDirectiveNode";
-import { isNone } from "../Maybe";
+import { getLiveDirectiveNode } from "../getLiveDirectiveNode.js";
+import { isNone } from "../Maybe.js";
 
 export const NoLiveMixedWithDeferStreamRule: ValidationRule = (context) => {
   return {

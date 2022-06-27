@@ -1,5 +1,5 @@
 import { buildSchema, getOperationAST, parse, TypeInfo } from "graphql";
-import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
+import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates.js";
 
 const schema = buildSchema(/* GraphQL */ `
   type Query {

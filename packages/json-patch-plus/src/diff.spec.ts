@@ -1,4 +1,4 @@
-import { diff } from "./diff";
+import { diff } from "./diff.js";
 
 it("produces no patch for unchanged primitive type", () => {
   expect(

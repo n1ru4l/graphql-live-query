@@ -3,7 +3,7 @@ import { useServer } from "graphql-ws/lib/use/ws";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
 import { Server } from "ws";
-import { schema } from "./schema";
+import { schema } from "./schema.js";
 
 const liveQueryStore = new InMemoryLiveQueryStore();
 const rootValue = {

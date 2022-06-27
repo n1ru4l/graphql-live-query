@@ -16,7 +16,7 @@
     "@changesets/cli": "2.21.1",
     "@types/jest": "27.5.1",
     "babel-jest": "27.5.1",
-    "bob-the-bundler": "1.5.1",
+    "bob-the-bundler": "2.0.0",
     "chalk": "4.1.2",
     "globby": "12.2.0",
     "husky": "7.0.4",
@@ -33,11 +33,10 @@
     "graphql": "16.0.0-experimental-stream-defer.5"
   },
   "scripts": {
-    "build": "yarn ts:transpile && bob build",
-    "watch-build": "tsc-watch --project tsconfig.build.json --onSuccess \"bob build\"",
+    "build": "bob build",
+    "watch-build": "tsc-watch --onSuccess \"bob build\"",
     "test": "jest --no-watchman",
     "test:end2end": "jest --no-watchman --config jest.end2end.config.js",
-    "ts:transpile": "tsc --project tsconfig.build.json",
     "prerelease": "yarn build",
     "release": "changeset publish",
     "postinstall": "patch-package",

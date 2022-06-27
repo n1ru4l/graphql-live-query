@@ -1,4 +1,4 @@
-import { isNone } from "./Maybe";
+import { isNone } from "./Maybe.js";
 
 /**
  * ResourceTracker is a ad hoc system for tracking events associated with a record.

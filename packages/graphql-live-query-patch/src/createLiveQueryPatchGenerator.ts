@@ -1,8 +1,8 @@
 import { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
 import { Repeater } from "@repeaterjs/repeater";
 import type { ExecutionResult } from "graphql";
-import type { ExecutionPatchResult } from "./ExecutionPatchResult";
-import type { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
+import type { ExecutionPatchResult } from "./ExecutionPatchResult.js";
+import type { ExecutionLivePatchResult } from "./ExecutionLivePatchResult.js";
 
 /**
  * Symbol that indicates that there is no diff between the previous and current state and thus no patch must be sent to the client.

@@ -1,4 +1,4 @@
-import { patch } from "./patch";
+import { patch } from "./patch.js";
 
 it("applies a primitive delta (replace)", () => {
   expect(
