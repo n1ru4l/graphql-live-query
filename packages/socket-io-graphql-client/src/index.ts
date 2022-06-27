@@ -1,1 +1,1 @@
-export * from "./createSocketIOGraphQLClient";
+export * from "./createSocketIOGraphQLClient.js";

@@ -1,1 +1,1 @@
-export * from "./InMemoryLiveQueryStore";
+export * from "./InMemoryLiveQueryStore.js";

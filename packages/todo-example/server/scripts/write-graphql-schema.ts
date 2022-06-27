@@ -1,5 +1,5 @@
 import { printSchema } from "graphql";
-import { schema } from "../src/schema";
+import { schema } from "../src/schema.js";
 import * as fs from "fs";
 import * as path from "path";
 

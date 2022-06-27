@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import fastify from "fastify";
 import fastifyStatic from "fastify-static";
-import { createServer } from "../server/src";
+import { createServer } from "../server/src/index.js";
 import * as path from "path";
 
 [

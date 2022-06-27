@@ -3,7 +3,7 @@ import * as io from "socket.io";
 import * as ioClient from "socket.io-client";
 import * as http from "http";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import * as server from "../src";
+import * as server from "../src/index.js";
 
 const schema = makeExecutableSchema({
   typeDefs: /* GraphQL */ `

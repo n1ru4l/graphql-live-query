@@ -1,5 +1,5 @@
 import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
-import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
+import { isNonNullIDScalarType } from "./isNonNullIDScalarType.js";
 
 it("returns true for a NonNull ID scalar type", () => {
   const input = new GraphQLNonNull(GraphQLID);

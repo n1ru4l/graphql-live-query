@@ -1,4 +1,4 @@
-import { runWith } from "./runWith";
+import { runWith } from "./runWith.js";
 
 it("invokes a callback synchronously for a sync value", (done) => {
   let value = 1;

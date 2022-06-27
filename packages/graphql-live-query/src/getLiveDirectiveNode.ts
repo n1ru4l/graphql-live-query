@@ -1,5 +1,5 @@
 import { DefinitionNode, DirectiveNode } from "graphql";
-import { isNone, Maybe } from "./Maybe";
+import { isNone, Maybe } from "./Maybe.js";
 
 export const getLiveDirectiveNode = (
   input: DefinitionNode

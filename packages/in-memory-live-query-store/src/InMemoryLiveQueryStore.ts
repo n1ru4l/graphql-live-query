@@ -15,12 +15,12 @@ import {
   LiveExecutionResult,
   getLiveDirectiveNode,
 } from "@n1ru4l/graphql-live-query";
-import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates";
-import { isNonNullIDScalarType } from "./isNonNullIDScalarType";
-import { runWith } from "./runWith";
-import { isNone, isSome, None, Maybe } from "./Maybe";
-import { ResourceTracker } from "./ResourceTracker";
-import { throttle } from "./throttle";
+import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates.js";
+import { isNonNullIDScalarType } from "./isNonNullIDScalarType.js";
+import { runWith } from "./runWith.js";
+import { isNone, isSome, None, Maybe } from "./Maybe.js";
+import { ResourceTracker } from "./ResourceTracker.js";
+import { throttle } from "./throttle.js";
 
 type PromiseOrValue<T> = T | Promise<T>;
 

@@ -1,6 +1,6 @@
 import { Repeater } from "@repeaterjs/repeater";
 import { ExecutionResult } from "graphql";
-import { ExecutionLivePatchResult } from "./ExecutionLivePatchResult";
+import { ExecutionLivePatchResult } from "./ExecutionLivePatchResult.js";
 
 export type ApplyPatchFunction<PatchPayload = unknown> = (
   previous: Record<string, unknown>,

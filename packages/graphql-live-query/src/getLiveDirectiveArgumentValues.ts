@@ -1,6 +1,6 @@
 import { DirectiveNode, getDirectiveValues } from "graphql";
-import { GraphQLLiveDirective } from "./GraphQLLiveDirective";
-import { Maybe } from "./Maybe";
+import { GraphQLLiveDirective } from "./GraphQLLiveDirective.js";
+import { Maybe } from "./Maybe.js";
 
 export const getLiveDirectiveArgumentValues = (
   node: DirectiveNode,

@@ -15,10 +15,10 @@ jobs:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
 
-      - name: Setup Node.js 14.x
+      - name: Setup Node.js 16.x
         uses: actions/setup-node@master
         with:
-          node-version: 14.x
+          node-version: 16.x
 
       - name: Install Dependencies
         run: yarn
@@ -29,5 +29,5 @@ jobs:
       - name: "Test Packages"
         run: yarn test
 
-      - name: "Test ESM Support"
-        run: node scripts/test-esm.mjs
+      - name: "Test ESM & CJS integrity"
+        run: yarn bob check

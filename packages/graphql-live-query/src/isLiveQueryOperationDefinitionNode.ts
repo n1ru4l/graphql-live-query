@@ -1,8 +1,8 @@
 import type { DefinitionNode, OperationDefinitionNode } from "graphql";
-import { getLiveDirectiveNode } from "./getLiveDirectiveNode";
-import { getLiveDirectiveArgumentValues } from "./getLiveDirectiveArgumentValues";
+import { getLiveDirectiveNode } from "./getLiveDirectiveNode.js";
+import { getLiveDirectiveArgumentValues } from "./getLiveDirectiveArgumentValues.js";
 
-import { isNone, Maybe } from "./Maybe";
+import { isNone, Maybe } from "./Maybe.js";
 
 export const isLiveQueryOperationDefinitionNode = (
   input: DefinitionNode,

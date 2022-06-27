@@ -1,4 +1,4 @@
-import { ResourceTracker } from "./ResourceTracker";
+import { ResourceTracker } from "./ResourceTracker.js";
 
 it("can be created", () => {
   new ResourceTracker();

@@ -3,7 +3,7 @@ import type { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
 import {
   createLiveQueryPatchGenerator,
   GeneratePatchFunction,
-} from "./createLiveQueryPatchGenerator";
+} from "./createLiveQueryPatchGenerator.js";
 
 type MaybePromise<T> = T | Promise<T>;
 

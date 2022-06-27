@@ -1,3 +1,3 @@
-export * from "./diff";
-export * from "./patch";
-export type { Delta } from "./types";
+export * from "./diff.js";
+export * from "./patch.js";
+export type { Delta } from "./types.js";
