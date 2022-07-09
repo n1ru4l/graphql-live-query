@@ -1,54 +1,61 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { io } from "socket.io-client";
 import "todomvc-app-css/index.css";
-import { ApolloProvider, FetchResult } from "@apollo/client";
-import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
-import type { FetcherResult } from "graphiql";
-import type { GraphiQLWidget as GraphiQLWidgetType } from "./GraphiQLWidget";
-
-import { createApolloClient } from "./createApolloClient";
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloProvider,
+  InMemoryCache,
+  NormalizedCacheObject,
+} from "@apollo/client";
 import { TodoApplication } from "./TodoApplication";
 
-let host = new URLSearchParams(window.location.search).get("host") ?? undefined;
-const socket = host ? io(host) : io();
-const networkInterface = createSocketIOGraphQLClient<FetchResult>(socket);
-const apolloClient = createApolloClient(networkInterface);
+const createApolloClient = (link: ApolloLink) =>
+  new ApolloClient({
+    link,
+    cache: new InMemoryCache(),
+  });
 
-// we only want GraphiQL in our development environment!
-let GraphiQLWidget = (): React.ReactElement | null => null;
-if (process.env.NODE_ENV === "development") {
-  GraphiQLWidget = () => {
-    const [Component, setComponent] = React.useState<
-      typeof GraphiQLWidgetType | null
-    >(null);
+const Root = (): React.ReactElement | null => {
+  const [client, setClient] =
+    React.useState<ApolloClient<NormalizedCacheObject> | null>(null);
 
-    React.useEffect(() => {
-      import("./GraphiQLWidget").then(({ GraphiQLWidget }) => {
-        setComponent(() => GraphiQLWidget);
-      });
-    }, []);
-
-    return Component ? (
-      <Component
-        fetcher={({ query: operation, variables, operationName }) =>
-          networkInterface.execute({
-            operation,
-            variables,
-            operationName,
-          }) as AsyncIterableIterator<FetcherResult>
+  React.useEffect(() => {
+    if (globalThis.location.search.includes("sse")) {
+      import("./apollo-link/create-http-apollo-link").then(
+        async ({ createHTTPApolloLink }) => {
+          setClient(
+            createApolloClient(
+              createHTTPApolloLink(
+                `${window.location.protocol}//${window.location.host}/graphql`
+              )
+            )
+          );
         }
-      />
-    ) : null;
-  };
-}
+      );
+    } else {
+      import("./apollo-link/create-socket-io-apollo-link").then(
+        async ({ createSocketIOApolloLink }) => {
+          setClient(createApolloClient(createSocketIOApolloLink()));
+        }
+      );
+    }
+  }, []);
+
+  if (client === null) {
+    return null;
+  }
+
+  return (
+    <ApolloProvider client={client}>
+      <TodoApplication />
+    </ApolloProvider>
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
-    <ApolloProvider client={apolloClient}>
-      <TodoApplication />
-      <GraphiQLWidget />
-    </ApolloProvider>
+    <Root />
   </React.StrictMode>,
   document.getElementById("root")
 );
