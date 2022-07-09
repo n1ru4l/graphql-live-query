@@ -8,7 +8,7 @@ import {
 } from "graphql-helix";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
-import { schema } from "./schema.js";
+import { schema } from "./schema";
 
 const liveQueryStore = new InMemoryLiveQueryStore();
 const execute = liveQueryStore.makeExecute(defaultExecute);
