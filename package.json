@@ -21,7 +21,7 @@
     "globby": "12.2.0",
     "husky": "7.0.4",
     "jest": "27.5.1",
-    "lint-staged": "12.4.1",
+    "lint-staged": "12.5.0",
     "patch-package": "6.4.7",
     "prettier": "2.5.1",
     "semver": "7.3.7",
