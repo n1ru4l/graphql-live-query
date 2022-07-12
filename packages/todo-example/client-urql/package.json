@@ -8,8 +8,8 @@
   },
   "devDependencies": {
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",
-    "@graphql-codegen/cli": "2.6.2",
-    "@graphql-codegen/gql-tag-operations-preset": "1.4.0",
+    "@graphql-codegen/cli": "2.8.0",
+    "@graphql-codegen/gql-tag-operations-preset": "1.5.1",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "5.16.4",
@@ -21,9 +21,9 @@
     "classnames": "2.3.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "socket.io-client": "4.4.1",
+    "socket.io-client": "4.5.1",
     "todomvc-app-css": "2.4.2",
-    "vite": "2.8.6"
+    "vite": "2.9.14"
   },
   "scripts": {
     "start": "vite",
