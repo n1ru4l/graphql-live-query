@@ -21,13 +21,17 @@ const Root = (): React.ReactElement | null => {
     React.useState<ApolloClient<NormalizedCacheObject> | null>(null);
 
   React.useEffect(() => {
-    if (globalThis.location.search.includes("sse")) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("sse")) {
+      let host = params.get("host") ?? undefined;
       import("./apollo-link/create-http-apollo-link").then(
         async ({ createHTTPApolloLink }) => {
           setClient(
             createApolloClient(
               createHTTPApolloLink(
-                `${window.location.protocol}//${window.location.host}/graphql`
+                (host ??
+                  `${window.location.protocol}//${window.location.host}`) +
+                  "/graphql"
               )
             )
           );

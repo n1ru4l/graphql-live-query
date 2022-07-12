@@ -52,25 +52,11 @@ const attachNotifyGarbageCollectionBehaviourToStore = (store: Store): Store => {
 };
 
 export const createRelayEnvironment = (
-  networkInterface: SocketIOGraphQLClient<GraphQLResponse>
+  execute: (
+    request: RequestParameters,
+    variables: Variables
+  ) => Observable<GraphQLResponse>
 ) => {
-  const execute = (request: RequestParameters, variables: Variables) => {
-    if (!request.text) throw new Error("Missing document.");
-    const { text: operation, name } = request;
-    return Observable.create<GraphQLResponse>((sink) =>
-      applyAsyncIterableIteratorToSink(
-        applyLiveQueryJSONPatch(
-          networkInterface.execute({
-            operation,
-            variables,
-            operationName: name,
-          })
-        ),
-        sink
-      )
-    );
-  };
-
   const network = Network.create(execute, execute);
   const store = attachNotifyGarbageCollectionBehaviourToStore(
     new Store(new RecordSource())

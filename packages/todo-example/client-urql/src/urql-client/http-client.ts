@@ -42,9 +42,7 @@ export const createUrqlClient = (url: string) => {
                   JSON.stringify(operation.variables)
                 );
               }
-              const eventsource = new EventSource(targetUrl.toString(), {
-                withCredentials: true, // This is required for cookies
-              });
+              const eventsource = new EventSource(targetUrl.toString());
 
               eventsource.onmessage = function (event) {
                 const data = JSON.parse(event.data);

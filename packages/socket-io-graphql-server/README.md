@@ -6,7 +6,7 @@ A layer for serving a GraphQL schema via a socket.io server. Supports Queries, M
 
 **Note:** Use [`@n1ru4l/socket-io-graphql-client`](https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/socket-io-graphql-client) for executing operations against the server.
 
-For a full setup check out the [todo-example-server](https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/todo-example/server).
+For a full setup check out the [todo-example-server-socket-io](https://github.com/n1ru4l/graphql-live-queries/tree/main/packages/todo-example/server-socket-io).
 
 ## Install Instructions
 
