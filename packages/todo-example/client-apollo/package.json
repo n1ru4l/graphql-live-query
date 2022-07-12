@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "3.5.9",
+    "@apollo/client": "3.6.9",
     "@n1ru4l/graphql-live-query-patch-json-patch": "*",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
     "@n1ru4l/socket-io-graphql-client": "*",
@@ -11,8 +11,8 @@
     "graphql": "16.0.0-experimental-stream-defer.5"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.6.2",
-    "@graphql-codegen/gql-tag-operations-preset": "1.4.0",
+    "@graphql-codegen/cli": "2.8.0",
+    "@graphql-codegen/gql-tag-operations-preset": "1.5.1",
     "@testing-library/jest-dom": "5.16.4",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.5.0",
@@ -22,9 +22,9 @@
     "classnames": "2.3.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "socket.io-client": "4.4.1",
+    "socket.io-client": "4.5.1",
     "todomvc-app-css": "2.4.2",
-    "vite": "2.8.6"
+    "vite": "2.9.14"
   },
   "scripts": {
     "start": "vite",

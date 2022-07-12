@@ -23,7 +23,7 @@
     "jest": "27.5.1",
     "lint-staged": "12.5.0",
     "patch-package": "6.4.7",
-    "prettier": "2.5.1",
+    "prettier": "2.7.1",
     "semver": "7.3.7",
     "ts-jest": "27.1.5",
     "tsc-watch": "4.6.2",
@@ -31,7 +31,7 @@
   },
   "resolutions": {
     "graphql": "16.0.0-experimental-stream-defer.5",
-    "ts-node": "~10.7.0"
+    "ts-node": "~10.8.0"
   },
   "scripts": {
     "build": "bob build",
