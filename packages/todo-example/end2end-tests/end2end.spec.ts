@@ -3,6 +3,7 @@ import fastify from "fastify";
 import fastifyStatic from "fastify-static";
 import { createServer as createSocketIOServer } from "../server-socket-io/src/index.js";
 import { createServer as createHTTPServer } from "../server-helix/src/main.js";
+import { createServer as createYogaServer } from "../server-yoga/src/main.js";
 
 import * as path from "path";
 
@@ -13,8 +14,9 @@ describe.each([
   "client-urql",
 ])(`end2end %s`, (name) => {
   describe.each([
-    // ["GraphQL over Socket.io", "socket.io", createSocketIOServer],
-    ["GraphQL over SSE", "sse", createHTTPServer],
+    ["GraphQL over Socket.io", "socket.io", createSocketIOServer],
+    ["GraphQL over SSE (Helix)", "sse", createHTTPServer],
+    ["GraphQL over SSE (Yoga)", "sse", createYogaServer],
   ])("%s", (_, protocol, createServer) => {
     const apiPort = 6167;
     const apiAddress = `http://localhost:${apiPort}`;
@@ -123,6 +125,7 @@ describe.each([
       await page.goto(testPage);
       await page.waitForSelector(".todo-list label");
       await page.hover(".view");
+      await page.waitForSelector(".destroy");
       await page.click(".destroy");
       await page.waitForFunction(
         // @ts-ignore
