@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@n1ru4l/in-memory-live-query-store": "*",
-    "@graphql-yoga/node": "2.12.0",
+    "@graphql-yoga/node": "2.13.1",
     "graphql": "16.0.0-experimental-stream-defer.5"
   },
   "devDependencies": {
