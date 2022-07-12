@@ -1,21 +1,28 @@
 import puppeteer from "puppeteer";
 import fastify from "fastify";
 import fastifyStatic from "fastify-static";
-import { createServer } from "../server/src/index.js";
+import { createServer as createSocketIOServer } from "../server-socket-io/src/index.js";
+import { createServer as createHTTPServer } from "../server-helix/src/main.js";
+import { createServer as createYogaServer } from "../server-yoga/src/main.js";
+
 import * as path from "path";
 
-[
+describe.each([
   // prettier-ignore
   "client-relay",
   "client-apollo",
   "client-urql",
-].forEach((name) => {
-  describe(`end2end ${name}`, () => {
+])(`end2end %s`, (name) => {
+  describe.each([
+    ["GraphQL over Socket.io", "socket.io", createSocketIOServer],
+    ["GraphQL over SSE (Helix)", "sse", createHTTPServer],
+    ["GraphQL over SSE (Yoga)", "sse", createYogaServer],
+  ])("%s", (_, protocol, createServer) => {
     const apiPort = 6167;
     const apiAddress = `http://localhost:${apiPort}`;
     const staticPort = 6168;
 
-    const testPage = `http://localhost:${staticPort}?host=${encodeURIComponent(
+    const testPage = `http://localhost:${staticPort}?${protocol}=true&host=${encodeURIComponent(
       apiAddress
     )}`;
 
@@ -24,8 +31,6 @@ import * as path from "path";
 
     let browser: puppeteer.Browser;
     let page: puppeteer.Page | undefined;
-
-    // const sleep = (t = 100) => new Promise((res) => setTimeout(res, t));
 
     beforeAll(async () => {
       browser = await puppeteer.launch({
@@ -76,6 +81,7 @@ import * as path from "path";
     it("can create a new todo", async () => {
       page = await browser.newPage();
       await page.goto(testPage);
+      await page.waitForSelector(".new-todo");
       await page.type(".new-todo", "Do the laundry");
       await page.keyboard.press("\n");
       // wait until there are two elements in the list
@@ -119,6 +125,7 @@ import * as path from "path";
       await page.goto(testPage);
       await page.waitForSelector(".todo-list label");
       await page.hover(".view");
+      await page.waitForSelector(".destroy");
       await page.click(".destroy");
       await page.waitForFunction(
         // @ts-ignore

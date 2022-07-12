@@ -1,54 +1,49 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import ReactDOM from "react-dom";
 import "todomvc-app-css/index.css";
-import { Provider, ExecutionResult } from "urql";
-import { io } from "socket.io-client";
-import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
-import type { FetcherResult } from "graphiql";
-import type { GraphiQLWidget as GraphiQLWidgetType } from "./GraphiQLWidget";
+import { Provider, Client } from "urql";
 
-import { createUrqlClient } from "./createUrgqlClient";
 import { TodoApplication } from "./TodoApplication";
 
-let host = new URLSearchParams(window.location.search).get("host") ?? undefined;
-const socket = host ? io(host) : io();
-const networkInterface = createSocketIOGraphQLClient<ExecutionResult>(socket);
-const urqlClient = createUrqlClient(networkInterface);
+const Root = (): ReactElement | null => {
+  const [client, setClient] = React.useState<Client | null>(null);
 
-// we only want GraphiQL in our development environment!
-let GraphiQLWidget = (): React.ReactElement | null => null;
-if (process.env.NODE_ENV === "development") {
-  GraphiQLWidget = () => {
-    const [Component, setComponent] = React.useState<
-      typeof GraphiQLWidgetType | null
-    >(null);
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("sse")) {
+      let host = params.get("host") ?? undefined;
 
-    React.useEffect(() => {
-      import("./GraphiQLWidget").then(({ GraphiQLWidget }) => {
-        setComponent(() => GraphiQLWidget);
+      import("./urql-client/http-client").then(async ({ createUrqlClient }) => {
+        setClient(
+          createUrqlClient(
+            (host ?? `${window.location.protocol}//${window.location.host}`) +
+              "/graphql"
+          )
+        );
       });
-    }, []);
-
-    return Component ? (
-      <Component
-        fetcher={({ query: operation, variables, operationName }) =>
-          networkInterface.execute({
-            operation,
-            variables,
-            operationName,
-          }) as AsyncIterableIterator<FetcherResult>
+    } else {
+      import("./urql-client/socket-io-client").then(
+        async ({ createUrqlClient }) => {
+          createUrqlClient().then(setClient);
         }
-      />
-    ) : null;
-  };
-}
+      );
+    }
+  }, []);
+
+  if (client === null) {
+    return null;
+  }
+
+  return (
+    <Provider value={client}>
+      <TodoApplication />
+    </Provider>
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider value={urqlClient}>
-      <TodoApplication />
-      <GraphiQLWidget />
-    </Provider>
+    <Root />
   </React.StrictMode>,
   document.getElementById("root")
 );

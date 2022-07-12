@@ -6,8 +6,8 @@ import { applyLiveQueryJSONPatchGenerator } from "@n1ru4l/graphql-live-query-pat
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import { specifiedRules, execute as defaultExecute } from "graphql";
-import { schema } from "./schema.js";
-import { flow } from "./util/flow.js";
+import { schema } from "./schema";
+import { flow } from "./util/flow";
 
 const parsePortSafe = (port: null | undefined | string) => {
   if (!port) {

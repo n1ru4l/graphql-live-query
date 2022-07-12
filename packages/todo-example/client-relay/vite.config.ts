@@ -22,6 +22,9 @@ export default defineConfig({
         target: backendAddress,
         ws: true,
       },
+      "/graphql": {
+        target: backendAddress,
+      },
     },
   },
 });

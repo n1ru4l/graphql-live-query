@@ -1,4 +1,6 @@
 import express from "express";
+import http from "http";
+import cors from "cors";
 import { specifiedRules, execute as defaultExecute } from "graphql";
 import {
   getGraphQLParameters,
@@ -9,101 +11,158 @@ import {
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
 import { schema } from "./schema";
+import { Socket } from "net";
 
-const liveQueryStore = new InMemoryLiveQueryStore();
-const execute = liveQueryStore.makeExecute(defaultExecute);
-const rootValue = {
-  todos: new Map(),
+const parsePortSafe = (port: null | undefined | string) => {
+  if (!port) {
+    return null;
+  }
+  const parsedPort = parseInt(port, 10);
+  if (Number.isNaN(parsedPort)) {
+    return null;
+  }
+  return parsedPort;
 };
 
-rootValue.todos.set("1", {
-  id: "1",
-  content: "foo",
-  isCompleted: false,
-});
-
-const app = express();
-
-app.use(express.json());
-
-app.use("/", async (req, res) => {
-  const request = {
-    body: req.body,
-    headers: req.headers,
-    method: req.method,
-    query: req.query,
+export async function createServer({ port = 3001 }: { port?: number }) {
+  const liveQueryStore = new InMemoryLiveQueryStore();
+  const execute = liveQueryStore.makeExecute(defaultExecute);
+  const rootValue = {
+    todos: new Map(),
   };
 
-  if (shouldRenderGraphiQL(request)) {
-    res.send(renderGraphiQL());
-  } else {
-    const { operationName, query, variables } = getGraphQLParameters(request);
+  rootValue.todos.set("1", {
+    id: "1",
+    content: "foo",
+    isCompleted: false,
+  });
 
-    const result = await processRequest({
-      operationName,
-      query,
-      variables,
-      request,
-      schema,
-      validationRules: [...specifiedRules, NoLiveMixedWithDeferStreamRule],
-      contextFactory: () => ({
-        liveQueryStore,
-      }),
-      rootValueFactory: () => rootValue,
-      execute,
-    });
+  const app = express();
 
-    if (result.type === "RESPONSE") {
-      result.headers.forEach(({ name, value }) => res.setHeader(name, value));
-      res.status(result.status);
-      res.json(result.payload);
-    } else if (result.type === "MULTIPART_RESPONSE") {
-      res.writeHead(200, {
-        Connection: "keep-alive",
-        "Content-Type": 'multipart/mixed; boundary="-"',
-        "Transfer-Encoding": "chunked",
-      });
+  app.use(cors());
 
-      req.on("close", () => {
-        result.unsubscribe();
-      });
+  app.use(express.json());
 
-      await result.subscribe((result) => {
-        const chunk = Buffer.from(JSON.stringify(result), "utf8");
-        const data = [
-          "",
-          "---",
-          "Content-Type: application/json; charset=utf-8",
-          "Content-Length: " + String(chunk.length),
-          "",
-          chunk,
-          "",
-        ].join("\r\n");
-        res.write(data);
-      });
+  app.use("/", async (req, res) => {
+    const request = {
+      body: req.body,
+      headers: req.headers,
+      method: req.method,
+      query: req.query,
+    };
 
-      res.write("\r\n-----\r\n");
-      res.end();
+    if (shouldRenderGraphiQL(request)) {
+      res.send(renderGraphiQL());
     } else {
-      res.writeHead(200, {
-        "Content-Type": "text/event-stream",
-        Connection: "keep-alive",
-        "Cache-Control": "no-cache",
+      const { operationName, query, variables } = getGraphQLParameters(request);
+
+      const result = await processRequest({
+        operationName,
+        query,
+        variables,
+        request,
+        schema,
+        validationRules: [...specifiedRules, NoLiveMixedWithDeferStreamRule],
+        contextFactory: () => ({
+          liveQueryStore,
+        }),
+        rootValueFactory: () => rootValue,
+        execute,
       });
 
-      req.on("close", () => {
-        result.unsubscribe();
-      });
+      if (result.type === "RESPONSE") {
+        result.headers.forEach(({ name, value }) => res.setHeader(name, value));
+        res.status(result.status);
+        res.json(result.payload);
+      } else if (result.type === "MULTIPART_RESPONSE") {
+        res.writeHead(200, {
+          Connection: "keep-alive",
+          "Content-Type": 'multipart/mixed; boundary="-"',
+          "Transfer-Encoding": "chunked",
+        });
 
-      await result.subscribe((result) => {
-        res.write(`data: ${JSON.stringify(result)}\n\n`);
-      });
+        req.on("close", () => {
+          result.unsubscribe();
+        });
+
+        await result.subscribe((result) => {
+          const chunk = Buffer.from(JSON.stringify(result), "utf8");
+          const data = [
+            "",
+            "---",
+            "Content-Type: application/json; charset=utf-8",
+            "Content-Length: " + String(chunk.length),
+            "",
+            chunk,
+            "",
+          ].join("\r\n");
+          res.write(data);
+        });
+
+        res.write("\r\n-----\r\n");
+        res.end();
+      } else {
+        res.writeHead(200, {
+          "Content-Type": "text/event-stream",
+          Connection: "keep-alive",
+          "Cache-Control": "no-cache",
+        });
+
+        req.on("close", () => {
+          result.unsubscribe();
+        });
+
+        await result.subscribe((result) => {
+          res.write(`data: ${JSON.stringify(result)}\n\n`);
+        });
+      }
     }
-  }
-});
+  });
 
-const port = process.env.PORT || 3001;
+  const server = await new Promise<http.Server>((resolve) => {
+    const server = app.listen(port, () => {
+      console.log(`GraphQL server is running on port ${port}.`);
+      resolve(server);
+    });
+  });
 
-app.listen(port, () => {
-  console.log(`GraphQL server is running on port ${port}.`);
-});
+  // Graceful shutdown stuff :)
+  // Ensure connections are closed when shutting down is received
+  const connections = new Set<Socket>();
+  server.on("connection", (connection) => {
+    connections.add(connection);
+    connection.on("close", () => {
+      connections.delete(connection);
+    });
+  });
+
+  return async () => {
+    await new Promise<void>((resolve, reject) => {
+      server.close((err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+      for (const connection of connections) {
+        connection.destroy();
+      }
+    });
+  };
+}
+
+if (require.main === module) {
+  let isShuttingDown = false;
+
+  (async () => {
+    const port = parsePortSafe(process.env.PORT) ?? 3001;
+    const destroy = await createServer({ port });
+    console.log("Listening on http://localhost:" + port);
+
+    process.on("SIGINT", () => {
+      if (isShuttingDown) {
+        return;
+      }
+      isShuttingDown = true;
+      destroy();
+    });
+  })();
+}
