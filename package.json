@@ -16,7 +16,7 @@
     "@changesets/cli": "2.23.1",
     "@types/jest": "27.5.2",
     "babel-jest": "27.5.1",
-    "bob-the-bundler": "2.0.0",
+    "bob-the-bundler": "3.0.5",
     "chalk": "4.1.2",
     "globby": "12.2.0",
     "husky": "7.0.4",

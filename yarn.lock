@@ -2932,17 +2932,16 @@ bl@^4.0.3, bl@^4.1.0:
     inherits "^2.0.4"
     readable-stream "^3.4.0"
 
-bob-the-bundler@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/bob-the-bundler/-/bob-the-bundler-2.0.0.tgz#a0b5971e557d15f53c942e559a979542786677fc"
-  integrity sha512-3/qnKDSlUc/65hDgJLK/t7P2eWYKJF8Siz3Cu5mJRgMvtvYnbhKc5lbJyda/Y1sox1fnePHfBn+mFd/L/Z9KtA==
+bob-the-bundler@3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/bob-the-bundler/-/bob-the-bundler-3.0.5.tgz#21add478d193690fa2ad2e1af918ee9fe62c2142"
+  integrity sha512-j5QPBp+jYB+13KcaQpKE3Qg5wM/l9ojFOvTMeymC8I+THoJJEdcopDxgTjwg1KVuVvFCmXIjx+YAhBA9hFupKA==
   dependencies:
     "@rollup/plugin-json" "^4.1.0"
     "@rollup/plugin-node-resolve" "^13.3.0"
     "@vercel/ncc" "^0.34.0"
     builtins "^5.0.1"
     consola "^2.15.3"
-    cosmiconfig "^7.0.1"
     cross-spawn "^7.0.3"
     dependency-graph "^0.11.0"
     fs-extra "^10.1.0"
@@ -3491,7 +3490,7 @@ cosmiconfig-toml-loader@1.0.0:
   dependencies:
     "@iarna/toml" "^2.2.5"
 
-cosmiconfig@7.0.1, cosmiconfig@^7.0.0, cosmiconfig@^7.0.1:
+cosmiconfig@7.0.1, cosmiconfig@^7.0.0:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/cosmiconfig/-/cosmiconfig-7.0.1.tgz#714d756522cace867867ccb4474c5d01bbae5d6d"
   integrity sha512-a1YWNUV2HwGimB7dU2s1wUMurNKjpx60HxBB6xUM8Re+2s1g1IIfJvFR0/iCF+XHdE0GMTKTuLR32UQff4TEyQ==
