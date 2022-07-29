@@ -2,14 +2,12 @@ import {
   Client,
   subscriptionExchange,
   type ExecutionResult,
-  fetchExchange,
   cacheExchange,
   dedupExchange,
 } from "urql";
 import { io } from "socket.io-client";
 import { createSocketIOGraphQLClient } from "@n1ru4l/socket-io-graphql-client";
-import { applyLiveQueryJSONPatch } from "@n1ru4l/graphql-live-query-patch-json-patch";
-import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
+import { applySourceToSink } from "./shared";
 
 export const createUrqlClient = async () => {
   let host =
@@ -26,13 +24,11 @@ export const createUrqlClient = async () => {
       subscriptionExchange({
         forwardSubscription: (operation) => ({
           subscribe: (sink) => ({
-            unsubscribe: applyAsyncIterableIteratorToSink(
-              applyLiveQueryJSONPatch(
-                networkInterface.execute({
-                  operation: operation.query,
-                  variables: operation.variables,
-                })
-              ),
+            unsubscribe: applySourceToSink(
+              networkInterface.execute({
+                operation: operation.query,
+                variables: operation.variables,
+              }),
               sink
             ),
           }),

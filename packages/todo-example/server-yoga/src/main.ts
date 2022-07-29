@@ -1,6 +1,8 @@
 import { createServer as createYoga, Plugin } from "@graphql-yoga/node";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+import { applyLiveQueryJSONDiffPatchGenerator } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
 import { schema } from "./schema";
+import { flow } from "./util/flow";
 
 const parsePortSafe = (port: null | undefined | string) => {
   if (!port) {
@@ -20,8 +22,11 @@ const useLiveQueryPlugin = (
 }> => ({
   onExecute: (onExecuteContext) => {
     onExecuteContext.setExecuteFn(
-      onExecuteContext.args.contextValue.liveQueryStore.makeExecute(
-        onExecuteContext.executeFn
+      flow(
+        onExecuteContext.args.contextValue.liveQueryStore.makeExecute(
+          onExecuteContext.executeFn
+        ),
+        applyLiveQueryJSONDiffPatchGenerator
       )
     );
     onExecuteContext.args.rootValue = rootValue;

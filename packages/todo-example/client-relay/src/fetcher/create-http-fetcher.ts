@@ -1,11 +1,32 @@
-import { applyLiveQueryJSONPatch } from "@n1ru4l/graphql-live-query-patch-json-patch";
-import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import {
   GraphQLResponse,
   Observable,
   RequestParameters,
   Variables,
 } from "relay-runtime";
+import { Repeater } from "@repeaterjs/repeater";
+import { applySourceToSink } from "./shared";
+
+function makeEventStreamSource(url: string) {
+  return new Repeater<GraphQLResponse>(async (push, end) => {
+    const eventsource = new EventSource(url);
+    eventsource.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+      push(data);
+      if (eventsource.readyState === 2) {
+        end();
+      }
+    };
+    eventsource.onerror = function (event) {
+      console.log("Error", event);
+      end(new Error("Check the console bruv."));
+    };
+    await end;
+
+    eventsource.close();
+  });
+}
+
 export function createHTTPFetcher(url: string) {
   return (
     request: RequestParameters,
@@ -28,20 +49,10 @@ export function createHTTPFetcher(url: string) {
         if (variables) {
           targetUrl.searchParams.append("variables", JSON.stringify(variables));
         }
-        const eventsource = new EventSource(targetUrl.toString());
-
-        eventsource.onmessage = function (event) {
-          const data = JSON.parse(event.data);
-          sink.next(data);
-          if (eventsource.readyState === 2) {
-            sink.complete();
-          }
-        };
-        eventsource.onerror = function (event) {
-          console.log("Error", event);
-          sink.error(new Error("Check the console bruv."));
-        };
-        return () => eventsource.close();
+        return applySourceToSink(
+          makeEventStreamSource(targetUrl.toString()),
+          sink
+        );
       }
 
       fetch(url, {

@@ -10,8 +10,10 @@ import {
 } from "graphql-helix";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
+import { applyLiveQueryJSONDiffPatchGenerator } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
 import { schema } from "./schema";
 import { Socket } from "net";
+import { flow } from "./util/flow";
 
 const parsePortSafe = (port: null | undefined | string) => {
   if (!port) {
@@ -26,7 +28,11 @@ const parsePortSafe = (port: null | undefined | string) => {
 
 export async function createServer({ port = 3001 }: { port?: number }) {
   const liveQueryStore = new InMemoryLiveQueryStore();
-  const execute = liveQueryStore.makeExecute(defaultExecute);
+  const execute = flow(
+    liveQueryStore.makeExecute(defaultExecute),
+    applyLiveQueryJSONDiffPatchGenerator
+  );
+
   const rootValue = {
     todos: new Map(),
   };

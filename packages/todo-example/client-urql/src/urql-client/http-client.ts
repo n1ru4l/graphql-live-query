@@ -11,6 +11,25 @@ import { Repeater } from "@repeaterjs/repeater";
 import { applyLiveQueryJSONPatch } from "@n1ru4l/graphql-live-query-patch-json-patch";
 import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import { ExecutionLivePatchResult } from "@n1ru4l/graphql-live-query-patch";
+import { applySourceToSink } from "./shared";
+
+function makeEventStreamSource(url: string) {
+  return new Repeater<ExecutionLivePatchResult>(async (push, end) => {
+    const eventsource = new EventSource(url);
+    eventsource.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+      push(data);
+      if (eventsource.readyState === 2) {
+        end();
+      }
+    };
+    eventsource.onerror = function (error) {
+      end(error);
+    };
+    await end;
+    eventsource.close();
+  });
+}
 
 export const createUrqlClient = (url: string) => {
   return new Client({
@@ -32,38 +51,19 @@ export const createUrqlClient = (url: string) => {
           return isSubscription || isLiveQuery;
         },
         forwardSubscription(operation) {
-          const create = () =>
-            new Repeater<ExecutionLivePatchResult>((push, stop) => {
-              const targetUrl = new URL(url);
-              targetUrl.searchParams.append("query", operation.query);
-              if (operation.variables) {
-                targetUrl.searchParams.append(
-                  "variables",
-                  JSON.stringify(operation.variables)
-                );
-              }
-              const eventsource = new EventSource(targetUrl.toString());
-
-              eventsource.onmessage = function (event) {
-                const data = JSON.parse(event.data);
-                push(data);
-                if (eventsource.readyState === 2) {
-                  stop();
-                }
-              };
-              eventsource.onerror = function (error) {
-                stop(error);
-              };
-
-              stop.then(() => {
-                eventsource.close();
-              });
-            });
+          const targetUrl = new URL(url);
+          targetUrl.searchParams.append("query", operation.query);
+          if (operation.variables) {
+            targetUrl.searchParams.append(
+              "variables",
+              JSON.stringify(operation.variables)
+            );
+          }
 
           return {
             subscribe: (sink) => ({
-              unsubscribe: applyAsyncIterableIteratorToSink(
-                applyLiveQueryJSONPatch(create()),
+              unsubscribe: applySourceToSink(
+                makeEventStreamSource(targetUrl.toString()),
                 sink
               ),
             }),

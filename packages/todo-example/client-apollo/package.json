@@ -4,9 +4,10 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "3.6.9",
-    "@n1ru4l/graphql-live-query-patch-json-patch": "*",
+    "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.7.0",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
     "@n1ru4l/socket-io-graphql-client": "*",
+    "@repeaterjs/repeater": "3.0.4",
     "@app/gql": "link:./src/gql",
     "graphql": "16.0.0-experimental-stream-defer.5"
   },

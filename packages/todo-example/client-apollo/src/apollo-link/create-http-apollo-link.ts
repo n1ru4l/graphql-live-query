@@ -3,16 +3,33 @@ import {
   Operation,
   FetchResult,
   Observable,
-  ApolloClient,
-  InMemoryCache,
-  gql,
 } from "@apollo/client/core";
 import { split } from "@apollo/client/link/core";
 import { HttpLink } from "@apollo/client/link/http";
 import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
+import { Repeater } from "@repeaterjs/repeater";
 import { print, getOperationAST } from "graphql";
+import { applySourceToSink } from "./shared";
 
 type SSELinkOptions = EventSourceInit & { uri: string };
+
+function makeEventStreamSource(url: string, options: SSELinkOptions) {
+  return new Repeater<FetchResult>(async (push, end) => {
+    const eventsource = new EventSource(url, options);
+    eventsource.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+      push(data);
+      if (eventsource.readyState === 2) {
+        end();
+      }
+    };
+    eventsource.onerror = function (error) {
+      end(error);
+    };
+    await end;
+    eventsource.close();
+  });
+}
 
 class SSELink extends ApolloLink {
   constructor(private options: SSELinkOptions) {
@@ -34,20 +51,12 @@ class SSELink extends ApolloLink {
       );
     }
 
-    return new Observable((sink) => {
-      const eventsource = new EventSource(url.toString(), this.options);
-      eventsource.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        sink.next(data);
-        if (eventsource.readyState === 2) {
-          sink.complete();
-        }
-      };
-      eventsource.onerror = function (error) {
-        sink.error(error);
-      };
-      return () => eventsource.close();
-    });
+    return new Observable((sink) =>
+      applySourceToSink(
+        makeEventStreamSource(url.toString(), this.options),
+        sink
+      )
+    );
   }
 }
 
