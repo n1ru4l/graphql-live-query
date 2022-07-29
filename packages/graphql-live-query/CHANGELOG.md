@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query
 
+## 0.10.0
+
+### Minor Changes
+
+- f585fb3: Support TypeScript ESM module resolution. More information on https://devblogs.microsoft.com/typescript/announcing-typescript-4-7/#ecmascript-module-support-in-node-js
+
 ## 0.9.0
 
 ### Minor Changes

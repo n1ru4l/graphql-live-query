@@ -1,5 +1,17 @@
 # @n1ru4l/graphql-live-query-patch-json-patch
 
+## 0.7.0
+
+### Minor Changes
+
+- f585fb3: Support TypeScript ESM module resolution. More information on https://devblogs.microsoft.com/typescript/announcing-typescript-4-7/#ecmascript-module-support-in-node-js
+
+### Patch Changes
+
+- Updated dependencies [25ad6d0]
+- Updated dependencies [f585fb3]
+  - @n1ru4l/graphql-live-query-patch@0.7.0
+
 ## 0.6.1
 
 ### Patch Changes

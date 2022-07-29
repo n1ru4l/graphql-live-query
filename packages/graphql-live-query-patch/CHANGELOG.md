@@ -1,5 +1,15 @@
 # @n1ru4l/graphql-live-query-patch
 
+## 0.7.0
+
+### Minor Changes
+
+- f585fb3: Support TypeScript ESM module resolution. More information on https://devblogs.microsoft.com/typescript/announcing-typescript-4-7/#ecmascript-module-support-in-node-js
+
+### Patch Changes
+
+- 25ad6d0: Ensure the `data` property reference changes for each published value in order to please GraphQL clients that rely on immutability.
+
 ## 0.6.1
 
 ### Patch Changes

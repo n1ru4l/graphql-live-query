@@ -1,5 +1,11 @@
 # @n1ru4l/socket-io-graphql-client
 
+## 0.13.0
+
+### Minor Changes
+
+- f585fb3: Support TypeScript ESM module resolution. More information on https://devblogs.microsoft.com/typescript/announcing-typescript-4-7/#ecmascript-module-support-in-node-js
+
 ## 0.11.1
 
 ### Patch Changes
