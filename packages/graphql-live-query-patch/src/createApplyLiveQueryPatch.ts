@@ -52,7 +52,7 @@ export const createApplyLiveQueryPatch =
               mutableData as Record<string, unknown>,
               next.value.patch
             );
-            valueToPublish.data = mutableData as Record<string, unknown>;
+            valueToPublish.data = { ...mutableData } as Record<string, unknown>;
 
             lastRevision++;
           }

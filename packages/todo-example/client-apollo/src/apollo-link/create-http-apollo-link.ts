@@ -7,10 +7,9 @@ import {
 import { split } from "@apollo/client/link/core";
 import { HttpLink } from "@apollo/client/link/http";
 import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
-import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
-import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import { Repeater } from "@repeaterjs/repeater";
 import { print, getOperationAST } from "graphql";
+import { applySourceToSink } from "./shared";
 
 type SSELinkOptions = EventSourceInit & { uri: string };
 
@@ -53,10 +52,8 @@ class SSELink extends ApolloLink {
     }
 
     return new Observable((sink) =>
-      applyAsyncIterableIteratorToSink(
-        applyLiveQueryJSONDiffPatch(
-          makeEventStreamSource(url.toString(), this.options)
-        ),
+      applySourceToSink(
+        makeEventStreamSource(url.toString(), this.options),
         sink
       )
     );

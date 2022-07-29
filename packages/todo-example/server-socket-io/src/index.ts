@@ -2,7 +2,7 @@ import { Server as IOServer } from "socket.io";
 import http from "http";
 import type { Socket } from "net";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
-import { applyLiveQueryJSONPatchGenerator } from "@n1ru4l/graphql-live-query-patch-json-patch";
+import { applyLiveQueryJSONDiffPatchGenerator } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
 import { specifiedRules, execute as defaultExecute } from "graphql";
@@ -53,7 +53,7 @@ export const createServer = async ({ port = 3001 }: { port?: number }) => {
 
   const execute = flow(
     liveQueryStore.makeExecute(defaultExecute),
-    applyLiveQueryJSONPatchGenerator
+    applyLiveQueryJSONDiffPatchGenerator
   );
 
   registerSocketIOGraphQLServer({
