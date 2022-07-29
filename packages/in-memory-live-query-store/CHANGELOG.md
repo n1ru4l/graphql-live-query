@@ -1,5 +1,37 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.10.0
+
+### Minor Changes
+
+- 93239dc: Drop the `execute` constructor argument option.
+  Please use `InMemoryLiveQueryStore.makeExecute` instead.
+
+  **Old**
+
+  ```ts
+  import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+  import { execute as executeImplementation } from "graphql";
+  const liveQueryStore = new InMemoryLiveQueryStore({ execute });
+  const execute = liveQueryStore.execute;
+  ```
+
+  **New**
+
+  ```ts
+  import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+  import { execute as executeImplementation } from "graphql";
+  const liveQueryStore = new InMemoryLiveQueryStore();
+  const execute = liveQueryStore.makeExecute(executeImplementation);
+  ```
+
+- f585fb3: Support TypeScript ESM module resolution. More information on https://devblogs.microsoft.com/typescript/announcing-typescript-4-7/#ecmascript-module-support-in-node-js
+
+### Patch Changes
+
+- Updated dependencies [f585fb3]
+  - @n1ru4l/graphql-live-query@0.10.0
+
 ## 0.9.0
 
 ### Minor Changes
