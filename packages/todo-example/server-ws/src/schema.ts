@@ -49,7 +49,7 @@ const GraphQLQueryType = new GraphQLObjectType<Root>({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(GraphQLTodoType))
       ),
-      resolve: (root, args, context) => Array.from(root.todos.values()),
+      resolve: (root) => Array.from(root.todos.values()),
     },
   },
 });

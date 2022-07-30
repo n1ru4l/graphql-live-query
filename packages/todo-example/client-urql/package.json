@@ -2,10 +2,6 @@
   "name": "@n1ru4l/todo-example-client-urql",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "urql": "2.2.2",
-    "graphql": "16.0.0-experimental-stream-defer.5"
-  },
   "devDependencies": {
     "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.8.0",
     "@repeaterjs/repeater": "3.0.4",
@@ -24,7 +20,9 @@
     "react-dom": "17.0.2",
     "socket.io-client": "4.5.1",
     "todomvc-app-css": "2.4.2",
-    "vite": "2.9.14"
+    "vite": "2.9.14",
+    "urql": "2.2.2",
+    "graphql": "16.0.0-experimental-stream-defer.5"
   },
   "scripts": {
     "start": "vite",
