@@ -9,6 +9,7 @@ module.exports = {
     "@n1ru4l/todo-example-server-ws",
     "@n1ru4l/todo-example-server-yoga",
     "@n1ru4l/end2end-tests",
+    "@n1ru4l/example-redis",
   ], // ignored packages
   base: "origin/main",
 };

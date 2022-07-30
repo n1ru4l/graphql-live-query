@@ -90,33 +90,41 @@ List of known and tested compatible transports/servers:
 ### Using with Redis
 
 You can use Redis to synchronize invalidations across multiple instances.
+[A full runnable example can be found here](../example-redis).
 
 ```ts
 import Redis from "ioredis";
-import {
-  InMemoryLiveQueryStore,
-  InMemoryLiveQueryStoreParameter,
-} from "@n1ru4l/in-memory-live-query-store";
-import { ExecutionArgs, execute as defaultExecute } from "graphql";
+import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
+import { execute as defaultExecute } from "graphql";
 
-const CHANNEL = "LIVE_QUERY_INVALIDATIONS";
+const inMemoryLiveQueryStore = new InMemoryLiveQueryStore();
 
-export class RedisLiveQueryStore {
-  pub: Redis.Redis;
-  sub: Redis.Redis;
+const client = new Redis(redisUri);
+const subClient = new Redis(redisUri);
+
+class RedisLiveQueryStore {
+  pub: Redis;
+  sub: Redis;
+  channel: string;
   liveQueryStore: InMemoryLiveQueryStore;
 
-  constructor(redisUrl: string, parameter?: InMemoryLiveQueryStoreParameter) {
-    this.pub = new Redis(redisUrl);
-    this.sub = new Redis(redisUrl);
-    this.liveQueryStore = new InMemoryLiveQueryStore(parameter);
+  constructor(
+    pub: Redis,
+    sub: Redis,
+    channel: string,
+    liveQueryStore: InMemoryLiveQueryStore
+  ) {
+    this.pub = pub;
+    this.sub = sub;
+    this.liveQueryStore = liveQueryStore;
+    this.channel = channel;
 
-    this.sub.subscribe(CHANNEL, (err) => {
+    this.sub.subscribe(this.channel, (err) => {
       if (err) throw err;
     });
 
     this.sub.on("message", (channel, resourceIdentifier) => {
-      if (channel === CHANNEL && resourceIdentifier)
+      if (channel === this.channel && resourceIdentifier)
         this.liveQueryStore.invalidate(resourceIdentifier);
     });
   }
@@ -126,12 +134,19 @@ export class RedisLiveQueryStore {
       identifiers = [identifiers];
     }
     for (const identifier of identifiers) {
-      this.pub.publish(CHANNEL, identifier);
+      this.pub.publish(this.channel, identifier);
     }
   }
 
   makeExecute(execute: typeof defaultExecute) {
-    return this.liveQueryStore.makeExecute(args);
+    return this.liveQueryStore.makeExecute(execute);
   }
 }
+
+const liveQueryStore = new RedisLiveQueryStore(
+  client,
+  subClient,
+  "live-query-invalidations",
+  inMemoryLiveQueryStore
+);
 ```
