@@ -9,7 +9,8 @@ import { getOperationAST } from "graphql";
 import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
 import { Repeater } from "@repeaterjs/repeater";
 import { ExecutionLivePatchResult } from "@n1ru4l/graphql-live-query-patch";
-import { applySourceToSink } from "./shared";
+import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 
 function makeEventStreamSource(url: string) {
   return new Repeater<ExecutionLivePatchResult>(async (push, end) => {
@@ -60,8 +61,10 @@ export const createUrqlClient = (url: string) => {
 
           return {
             subscribe: (sink) => ({
-              unsubscribe: applySourceToSink(
-                makeEventStreamSource(targetUrl.toString()),
+              unsubscribe: applyAsyncIterableIteratorToSink(
+                applyLiveQueryJSONDiffPatch(
+                  makeEventStreamSource(targetUrl.toString())
+                ),
                 sink
               ),
             }),

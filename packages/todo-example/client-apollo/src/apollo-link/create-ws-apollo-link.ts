@@ -8,7 +8,8 @@ import {
 import { print } from "graphql";
 import { createClient, Client } from "graphql-ws";
 import { makeAsyncIterableIteratorFromSink } from "@n1ru4l/push-pull-async-iterable-iterator";
-import { applySourceToSink } from "./shared";
+import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 
 class GraphQLWsLink extends ApolloLink {
   private client: Client;
@@ -21,7 +22,7 @@ class GraphQLWsLink extends ApolloLink {
 
   public request(operation: Operation): Observable<FetchResult> {
     return new Observable((sink) => {
-      const source = makeAsyncIterableIteratorFromSink((sink) => {
+      const source = makeAsyncIterableIteratorFromSink<FetchResult>((sink) => {
         return this.client.subscribe<FetchResult>(
           { ...operation, query: print(operation.query) },
           {
@@ -32,7 +33,10 @@ class GraphQLWsLink extends ApolloLink {
         );
       });
 
-      return applySourceToSink(source, sink);
+      return applyAsyncIterableIteratorToSink(
+        applyLiveQueryJSONDiffPatch(source),
+        sink
+      );
     });
   }
 }

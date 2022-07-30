@@ -5,7 +5,8 @@ import {
   Variables,
 } from "relay-runtime";
 import { Repeater } from "@repeaterjs/repeater";
-import { applySourceToSink } from "./shared";
+import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 
 function makeEventStreamSource(url: string) {
   return new Repeater<GraphQLResponse>(async (push, end) => {
@@ -49,8 +50,10 @@ export function createHTTPFetcher(url: string) {
         if (variables) {
           targetUrl.searchParams.append("variables", JSON.stringify(variables));
         }
-        return applySourceToSink(
-          makeEventStreamSource(targetUrl.toString()),
+        return applyAsyncIterableIteratorToSink(
+          applyLiveQueryJSONDiffPatch(
+            makeEventStreamSource(targetUrl.toString())
+          ),
           sink
         );
       }

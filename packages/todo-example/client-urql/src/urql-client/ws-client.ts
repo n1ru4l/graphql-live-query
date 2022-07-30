@@ -7,8 +7,11 @@ import {
   ExecutionResult,
 } from "urql";
 import { createClient } from "graphql-ws";
-import { applySourceToSink } from "./shared";
-import { makeAsyncIterableIteratorFromSink } from "@n1ru4l/push-pull-async-iterable-iterator";
+import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
+import {
+  makeAsyncIterableIteratorFromSink,
+  applyAsyncIterableIteratorToSink,
+} from "@n1ru4l/push-pull-async-iterable-iterator";
 
 export const createUrqlClient = (url: string) => {
   const client = createClient({ url });
@@ -21,19 +24,24 @@ export const createUrqlClient = (url: string) => {
         forwardSubscription(operation) {
           return {
             subscribe: (sink) => {
-              const source = makeAsyncIterableIteratorFromSink((sink) => {
-                return client.subscribe<ExecutionResult>(
-                  { ...operation, query: operation.query },
-                  {
-                    next: sink.next.bind(sink),
-                    complete: sink.complete.bind(sink),
-                    error: sink.error.bind(sink),
-                  }
-                );
-              });
+              const source = makeAsyncIterableIteratorFromSink<ExecutionResult>(
+                (sink) => {
+                  return client.subscribe<ExecutionResult>(
+                    { ...operation, query: operation.query },
+                    {
+                      next: sink.next.bind(sink) as any,
+                      complete: sink.complete.bind(sink),
+                      error: sink.error.bind(sink),
+                    }
+                  );
+                }
+              );
 
               return {
-                unsubscribe: applySourceToSink(source, sink),
+                unsubscribe: applyAsyncIterableIteratorToSink(
+                  applyLiveQueryJSONDiffPatch(source),
+                  sink
+                ),
               };
             },
           };
