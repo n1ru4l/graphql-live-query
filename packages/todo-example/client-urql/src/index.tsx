@@ -21,6 +21,15 @@ const Root = (): ReactElement | null => {
           )
         );
       });
+    } else if (params.get("ws")) {
+      let host = params.get("host") ?? undefined;
+      import("./urql-client/ws-client").then(async ({ createUrqlClient }) => {
+        setClient(
+          createUrqlClient(
+            (host ?? `ws://${window.location.host}`) + "/graphql"
+          )
+        );
+      });
     } else {
       import("./urql-client/socket-io-client").then(
         async ({ createUrqlClient }) => {

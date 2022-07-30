@@ -2,15 +2,6 @@
   "name": "@n1ru4l/todo-example-client-apollo",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@apollo/client": "3.6.9",
-    "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.8.0",
-    "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
-    "@n1ru4l/socket-io-graphql-client": "*",
-    "@repeaterjs/repeater": "3.0.4",
-    "@app/gql": "link:./src/gql",
-    "graphql": "16.0.0-experimental-stream-defer.5"
-  },
   "devDependencies": {
     "@graphql-codegen/cli": "2.8.0",
     "@graphql-codegen/gql-tag-operations-preset": "1.5.1",
@@ -25,7 +16,15 @@
     "react-dom": "17.0.2",
     "socket.io-client": "4.5.1",
     "todomvc-app-css": "2.4.2",
-    "vite": "2.9.14"
+    "vite": "2.9.14",
+    "@apollo/client": "3.6.9",
+    "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.8.0",
+    "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
+    "@n1ru4l/socket-io-graphql-client": "*",
+    "@repeaterjs/repeater": "3.0.4",
+    "@app/gql": "link:./src/gql",
+    "graphql": "16.0.0-experimental-stream-defer.5",
+    "graphql-ws": "5.9.1"
   },
   "scripts": {
     "start": "vite",

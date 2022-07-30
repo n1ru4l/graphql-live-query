@@ -28,7 +28,8 @@
     "todomvc-app-css": "2.4.2",
     "classnames": "2.3.1",
     "vite": "2.9.14",
-    "vite-plugin-babel-macros": "1.0.6"
+    "vite-plugin-babel-macros": "1.0.6",
+    "graphql-ws": "5.9.1"
   },
   "scripts": {
     "start": "vite",

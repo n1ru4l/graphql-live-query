@@ -37,6 +37,19 @@ const Root = (): React.ReactElement | null => {
           );
         }
       );
+    } else if (params.get("ws")) {
+      let host = params.get("host") ?? undefined;
+      import("./apollo-link/create-ws-apollo-link").then(
+        async ({ createWSApolloLink }) => {
+          setClient(
+            createApolloClient(
+              createWSApolloLink(
+                (host ?? `ws://${window.location.host}`) + "/graphql"
+              )
+            )
+          );
+        }
+      );
     } else {
       import("./apollo-link/create-socket-io-apollo-link").then(
         async ({ createSocketIOApolloLink }) => {

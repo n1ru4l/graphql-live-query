@@ -4,6 +4,7 @@ import fastifyStatic from "fastify-static";
 import { createServer as createSocketIOServer } from "../server-socket-io/src/index.js";
 import { createServer as createHTTPServer } from "../server-helix/src/main.js";
 import { createServer as createYogaServer } from "../server-yoga/src/main.js";
+import { createServer as createWSServer } from "../server-ws/src/main.js";
 
 import * as path from "path";
 
@@ -17,9 +18,13 @@ describe.each([
     ["GraphQL over Socket.io", "socket.io", createSocketIOServer],
     ["GraphQL over SSE (Helix)", "sse", createHTTPServer],
     ["GraphQL over SSE (Yoga)", "sse", createYogaServer],
+    ["GraphQL over WebSocket (graphql-ws)", "ws", createWSServer],
   ])("%s", (_, protocol, createServer) => {
     const apiPort = 6167;
-    const apiAddress = `http://localhost:${apiPort}`;
+    const apiAddress =
+      protocol !== "ws"
+        ? `http://localhost:${apiPort}`
+        : `ws://localhost:${apiPort}`;
     const staticPort = 6168;
 
     const testPage = `http://localhost:${staticPort}?${protocol}=true&host=${encodeURIComponent(
@@ -93,7 +98,7 @@ describe.each([
         ).map((element: any) => element.innerHTML);
       });
       expect(todos).toEqual(["foo", "Do the laundry"]);
-    });
+    }, 100_000);
 
     it("can complete a todo", async () => {
       page = await browser.newPage();

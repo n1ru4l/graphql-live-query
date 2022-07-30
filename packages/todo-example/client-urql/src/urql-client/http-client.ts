@@ -8,8 +8,6 @@ import {
 import { getOperationAST } from "graphql";
 import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
 import { Repeater } from "@repeaterjs/repeater";
-import { applyLiveQueryJSONPatch } from "@n1ru4l/graphql-live-query-patch-json-patch";
-import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import { ExecutionLivePatchResult } from "@n1ru4l/graphql-live-query-patch";
 import { applySourceToSink } from "./shared";
 
