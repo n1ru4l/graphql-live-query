@@ -6,7 +6,8 @@ import {
   Variables,
 } from "relay-runtime";
 import { io } from "socket.io-client";
-import { applySourceToSink } from "./shared";
+import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 
 export function createSocketIOFetcher() {
   let host =
@@ -21,12 +22,14 @@ export function createSocketIOFetcher() {
     if (!request.text) throw new Error("Missing document.");
     const { text: operation, name } = request;
     return Observable.create<GraphQLResponse>((sink) =>
-      applySourceToSink(
-        networkInterface.execute({
-          operation,
-          variables,
-          operationName: name,
-        }),
+      applyAsyncIterableIteratorToSink(
+        applyLiveQueryJSONDiffPatch(
+          networkInterface.execute({
+            operation,
+            variables,
+            operationName: name,
+          })
+        ),
         sink
       )
     );

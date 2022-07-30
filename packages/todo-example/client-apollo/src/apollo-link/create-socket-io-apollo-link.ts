@@ -5,7 +5,8 @@ import {
 import { ApolloLink, Operation, Observable, FetchResult } from "@apollo/client";
 import { print } from "graphql";
 import { io } from "socket.io-client";
-import { applySourceToSink } from "./shared";
+import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
+import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 
 class SocketIOGraphQLApolloLink extends ApolloLink {
   private networkLayer: SocketIOGraphQLClient<FetchResult>;
@@ -16,12 +17,14 @@ class SocketIOGraphQLApolloLink extends ApolloLink {
 
   public request(operation: Operation): Observable<FetchResult> | null {
     return new Observable<FetchResult>((sink) =>
-      applySourceToSink(
-        this.networkLayer.execute({
-          operationName: operation.operationName,
-          operation: print(operation.query),
-          variables: operation.variables,
-        }),
+      applyAsyncIterableIteratorToSink(
+        applyLiveQueryJSONDiffPatch(
+          this.networkLayer.execute({
+            operationName: operation.operationName,
+            operation: print(operation.query),
+            variables: operation.variables,
+          })
+        ),
         sink
       )
     );
