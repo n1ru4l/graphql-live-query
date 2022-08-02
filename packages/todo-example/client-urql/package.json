@@ -5,8 +5,8 @@
   "devDependencies": {
     "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.8.0",
     "@repeaterjs/repeater": "3.0.4",
-    "@graphql-codegen/cli": "2.8.0",
-    "@graphql-codegen/gql-tag-operations-preset": "1.5.1",
+    "@graphql-codegen/cli": "2.11.3",
+    "@graphql-codegen/gql-tag-operations-preset": "1.5.2",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@testing-library/jest-dom": "5.16.4",
@@ -21,7 +21,7 @@
     "socket.io-client": "4.5.1",
     "todomvc-app-css": "2.4.2",
     "vite": "2.9.14",
-    "urql": "2.2.2",
+    "urql": "2.2.3",
     "graphql": "16.0.0-experimental-stream-defer.5"
   },
   "scripts": {

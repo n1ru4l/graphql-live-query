@@ -10,8 +10,8 @@
     "packages/todo-example/*"
   ],
   "devDependencies": {
-    "@babel/core": "7.18.6",
-    "@babel/preset-env": "7.18.6",
+    "@babel/core": "7.18.10",
+    "@babel/preset-env": "7.18.10",
     "@babel/preset-typescript": "7.18.6",
     "@changesets/cli": "2.23.1",
     "@types/jest": "27.5.2",
@@ -31,7 +31,7 @@
   },
   "resolutions": {
     "graphql": "16.0.0-experimental-stream-defer.5",
-    "ts-node": "~10.8.0"
+    "ts-node": "~10.9.0"
   },
   "scripts": {
     "build": "bob build",
