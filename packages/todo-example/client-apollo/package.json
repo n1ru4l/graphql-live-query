@@ -4,7 +4,7 @@
   "private": true,
   "devDependencies": {
     "@graphql-codegen/cli": "2.11.3",
-    "@graphql-codegen/gql-tag-operations-preset": "1.5.2",
+    "@graphql-codegen/gql-tag-operations-preset": "1.5.3",
     "@testing-library/jest-dom": "5.16.4",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.5.0",
