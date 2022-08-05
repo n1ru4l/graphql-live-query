@@ -1367,10 +1367,10 @@
     "@graphql-tools/utils" "^8.8.0"
     tslib "~2.4.0"
 
-"@graphql-codegen/gql-tag-operations-preset@1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/gql-tag-operations-preset/-/gql-tag-operations-preset-1.5.2.tgz#ae7515b97a6a3e2329f07193689f00b7559a7eaa"
-  integrity sha512-MVgHHwz0jDnqA26WvOBhFWio3kb/Q9hST4anEpekCtY1C+upuIlSYF/Salc2jey1/t6snSH8SsxEDydLjW4Zbw==
+"@graphql-codegen/gql-tag-operations-preset@1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/gql-tag-operations-preset/-/gql-tag-operations-preset-1.5.3.tgz#0a6b511b92b7ab52a20c4aaffb6add48fd1c9587"
+  integrity sha512-CIaqZDXp35wSG0kXDn3em+TAyAP4Eq+VgEdoqXfGQ8KllcJUmLAg4MbJqGONLaarQktzSphE7h2412GWUJJZ1A==
   dependencies:
     "@babel/helper-plugin-utils" "^7.14.5"
     "@babel/template" "^7.15.4"
@@ -1692,10 +1692,10 @@
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.1.1.tgz#076d78ce99822258cf813ecc1e7fa460fa74d052"
   integrity sha512-NQ17ii0rK1b34VZonlmT2QMJFI70m0TRwbknO/ihlbatXyaktDhN/98vBiUU6kNBPljqGqyIrl2T4nY2RpFANg==
 
-"@graphql-yoga/common@^2.12.4":
-  version "2.12.4"
-  resolved "https://registry.yarnpkg.com/@graphql-yoga/common/-/common-2.12.4.tgz#2c29e9edbb21f0eb4afbacb6e36865957dd70710"
-  integrity sha512-ZGOGhSnpY6bW5z5hh2/gu+bvTSmjmJ2PMXT+cfrqjnSYGBI16e3glH0BQWOgPpRlQPJ0cLYLJVaIe3P0yYOrbA==
+"@graphql-yoga/common@^2.12.5":
+  version "2.12.5"
+  resolved "https://registry.yarnpkg.com/@graphql-yoga/common/-/common-2.12.5.tgz#930cf3599a3398f6a56f2f1755e6c9785e60bedb"
+  integrity sha512-5p634xtfphiHNPd39kyDc3VSIX8shkinywalNiMHEAal1DGYCn4x/mKbA6Q7tgWvrCqC4fAAuklHoxxi7TIyxA==
   dependencies:
     "@envelop/core" "^2.4.0"
     "@envelop/parser-cache" "^4.4.0"
@@ -1703,36 +1703,36 @@
     "@graphql-tools/schema" "^8.5.0"
     "@graphql-tools/utils" "^8.8.0"
     "@graphql-typed-document-node/core" "^3.1.1"
-    "@graphql-yoga/subscription" "^2.2.2"
+    "@graphql-yoga/subscription" "^2.2.3"
     "@whatwg-node/fetch" "^0.2.6"
     dset "^3.1.1"
     tslib "^2.3.1"
 
-"@graphql-yoga/node@2.13.5":
-  version "2.13.5"
-  resolved "https://registry.yarnpkg.com/@graphql-yoga/node/-/node-2.13.5.tgz#b6b3e206ac45671faa09349efcb41547669599ba"
-  integrity sha512-oFdo4hwhW9wFFBjFMruE126mtFlkB9IcUB7CoCu4XeN/2izMmYe0d6znPe51hcrm293ipzGvZgxG9LSJFKrUfg==
+"@graphql-yoga/node@2.13.6":
+  version "2.13.6"
+  resolved "https://registry.yarnpkg.com/@graphql-yoga/node/-/node-2.13.6.tgz#536b9e9b63d56c87e4886dd86808eab8ff83a979"
+  integrity sha512-gQDP2pZ88lR6+ZZbq6VosiCmhKR9cMWIAbtjTqcFu5k3isKdJnJvCSzk8vZuMjdwWl+IlyJaTVZTN8Xor+Z2tQ==
   dependencies:
     "@envelop/core" "^2.4.0"
     "@graphql-tools/utils" "^8.8.0"
-    "@graphql-yoga/common" "^2.12.4"
-    "@graphql-yoga/subscription" "^2.2.2"
+    "@graphql-yoga/common" "^2.12.5"
+    "@graphql-yoga/subscription" "^2.2.3"
     "@whatwg-node/fetch" "^0.2.6"
     tslib "^2.3.1"
 
-"@graphql-yoga/subscription@^2.2.2":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@graphql-yoga/subscription/-/subscription-2.2.2.tgz#3a940a0c7daadede4adb824b262b29ce24f08425"
-  integrity sha512-830Aszxon2YDRW4+NXLjlh9ssP56hreMIA6vQIVCMzzQEbv4CnjPYDde6vVqCSZhJ51SvlJsVRYFbPEObEuzWw==
+"@graphql-yoga/subscription@^2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@graphql-yoga/subscription/-/subscription-2.2.3.tgz#e378fa17a12675ae7b34b2f51e39bc02df312ba0"
+  integrity sha512-It/Dfh+nW2ClTtmOylAa+o7fbKIRYRTH6jfKLj3YB75tkv/rFZ70bjlChDCrEMa46I+zDMg7+cdkrQOXov2fDg==
   dependencies:
-    "@graphql-yoga/typed-event-target" "^0.1.0"
+    "@graphql-yoga/typed-event-target" "^0.1.1"
     "@repeaterjs/repeater" "^3.0.4"
     tslib "^2.3.1"
 
-"@graphql-yoga/typed-event-target@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@graphql-yoga/typed-event-target/-/typed-event-target-0.1.0.tgz#c83b4f3cb2793ba29c3442193c9369884fe8fde6"
-  integrity sha512-3zsJSSUgrJalE1/KoNN1ga1jU6GhTyEnAWACMP2vFzr3hkVyhB3QIkAYaGOVu0sg87K67gfD8QblT+WFZbsX6g==
+"@graphql-yoga/typed-event-target@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@graphql-yoga/typed-event-target/-/typed-event-target-0.1.1.tgz#248d56a76046d805af8c0da3ef590cdb95d2c192"
+  integrity sha512-l23kLKHKhfD7jmv4OUlzxMTihSqgIjGWCSb0KdlLkeiaF2jjuo8pRhX200hFTrtjRHGSYS1fx2lltK/xWci+vw==
   dependencies:
     "@repeaterjs/repeater" "^3.0.4"
     tslib "^2.3.1"
