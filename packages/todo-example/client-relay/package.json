@@ -8,7 +8,7 @@
     "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
     "@n1ru4l/socket-io-graphql-client": "*",
     "@repeaterjs/repeater": "3.0.4",
-    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.5.0",
     "@types/classnames": "2.3.0",
