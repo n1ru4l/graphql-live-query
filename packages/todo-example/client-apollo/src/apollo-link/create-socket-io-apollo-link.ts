@@ -3,7 +3,7 @@ import {
   SocketIOGraphQLClient,
 } from "@n1ru4l/socket-io-graphql-client";
 import { ApolloLink, Operation, Observable, FetchResult } from "@apollo/client";
-import { print } from "graphql";
+import { print } from "@graphql-tools/graphql";
 import { io } from "socket.io-client";
 import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
 import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";

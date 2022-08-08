@@ -34,6 +34,7 @@
 
 "@app/gql@link:./packages/todo-example/client-apollo/src/gql":
   version "0.0.0"
+  uid ""
 
 "@ardatan/relay-compiler@12.0.0":
   version "12.0.0"
@@ -1558,6 +1559,11 @@
     "@graphql-tools/utils" "8.9.0"
     tslib "^2.4.0"
 
+"@graphql-tools/graphql@0.1.0-alpha-25f2d2c4.0":
+  version "0.1.0-alpha-25f2d2c4.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/graphql/-/graphql-0.1.0-alpha-25f2d2c4.0.tgz#fd4b43ef033acf1af3f1e136dfdf7ce2476d67a1"
+  integrity sha512-PlW82PN9jMmEYbbEGmDRYE3jDDzTT1EktWhHRP3JYvmD3kJ/8lZ2s8DGMvhA9Lqlw6kc9d1fyVB8lKyPagOojw==
+
 "@graphql-tools/import@6.7.1":
   version "6.7.1"
   resolved "https://registry.yarnpkg.com/@graphql-tools/import/-/import-6.7.1.tgz#bb62a109503266f25e6dd8799763eddaeba8da3a"
@@ -1593,6 +1599,15 @@
   integrity sha512-BMm99mqdNZbEYeTPK3it9r9S6rsZsQKtlqJsSBknAclXq2pGEfOxjcIZi+kBSkHZKPKCRrYDd5vY0+rUmIHVLg==
   dependencies:
     "@graphql-tools/utils" "8.9.0"
+    tslib "^2.4.0"
+
+"@graphql-tools/merge@8.3.2-alpha-25f2d2c4.0":
+  version "8.3.2-alpha-25f2d2c4.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/merge/-/merge-8.3.2-alpha-25f2d2c4.0.tgz#570caf5cd213abd95999d262ad2c8fb48d4c5bee"
+  integrity sha512-QvmJxRLGeh4yK9yVr5Ggg/LX8WTMtFbIJ4tcxC7VSc+XnxAxwjFNQiaxNF6YjvqslZGoJRwkc1baW42j/i7r4w==
+  dependencies:
+    "@graphql-tools/graphql" "0.1.0-alpha-25f2d2c4.0"
+    "@graphql-tools/utils" "8.9.1-alpha-25f2d2c4.0"
     tslib "^2.4.0"
 
 "@graphql-tools/optimize@^1.3.0":
@@ -1646,6 +1661,17 @@
     tslib "^2.4.0"
     value-or-promise "1.0.11"
 
+"@graphql-tools/schema@8.5.2-alpha-25f2d2c4.0":
+  version "8.5.2-alpha-25f2d2c4.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/schema/-/schema-8.5.2-alpha-25f2d2c4.0.tgz#35bba298a10f74ee7b6d97e686bad7e2be30b252"
+  integrity sha512-VOqIO4HmVPVUNOw1bUrNNdZqH4UBOVyGdyhn858kHG7wBWCN5khDCj+vGhLVXGYamtQt6MjNPiLScAJ6dJZhdg==
+  dependencies:
+    "@graphql-tools/graphql" "0.1.0-alpha-25f2d2c4.0"
+    "@graphql-tools/merge" "8.3.2-alpha-25f2d2c4.0"
+    "@graphql-tools/utils" "8.9.1-alpha-25f2d2c4.0"
+    tslib "^2.4.0"
+    value-or-promise "1.0.11"
+
 "@graphql-tools/url-loader@7.13.3", "@graphql-tools/url-loader@^7.13.2", "@graphql-tools/url-loader@^7.9.7":
   version "7.13.3"
   resolved "https://registry.yarnpkg.com/@graphql-tools/url-loader/-/url-loader-7.13.3.tgz#bbded3c86325c26bdc32d4a8c0a2767e045f6603"
@@ -1674,11 +1700,19 @@
   dependencies:
     tslib "^2.4.0"
 
-"@graphql-tools/utils@8.9.0", "@graphql-tools/utils@^8.5.2", "@graphql-tools/utils@^8.6.5", "@graphql-tools/utils@^8.8.0", "@graphql-tools/utils@^8.9.0":
+"@graphql-tools/utils@8.9.0", "@graphql-tools/utils@^8.6.5", "@graphql-tools/utils@^8.8.0", "@graphql-tools/utils@^8.9.0":
   version "8.9.0"
   resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.9.0.tgz#c6aa5f651c9c99e1aca55510af21b56ec296cdb7"
   integrity sha512-pjJIWH0XOVnYGXCqej8g/u/tsfV4LvLlj0eATKQu5zwnxd/TiTHq7Cg313qUPTFFHZ3PP5wJ15chYVtLDwaymg==
   dependencies:
+    tslib "^2.4.0"
+
+"@graphql-tools/utils@8.9.1-alpha-25f2d2c4.0":
+  version "8.9.1-alpha-25f2d2c4.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.9.1-alpha-25f2d2c4.0.tgz#822c95a84f64520e0519abdbec4527e540814f9a"
+  integrity sha512-Yd2KnyvPwRbsW3YROM3HE9VBSgtWa1/rNDlRi9Bkcd34+E4/nQnVk9lIQm0CckHafN2mMz76RA3yX32pc88GNw==
+  dependencies:
+    "@graphql-tools/graphql" "0.1.0-alpha-25f2d2c4.0"
     tslib "^2.4.0"
 
 "@graphql-tools/wrap@8.5.1":
@@ -4812,11 +4846,6 @@ graphql-ws@5.9.1, graphql-ws@^5.4.1:
   version "5.9.1"
   resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-5.9.1.tgz#9c0fa48ceb695d61d574ed3ab21b426729e87f2d"
   integrity sha512-mL/SWGBwIT9Meq0NlfS55yXXTOeWPMbK7bZBEZhFu46bcGk1coTx2Sdtzxdk+9yHWngD+Fk1PZDWaAutQa9tpw==
-
-graphql@16.0.0-experimental-stream-defer.5:
-  version "16.0.0-experimental-stream-defer.5"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.0.0-experimental-stream-defer.5.tgz#d668566fd33053a054dc5367c38c20a4ac4e4224"
-  integrity sha512-bluMjYpxh3a1lwZuNP+FAaEDMWzccVhkv+STcw0ckB2EPtLRTYUdXQhF9YBbUHd3tZSAR7LXzsxIw2GZXhg5rw==
 
 hard-rejection@^2.1.0:
   version "2.1.0"

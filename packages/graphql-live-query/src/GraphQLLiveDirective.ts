@@ -3,7 +3,7 @@ import {
   DirectiveLocation,
   GraphQLBoolean,
   GraphQLInt,
-} from "graphql";
+} from "@graphql-tools/graphql";
 
 export const GraphQLLiveDirective = new GraphQLDirective({
   name: "live",

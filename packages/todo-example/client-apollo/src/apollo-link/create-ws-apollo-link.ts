@@ -5,7 +5,7 @@ import {
   FetchResult,
   Observable,
 } from "@apollo/client/core";
-import { print } from "graphql";
+import { print } from "@graphql-tools/graphql";
 import { createClient, Client } from "graphql-ws";
 import { makeAsyncIterableIteratorFromSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";

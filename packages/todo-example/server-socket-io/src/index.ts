@@ -5,7 +5,10 @@ import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";
 import { applyLiveQueryJSONDiffPatchGenerator } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { registerSocketIOGraphQLServer } from "@n1ru4l/socket-io-graphql-server";
-import { specifiedRules, execute as defaultExecute } from "graphql";
+import {
+  specifiedRules,
+  execute as defaultExecute,
+} from "@graphql-tools/graphql";
 import { schema } from "./schema";
 import { flow } from "./util/flow";
 

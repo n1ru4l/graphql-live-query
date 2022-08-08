@@ -1,5 +1,4 @@
-import { GraphQLError } from "graphql";
-import { ValidationRule } from "graphql";
+import { GraphQLError, ValidationRule } from "@graphql-tools/graphql";
 import { getLiveDirectiveNode } from "../getLiveDirectiveNode.js";
 import { isNone } from "../Maybe.js";
 

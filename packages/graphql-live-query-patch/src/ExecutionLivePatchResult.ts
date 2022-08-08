@@ -1,4 +1,4 @@
-import { ExecutionResult } from "graphql";
+import { ExecutionResult } from "@graphql-tools/graphql";
 
 export type ExecutionLivePatchResult<PatchPayload = unknown> = {
   errors?: ExecutionResult["errors"];

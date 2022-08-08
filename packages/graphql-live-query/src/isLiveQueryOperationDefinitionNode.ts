@@ -1,4 +1,7 @@
-import type { DefinitionNode, OperationDefinitionNode } from "graphql";
+import type {
+  DefinitionNode,
+  OperationDefinitionNode,
+} from "@graphql-tools/graphql";
 import { getLiveDirectiveNode } from "./getLiveDirectiveNode.js";
 import { getLiveDirectiveArgumentValues } from "./getLiveDirectiveArgumentValues.js";
 

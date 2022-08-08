@@ -1,4 +1,4 @@
-import { ExecutionResult } from "graphql";
+import { ExecutionResult } from "@graphql-tools/graphql";
 import { LiveExecutionResult } from "packages/graphql-live-query/src";
 import { liveQueryJSONPatchGenerator } from "./liveQueryJSONPatchGenerator.js";
 

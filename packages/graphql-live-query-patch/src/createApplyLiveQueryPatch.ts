@@ -1,5 +1,5 @@
 import { Repeater } from "@repeaterjs/repeater";
-import { ExecutionResult } from "graphql";
+import { ExecutionResult } from "@graphql-tools/graphql";
 import { ExecutionLivePatchResult } from "./ExecutionLivePatchResult.js";
 
 export type ApplyPatchFunction<PatchPayload = unknown> = (

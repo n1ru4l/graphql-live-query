@@ -22,12 +22,12 @@
     "@repeaterjs/repeater": "^3.0.4"
   },
   "devDependencies": {
-    "graphql": "16.0.0-experimental-stream-defer.5",
+    "@graphql-tools/graphql": "0.1.0-alpha-25f2d2c4.0",
     "@n1ru4l/graphql-live-query": "*",
     "@n1ru4l/in-memory-live-query-store": "*"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0 || ^16.0.0"
+    "@graphql-tools/graphql": "0.1.0-alpha-25f2d2c4.0"
   },
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

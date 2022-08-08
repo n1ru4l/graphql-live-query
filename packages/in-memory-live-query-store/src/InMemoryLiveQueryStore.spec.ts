@@ -8,7 +8,7 @@ import {
   execute as defaultExecuteImplementation,
   GraphQLList,
   ExecutionArgs,
-} from "graphql";
+} from "@graphql-tools/graphql";
 import { isAsyncIterable } from "@graphql-tools/utils";
 import { InMemoryLiveQueryStore } from "./InMemoryLiveQueryStore.js";
 

@@ -5,7 +5,7 @@ import {
   cacheExchange,
   dedupExchange,
 } from "urql";
-import { getOperationAST } from "graphql";
+import { getOperationAST } from "@graphql-tools/graphql";
 import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
 import { Repeater } from "@repeaterjs/repeater";
 import { ExecutionLivePatchResult } from "@n1ru4l/graphql-live-query-patch";

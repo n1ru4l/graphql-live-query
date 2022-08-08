@@ -13,7 +13,7 @@ import {
   ValidationRule,
   getOperationAST,
   OperationDefinitionNode,
-} from "graphql";
+} from "@graphql-tools/graphql";
 import { isAsyncIterableIterator } from "./isAsyncIterableIterator.js";
 import type { Server as IOServer, Socket as IOSocket } from "socket.io";
 

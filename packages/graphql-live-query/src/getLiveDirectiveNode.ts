@@ -1,4 +1,4 @@
-import { DefinitionNode, DirectiveNode } from "graphql";
+import { DefinitionNode, DirectiveNode } from "@graphql-tools/graphql";
 import { isNone, Maybe } from "./Maybe.js";
 
 export const getLiveDirectiveNode = (

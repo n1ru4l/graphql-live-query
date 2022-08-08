@@ -1,4 +1,4 @@
-import { DirectiveNode, getDirectiveValues } from "graphql";
+import { DirectiveNode, getDirectiveValues } from "@graphql-tools/graphql";
 import { GraphQLLiveDirective } from "./GraphQLLiveDirective.js";
 import { Maybe } from "./Maybe.js";
 

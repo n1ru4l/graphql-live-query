@@ -3,7 +3,7 @@ import {
   GraphQLScalarType,
   isNonNullType,
   isScalarType,
-} from "graphql";
+} from "@graphql-tools/graphql";
 
 export const isNonNullIDScalarType = (
   type: GraphQLOutputType
