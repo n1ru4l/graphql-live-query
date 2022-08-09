@@ -43,8 +43,7 @@
     "release": "changeset publish",
     "postinstall": "patch-package",
     "prepare": "husky install",
-    "lint-staged": "lint-staged",
-    "release:canary": "(node scripts/canary-release.js && yarn build && yarn changeset publish --tag alpha) || echo Skipping Canary..."
+    "lint-staged": "lint-staged"
   },
   "lint-staged": {
     "**/*.{ts,tsx,graphql,yml,json}": [
