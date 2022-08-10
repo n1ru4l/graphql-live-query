@@ -6,7 +6,7 @@
     "@n1ru4l/in-memory-live-query-store": "0.10.0",
     "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.8.0",
     "@graphql-yoga/node": "2.13.6",
-    "@graphql-tools/graphql": "0.1.0-alpha-25f2d2c4.0"
+    "@graphql-tools/graphql": "0.1.0-alpha-20220809192840-c5b336bd"
   },
   "devDependencies": {
     "@types/node": "16.11.47",

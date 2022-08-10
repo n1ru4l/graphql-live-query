@@ -23,7 +23,7 @@
     "@n1ru4l/socket-io-graphql-client": "*",
     "@repeaterjs/repeater": "3.0.4",
     "@app/gql": "link:./src/gql",
-    "@graphql-tools/graphql": "0.1.0-alpha-25f2d2c4.0",
+    "@graphql-tools/graphql": "0.1.0-alpha-20220809192840-c5b336bd",
     "graphql-ws": "5.9.1"
   },
   "scripts": {
