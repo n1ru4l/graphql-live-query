@@ -1,4 +1,4 @@
-import type { ExecutionResult } from "graphql";
+import type { ExecutionResult } from "@graphql-tools/graphql";
 import type { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
 import {
   createLiveQueryPatchGenerator,

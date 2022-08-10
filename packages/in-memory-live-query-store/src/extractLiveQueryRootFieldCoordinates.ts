@@ -6,8 +6,8 @@ import {
   TypeInfo,
   visitWithTypeInfo,
   visit,
-} from "graphql";
-import { getArgumentValues } from "graphql/execution/values.js";
+  getArgumentValues,
+} from "@graphql-tools/graphql";
 import { isNone, isSome, Maybe } from "./Maybe.js";
 
 type MaybeOperationDefinitionNode = OperationDefinitionNode | null;

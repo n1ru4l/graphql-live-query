@@ -19,15 +19,15 @@
     "real-time"
   ],
   "devDependencies": {
-    "graphql": "16.0.0-experimental-stream-defer.5"
+    "@graphql-tools/graphql": "0.1.0-alpha-20220809192840-c5b336bd"
   },
   "dependencies": {
-    "@graphql-tools/utils": "^8.5.2",
+    "@graphql-tools/utils": "8.9.2-alpha-20220809192840-c5b336bd",
     "@n1ru4l/graphql-live-query": "0.10.0",
     "@repeaterjs/repeater": "^3.0.4"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0 || ^16.0.0"
+    "@graphql-tools/graphql": "0.1.0-alpha-20220809192840-c5b336bd"
   },
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

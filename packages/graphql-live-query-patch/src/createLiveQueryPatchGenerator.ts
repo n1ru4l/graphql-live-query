@@ -1,6 +1,6 @@
 import { LiveExecutionResult } from "@n1ru4l/graphql-live-query";
 import { Repeater } from "@repeaterjs/repeater";
-import type { ExecutionResult } from "graphql";
+import type { ExecutionResult } from "@graphql-tools/graphql";
 import type { ExecutionPatchResult } from "./ExecutionPatchResult.js";
 import type { ExecutionLivePatchResult } from "./ExecutionLivePatchResult.js";
 

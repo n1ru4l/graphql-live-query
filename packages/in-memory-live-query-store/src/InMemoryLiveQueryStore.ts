@@ -7,7 +7,7 @@ import {
   getOperationAST,
   defaultFieldResolver,
   TypeInfo,
-} from "graphql";
+} from "@graphql-tools/graphql";
 import { mapSchema, MapperKind, isAsyncIterable } from "@graphql-tools/utils";
 import { Repeater } from "@repeaterjs/repeater";
 import {

@@ -4,7 +4,7 @@ import {
   parse,
   specifiedRules,
   validate,
-} from "graphql";
+} from "@graphql-tools/graphql";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { InMemoryLiveQueryStore } from "@n1ru4l/in-memory-live-query-store";
 import { NoLiveMixedWithDeferStreamRule } from "@n1ru4l/graphql-live-query";

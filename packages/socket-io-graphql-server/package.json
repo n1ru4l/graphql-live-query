@@ -24,12 +24,13 @@
     "real-time"
   ],
   "devDependencies": {
-    "typescript": "4.7.4",
-    "graphql": "16.0.0-experimental-stream-defer.5",
-    "socket.io": "4.5.1"
+    "@graphql-tools/graphql": "0.1.0-alpha-20220809192840-c5b336bd",
+    "@graphql-tools/schema": "9.0.1-alpha-20220809192840-c5b336bd",
+    "socket.io": "4.5.1",
+    "typescript": "4.7.4"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0 || ^16.0.0",
+    "@graphql-tools/graphql": "0.1.0-alpha-20220809192840-c5b336bd",
     "socket.io": "^3.0.1 || ^4.0.0"
   },
   "main": "dist/cjs/index.js",

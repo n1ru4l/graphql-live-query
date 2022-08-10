@@ -1,4 +1,9 @@
-import { buildSchema, getOperationAST, parse, TypeInfo } from "graphql";
+import {
+  buildSchema,
+  getOperationAST,
+  parse,
+  TypeInfo,
+} from "@graphql-tools/graphql";
 import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFieldCoordinates.js";
 
 const schema = buildSchema(/* GraphQL */ `

@@ -8,7 +8,7 @@ import { split } from "@apollo/client/link/core";
 import { HttpLink } from "@apollo/client/link/http";
 import { isLiveQueryOperationDefinitionNode } from "@n1ru4l/graphql-live-query";
 import { Repeater } from "@repeaterjs/repeater";
-import { print, getOperationAST } from "graphql";
+import { print, getOperationAST } from "@graphql-tools/graphql";
 import { applyLiveQueryJSONDiffPatch } from "@n1ru4l/graphql-live-query-patch-jsondiffpatch";
 import { applyAsyncIterableIteratorToSink } from "@n1ru4l/push-pull-async-iterable-iterator";
 

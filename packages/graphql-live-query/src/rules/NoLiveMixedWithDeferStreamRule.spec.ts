@@ -10,7 +10,7 @@ import {
   GraphQLID,
   GraphQLList,
   specifiedDirectives,
-} from "graphql";
+} from "@graphql-tools/graphql";
 
 const createSchema = () => {
   const GraphQLUserType = new GraphQLObjectType({
@@ -112,7 +112,7 @@ test("validation passes with usage of @defer", () => {
   expect(errors).toHaveLength(0);
 });
 
-test("validation fails with @live and @defer on the same operation", () => {
+test.only("validation fails with @live and @defer on the same operation", () => {
   const schema = createSchema();
   const document = parse(/* GraphQL */ `
     query foo @live {

@@ -1,4 +1,4 @@
-import type { GraphQLError } from "graphql";
+import type { GraphQLError } from "@graphql-tools/graphql";
 
 /**
  * The result of an asynchronous GraphQL patch.

@@ -1,4 +1,8 @@
-import { GraphQLID, GraphQLNonNull, GraphQLString } from "graphql";
+import {
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLString,
+} from "@graphql-tools/graphql";
 import { isNonNullIDScalarType } from "./isNonNullIDScalarType.js";
 
 it("returns true for a NonNull ID scalar type", () => {
