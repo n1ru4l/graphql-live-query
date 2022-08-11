@@ -29,7 +29,7 @@
     "classnames": "2.3.1",
     "vite": "2.9.14",
     "vite-plugin-babel-macros": "1.0.6",
-    "graphql-ws": "5.9.1"
+    "graphql-ws": "5.10.0"
   },
   "scripts": {
     "start": "vite",
