@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": "true",
   "dependencies": {
-    "puppeteer": "15.5.0",
+    "puppeteer": "16.2.0",
     "fastify": "3.29.1",
     "fastify-static": "4.7.0"
   },
