@@ -94,7 +94,7 @@ liveQueryStore.invalidate([
 
 Those invalidation calls could be done manually in the mutation resolvers or on more global reactive level e.g. as a listener on a database write log. The possibilities are infinite. 🤔
 
-For scaling horizontally the independent `InMemoryLiveQueryStore` instances can be wired together via a PubSub system such as Redis.
+For scaling horizontally the independent `InMemoryLiveQueryStore` instances [can be wired together via a PubSub system such as Redis](./packages/example-redis).
 
 ### How are the updates sent/applied to the client?
 
