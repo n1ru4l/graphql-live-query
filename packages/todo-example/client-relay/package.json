@@ -24,12 +24,12 @@
     "relay-compiler-language-typescript": "15.0.1",
     "relay-config": "12.0.1",
     "relay-runtime": "12.0.0",
-    "socket.io-client": "4.5.1",
+    "socket.io-client": "4.5.2",
     "todomvc-app-css": "2.4.2",
-    "classnames": "2.3.1",
-    "vite": "2.9.14",
+    "classnames": "2.3.2",
+    "vite": "2.9.15",
     "vite-plugin-babel-macros": "1.0.6",
-    "graphql-ws": "5.10.0"
+    "graphql-ws": "5.11.2"
   },
   "scripts": {
     "start": "vite",
