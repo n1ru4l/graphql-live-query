@@ -17,7 +17,7 @@
     "@changesets/changelog-github": "0.4.6",
     "@types/jest": "27.5.2",
     "babel-jest": "27.5.1",
-    "bob-the-bundler": "2.0.0",
+    "bob-the-bundler": "4.1.1",
     "chalk": "4.1.2",
     "globby": "12.2.0",
     "husky": "8.0.1",
