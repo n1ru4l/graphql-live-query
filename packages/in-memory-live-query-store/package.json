@@ -24,7 +24,8 @@
   "dependencies": {
     "@graphql-tools/utils": "^8.5.2",
     "@n1ru4l/graphql-live-query": "0.10.0",
-    "@repeaterjs/repeater": "^3.0.4"
+    "@repeaterjs/repeater": "^3.0.4",
+    "tslib": "^2.4.1"
   },
   "peerDependencies": {
     "graphql": "^15.4.0 || ^16.0.0"
