@@ -7,7 +7,7 @@
     "@n1ru4l/graphql-live-query": "0.10.0",
     "graphql": "16.0.0-experimental-stream-defer.5",
     "@graphql-yoga/node": "2.13.13",
-    "ioredis": "5.2.3"
+    "ioredis": "5.3.2"
   },
   "devDependencies": {
     "@types/node": "16.11.60",
