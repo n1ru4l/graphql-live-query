@@ -22,7 +22,7 @@
     "graphql": "16.0.0-experimental-stream-defer.5"
   },
   "dependencies": {
-    "@graphql-tools/utils": "^8.5.2",
+    "@graphql-tools/utils": "^10.0.0",
     "@n1ru4l/graphql-live-query": "0.10.0",
     "@repeaterjs/repeater": "^3.0.4"
   },
