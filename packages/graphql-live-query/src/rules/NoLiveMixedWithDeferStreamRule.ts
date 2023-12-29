@@ -4,16 +4,21 @@ import { getLiveDirectiveNode } from "../getLiveDirectiveNode.js";
 import { isNone } from "../Maybe.js";
 
 export const NoLiveMixedWithDeferStreamRule: ValidationRule = (context) => {
+  let opmatch = false;
   return {
     OperationDefinition(operationDefinitionNode) {
       if (isNone(getLiveDirectiveNode(operationDefinitionNode))) {
         return false;
+      } else {
+        opmatch = true;
       }
     },
     Directive(directiveNode) {
       if (
-        directiveNode.name.value === "defer" ||
-        directiveNode.name.value === "stream"
+        opmatch && (
+          directiveNode.name.value === "defer" ||
+          directiveNode.name.value === "stream"
+        )
       ) {
         context.reportError(
           new GraphQLError(
