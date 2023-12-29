@@ -7,6 +7,9 @@ import {
   getOperationAST,
   defaultFieldResolver,
   TypeInfo,
+  DocumentNode,
+  visit,
+  Kind,
 } from "graphql";
 import { mapSchema, MapperKind, isAsyncIterable } from "@graphql-tools/utils";
 import { Repeater } from "@repeaterjs/repeater";
@@ -34,8 +37,6 @@ type AddResourceIdentifierFunction = (
   values: string | Iterable<string> | None
 ) => void;
 
-const originalContextSymbol = Symbol("originalContext");
-
 type ArgumentName = string;
 type ArgumentValue = string;
 type IndexConfiguration = Array<
@@ -43,11 +44,12 @@ type IndexConfiguration = Array<
 >;
 
 type LiveQueryContextValue = {
-  [originalContextSymbol]: unknown;
   collectResourceIdentifier: ResourceIdentifierCollectorFunction;
   addResourceIdentifier: AddResourceIdentifierFunction;
   indices: Map<string, Array<IndexConfiguration>> | null;
 };
+
+const liveQueryContextMap = new WeakMap<any, LiveQueryContextValue>();
 
 const addResourceIdentifierCollectorToSchema = (
   schema: GraphQLSchema,
@@ -61,24 +63,24 @@ const addResourceIdentifierCollectorToSchema = (
         fieldName === idFieldName && isNonNullIDScalarType(fieldConfig.type);
       let resolve = fieldConfig.resolve ?? defaultFieldResolver;
 
-      newFieldConfig.resolve = (src, args, context, info) => {
-        if (!context || originalContextSymbol in context === false) {
-          return resolve(src, args, context, info);
+      newFieldConfig.resolve = (root, args, context, info) => {
+        if (context == null) {
+          return resolve(root, args, context, info);
+        }
+
+        const liveQueryContext = liveQueryContextMap.get(context);
+        if (liveQueryContext == null) {
+          return resolve(root, args, context, info);
         }
 
         const liveQueyContext = context as LiveQueryContextValue;
-        const result = resolve(
-          src,
-          args,
-          liveQueyContext[originalContextSymbol],
-          info
-        ) as any;
+        const result = resolve(root, args, context, info) as any;
 
         const fieldConfigExtensions = fieldConfig.extensions as any | undefined;
         if (fieldConfigExtensions?.liveQuery?.collectResourceIdentifiers) {
           liveQueyContext.addResourceIdentifier(
             fieldConfigExtensions.liveQuery.collectResourceIdentifiers(
-              src,
+              root,
               args
             )
           );
@@ -236,11 +238,12 @@ export class InMemoryLiveQueryStore {
         schema: inputSchema,
         document,
         rootValue,
-        contextValue,
         variableValues,
         operationName,
         ...additionalArguments
       } = args;
+
+      let contextValue = args.contextValue;
 
       const operationNode = getOperationAST(document, operationName);
 
@@ -351,19 +354,24 @@ export class InMemoryLiveQueryStore {
             }
           };
 
-          const context: LiveQueryContextValue = {
-            [originalContextSymbol]: contextValue,
+          const liveQueryContext: LiveQueryContextValue = {
             collectResourceIdentifier,
             addResourceIdentifier,
             indices: liveQueryStore._indices,
           };
+
+          if (contextValue == null) {
+            contextValue = liveQueryContext;
+          }
+
+          liveQueryContextMap.set(contextValue, liveQueryContext);
 
           const result = execute({
             schema,
             document,
             operationName,
             rootValue,
-            contextValue: context,
+            contextValue,
             variableValues,
             ...additionalArguments,
             // TODO: remove this type-cast once GraphQL.js 16-defer-stream with fixed return type got released
@@ -379,6 +387,7 @@ export class InMemoryLiveQueryStore {
               );
               return;
             }
+
             if (counter === executionCounter) {
               liveQueryStore._resourceTracker.track(
                 scheduleRun,
