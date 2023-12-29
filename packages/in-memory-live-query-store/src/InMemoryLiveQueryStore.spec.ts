@@ -964,3 +964,33 @@ it("index via custom compound index", async () => {
     isLive: true,
   });
 });
+
+it("keeps the context as-is", async () => {
+  const schema = createTestSchema();
+
+  const store = new InMemoryLiveQueryStore();
+  const defaultExecuteFnSpy = jest.fn(defaultExecuteImplementation);
+  const execute = store.makeExecute(defaultExecuteFnSpy);
+
+  const document = parse(/* GraphQL */ `
+    query @live {
+      foo
+    }
+  `);
+
+  const contextValue = {
+    foo: "bar",
+  };
+
+  const executionResult = execute({ document, schema, contextValue });
+  assertAsyncIterable(executionResult);
+  let result = await executionResult.next();
+  expect(result.value).toEqual({
+    data: {
+      foo: "queried",
+    },
+    isLive: true,
+  });
+
+  expect(defaultExecuteFnSpy.mock.calls[0][0].contextValue).toBe(contextValue);
+});
