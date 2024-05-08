@@ -2145,10 +2145,15 @@
     tslib "^2.4.0"
     webcrypto-core "^1.7.4"
 
-"@repeaterjs/repeater@3.0.4", "@repeaterjs/repeater@^3.0.4":
+"@repeaterjs/repeater@3.0.4":
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/@repeaterjs/repeater/-/repeater-3.0.4.tgz#a04d63f4d1bf5540a41b01a921c9a7fddc3bd1ca"
   integrity sha512-AW8PKd6iX3vAZ0vA43nOUOnbq/X5ihgU+mSXXqunMkeQADGiqw/PY0JNeYtD5sr0PAy51YPgAPbDoeapv9r8WA==
+
+"@repeaterjs/repeater@3.0.6", "@repeaterjs/repeater@^3.0.4":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@repeaterjs/repeater/-/repeater-3.0.6.tgz#be23df0143ceec3c69f8b6c2517971a5578fdaa2"
+  integrity sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA==
 
 "@rollup/plugin-json@^4.1.0":
   version "4.1.0"
