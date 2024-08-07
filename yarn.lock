@@ -1356,6 +1356,19 @@
   resolved "https://registry.yarnpkg.com/@fastify/error/-/error-2.0.0.tgz#a9f94af56eb934f0ab1ce4ef9f0ced6ebf2319dc"
   integrity sha512-wI3fpfDT0t7p8E6dA2eTECzzOd+bZsZCJ2Hcv+Onn2b7ZwK3RwD27uW2QDaMtQhAfWQQP+WNK7nKf0twLsBf9w==
 
+"@fastify/static@5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@fastify/static/-/static-5.0.0.tgz#7aa2527148da067f2a550ac4a585c0f6f0a188ec"
+  integrity sha512-GGltJkO0idXa7yCZ0PfdTZ6qokWDX/vigCvmRpjOU2A3jc93c9p+oHDvHmwHK60hwWoBEGqHjGofVyn3H1CjZg==
+  dependencies:
+    content-disposition "^0.5.3"
+    encoding-negotiator "^2.0.1"
+    fastify-plugin "^3.0.0"
+    glob "^7.1.4"
+    p-limit "^3.1.0"
+    readable-stream "^3.4.0"
+    send "^0.17.1"
+
 "@graphql-codegen/add@^3.2.3":
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/add/-/add-3.2.3.tgz#f1ecee085987e7c21841edc4b1fd48877c663e1a"
@@ -4721,27 +4734,6 @@ fastify-plugin@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/fastify-plugin/-/fastify-plugin-3.0.0.tgz#cf1b8c8098e3b5a7c8c30e6aeb06903370c054ca"
   integrity sha512-ZdCvKEEd92DNLps5n0v231Bha8bkz1DjnPP/aEz37rz/q42Z5JVLmgnqR4DYuNn3NXAO3IDCPyRvgvxtJ4Ym4w==
-
-"fastify-static-deprecated@npm:fastify-static@4.6.1":
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/fastify-static/-/fastify-static-4.6.1.tgz#687131da76f1d4391fb8b47f71ea2118cdc85803"
-  integrity sha512-vy7N28U4AMhuOim12ZZWHulEE6OQKtzZbHgiB8Zj4llUuUQXPka0WHAQI3njm1jTCx4W6fixUHfpITxweMtAIA==
-  dependencies:
-    content-disposition "^0.5.3"
-    encoding-negotiator "^2.0.1"
-    fastify-plugin "^3.0.0"
-    glob "^7.1.4"
-    p-limit "^3.1.0"
-    readable-stream "^3.4.0"
-    send "^0.17.1"
-
-fastify-static@4.7.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/fastify-static/-/fastify-static-4.7.0.tgz#e802658d69c1dcddb380b9afc2456d467a3494be"
-  integrity sha512-zZhCfJv/hkmud2qhWqpU3K9XVAuy3+IV8Tp9BC5J5U+GyA2XwoB6h8lh9GqpEIqdXOw01WyWQllV7dOWVyAlXg==
-  dependencies:
-    fastify-static-deprecated "npm:fastify-static@4.6.1"
-    process-warning "^1.0.0"
 
 fastify-warning@^0.2.0:
   version "0.2.0"

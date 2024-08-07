@@ -5,7 +5,7 @@
   "dependencies": {
     "puppeteer": "18.0.5",
     "fastify": "3.29.2",
-    "fastify-static": "4.7.0"
+    "@fastify/static": "5.0.0"
   },
   "type": "commonjs"
 }
