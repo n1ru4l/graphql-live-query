@@ -9,7 +9,7 @@
     "@graphql-codegen/gql-tag-operations-preset": "1.7.4",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
     "@n1ru4l/socket-io-graphql-client": "*",
-    "@testing-library/jest-dom": "5.16.5",
+    "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "13.5.0",
     "@types/classnames": "2.3.0",
