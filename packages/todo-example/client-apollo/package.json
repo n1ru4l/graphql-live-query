@@ -17,7 +17,7 @@
     "socket.io-client": "4.5.2",
     "todomvc-app-css": "2.4.3",
     "vite": "3.2.10",
-    "@apollo/client": "3.10.8",
+    "@apollo/client": "3.11.8",
     "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.8.0",
     "@n1ru4l/push-pull-async-iterable-iterator": "3.2.0",
     "@n1ru4l/socket-io-graphql-client": "*",
