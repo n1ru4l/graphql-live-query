@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@0no-co/graphql.web@^1.0.5":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@0no-co/graphql.web/-/graphql.web-1.0.9.tgz#b0d053a5b892ea3e2f42a4ea2a92315b517d65d3"
+  integrity sha512-lXSg4bDHvP8CiMdpQf9f/rca12IIjXHN/p0Rc5mgzgLe4JBlIoA1zFa9NKhfG1bW0OyI2hgaOldFCfkEQwZuEQ==
+
 "@adobe/css-tools@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.0.1.tgz#b38b444ad3aa5fedbb15f2f746dcd934226a12dd"
@@ -2590,13 +2595,13 @@
   dependencies:
     "@types/node" "*"
 
-"@urql/core@^2.6.1":
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/@urql/core/-/core-2.6.1.tgz#c10ee972c5e81df6d7bf1e778ef1b5d30e2906e5"
-  integrity sha512-gYrEHy3tViJhwIhauK6MIf2Qp09QTsgNHZRd0n71rS+hF6gdwjspf1oKljl4m25+272cJF7fPjBUGmjaiEr7Kg==
+"@urql/core@^5.0.0":
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/@urql/core/-/core-5.0.7.tgz#eddfd63a4990488ef2a6bd6be746974774266624"
+  integrity sha512-1uBj2PmHoen3LugD+UHQ4cr/ls8/0e2/sD8YL0u17sXm02cVnV6VY3bC9wi6fl/DCWEO9AUnwv7qZCz6ME3BfA==
   dependencies:
-    "@graphql-typed-document-node/core" "^3.1.1"
-    wonka "^4.0.14"
+    "@0no-co/graphql.web" "^1.0.5"
+    wonka "^6.3.2"
 
 "@vercel/ncc@^0.34.0":
   version "0.34.0"
@@ -8790,13 +8795,13 @@ urlpattern-polyfill@^6.0.2:
   dependencies:
     braces "^3.0.2"
 
-urql@2.2.3:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/urql/-/urql-2.2.3.tgz#84c6ad962d771235106f24de56b5dc6bd85a2c3a"
-  integrity sha512-XMkSYJKW9s4ZlbSuxcUz3fTBIykOn0sGileRXQeyZpaRBXJPVz5saSY05k7jdefNxShZtTI+/nr7PYUWQertfg==
+urql@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/urql/-/urql-4.2.0.tgz#5db868129000caae37f29c093d858edb1c29d97e"
+  integrity sha512-xj9KoMxdF3omd0QCHHS3SvgxDHZAmuAFgUcdNe0w75NeJDA4qesc2/M6CquefZ7Sod6uyImENKCKg+/2I7YvXQ==
   dependencies:
-    "@urql/core" "^2.6.1"
-    wonka "^4.0.14"
+    "@urql/core" "^5.0.0"
+    wonka "^6.3.2"
 
 util-deprecate@^1.0.1:
   version "1.0.2"
@@ -9013,10 +9018,10 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
-wonka@^4.0.14:
-  version "4.0.14"
-  resolved "https://registry.yarnpkg.com/wonka/-/wonka-4.0.14.tgz#77d680a84e575ed15a9f975eb87d6c530488f3a4"
-  integrity sha512-v9vmsTxpZjrA8CYfztbuoTQSHEsG3ZH+NCYfasHm0V3GqBupXrjuuz0RJyUaw2cRO7ouW2js0P6i853/qxlDcA==
+wonka@^6.3.2:
+  version "6.3.4"
+  resolved "https://registry.yarnpkg.com/wonka/-/wonka-6.3.4.tgz#76eb9316e3d67d7febf4945202b5bdb2db534594"
+  integrity sha512-CjpbqNtBGNAeyNS/9W6q3kSkKE52+FjIj7AkFlLr11s/VWGUu6a2CdYSdGxocIhIVjaW/zchesBQUKPVU69Cqg==
 
 word-wrap@~1.2.3:
   version "1.2.3"
