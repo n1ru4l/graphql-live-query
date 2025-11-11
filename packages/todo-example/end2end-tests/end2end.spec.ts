@@ -42,6 +42,7 @@ describe.each([
         // If you wanna run tests with open browser
         // set your PUPPETEER_HEADLESS env to "false"
         headless: process.env.PUPPETEER_HEADLESS !== "false",
+        args: ['--no-sandbox'],
       });
 
       const staticServer = fastify();
