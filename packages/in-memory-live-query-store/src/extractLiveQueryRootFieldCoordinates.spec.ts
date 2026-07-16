@@ -4,6 +4,7 @@ import { extractLiveQueryRootFieldCoordinates } from "./extractLiveQueryRootFiel
 const schema = buildSchema(/* GraphQL */ `
   type Query {
     node(id: ID!): Node!
+    viewer: Node!
   }
 
   type Node {
@@ -46,4 +47,21 @@ test("collects the correct identifiers", () => {
     typeInfo,
   });
   expect(Array.from(result)).toEqual(["Query.node", `Query.node(id:"1")`]);
+});
+
+test("collects the identifier for a root field without arguments", () => {
+  const documentNode = parse(/* GraphQL */ `
+    query viewer {
+      viewer {
+        id
+      }
+    }
+  `);
+  const operationNode = getOperationAST(documentNode)!;
+  const result = extractLiveQueryRootFieldCoordinates({
+    documentNode,
+    operationNode,
+    typeInfo,
+  });
+  expect(Array.from(result)).toEqual(["Query.viewer"]);
 });
