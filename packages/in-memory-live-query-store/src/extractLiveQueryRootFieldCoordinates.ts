@@ -61,11 +61,7 @@ export const extractLiveQueryRootFieldCoordinates = (params: {
     visitWithTypeInfo(params.typeInfo, {
       Field(fieldNode) {
         const parentType = params.typeInfo.getParentType();
-        if (
-          isSome(parentType) &&
-          parentType.name === "Query" &&
-          isSome((fieldNode.arguments ?? []).length)
-        ) {
+        if (isSome(parentType) && parentType.name === "Query") {
           const fieldDef = params.typeInfo.getFieldDef();
           identifier.add(`Query.${fieldNode.name.value}`);
           if (isSome(fieldDef)) {
