@@ -9,12 +9,16 @@
     "packages/*",
     "packages/todo-example/*"
   ],
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
     "@babel/core": "7.21.8",
     "@babel/preset-env": "7.21.5",
     "@babel/preset-typescript": "7.21.5",
-    "@changesets/cli": "2.24.4",
-    "@changesets/changelog-github": "0.4.6",
+    "@changesets/cli": "2.31.1",
+    "@changesets/changelog-github": "0.7.0",
     "@types/jest": "27.5.2",
     "babel-jest": "27.5.1",
     "bob-the-bundler": "2.0.0",

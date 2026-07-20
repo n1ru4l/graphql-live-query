@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/n1ru4l/graphql-live-queries.git",
+    "url": "https://github.com/n1ru4l/graphql-live-query",
     "directory": "packages/json-patch-plus"
   },
   "bugs": {

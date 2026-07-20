@@ -2,23 +2,27 @@ name: CI
 
 on:
   push:
+    branches:
+      - master
   pull_request:
 
 jobs:
   ci:
     name: CI
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
           fetch-depth: 0
 
-      - name: Setup Node.js 16.x
-        uses: actions/setup-node@master
+      - name: Setup
+        uses: the-guild-org/shared-config/setup@v1
         with:
-          node-version: 16.x
+          node-version-file: .node-version
 
       - name: Install Dependencies
         run: yarn
