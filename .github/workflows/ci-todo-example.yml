@@ -19,6 +19,8 @@ jobs:
 
       - name: Setup
         uses: the-guild-org/shared-config/setup@v1
+        with:
+          node-version-file: .node-version
 
       - name: Install Dependencies
         run: yarn install

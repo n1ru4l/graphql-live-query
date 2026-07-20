@@ -22,6 +22,7 @@ jobs:
       npmTag: ${{ github.event.pull_request.title == 'Upcoming Release Changes' && 'rc' || 'alpha' }}
       restoreDeletedChangesets: ${{ github.event.pull_request.title == 'Upcoming Release Changes' && true || false }}
       buildScript: "build"
+      node-version-file: ".node-version"
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
 
@@ -29,5 +30,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     name: Stable
     uses: the-guild-org/shared-config/.github/workflows/release-stable.yml@v1
+    with:
+      node-version-file: ".node-version"
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
