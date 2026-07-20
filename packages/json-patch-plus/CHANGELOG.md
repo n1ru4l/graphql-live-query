@@ -1,5 +1,11 @@
 # @n1ru4l/json-patch-plus
 
+## 0.3.0
+
+### Minor Changes
+
+- [#1035](https://github.com/n1ru4l/graphql-live-query/pull/1035) [`5cdeddd`](https://github.com/n1ru4l/graphql-live-query/commit/5cdeddd62fbf593f267b167bc619baa4e11232bd) Thanks [@n1ru4l](https://github.com/n1ru4l)! - Set minimum required Node.js version to 24.
+
 ## 0.2.0
 
 ### Minor Changes
@@ -21,7 +27,7 @@
   ```ts
   const result = patch({
     left: { a: { a: 2 } },
-    delta: { a: [null, 0, 0] }
+    delta: { a: [null, 0, 0] },
   });
   // Previously result was
   // { a: undefined }
