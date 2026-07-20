@@ -27,7 +27,7 @@ jobs:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
 
   stable:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     name: Stable
     uses: the-guild-org/shared-config/.github/workflows/release-stable.yml@v1
     with:
