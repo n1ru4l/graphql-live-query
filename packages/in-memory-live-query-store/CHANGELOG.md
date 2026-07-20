@@ -1,5 +1,18 @@
 # @n1ru4l/in-memory-live-query-store
 
+## 0.11.0
+
+### Minor Changes
+
+- [#1035](https://github.com/n1ru4l/graphql-live-query/pull/1035) [`5cdeddd`](https://github.com/n1ru4l/graphql-live-query/commit/5cdeddd62fbf593f267b167bc619baa4e11232bd) Thanks [@n1ru4l](https://github.com/n1ru4l)! - Set minimum required Node.js version to 24.
+
+### Patch Changes
+
+- [#1033](https://github.com/n1ru4l/graphql-live-query/pull/1033) [`4339693`](https://github.com/n1ru4l/graphql-live-query/commit/43396936002f77b34768376db3545fda05c06e78) Thanks [@egoodwinx](https://github.com/egoodwinx)! - Fix `extractLiveQueryRootFieldCoordinates` to handle `FieldNode`s without an `arguments` array instead of relying on optional chaining alone to support graphql-js 17
+
+- Updated dependencies [[`5cdeddd`](https://github.com/n1ru4l/graphql-live-query/commit/5cdeddd62fbf593f267b167bc619baa4e11232bd)]:
+  - @n1ru4l/graphql-live-query@0.11.0
+
 ## 0.10.0
 
 ### Minor Changes
@@ -54,9 +67,9 @@
     indexBy: [
       {
         field: "Query.posts",
-        args: ["needle"]
-      }
-    ]
+        args: ["needle"],
+      },
+    ],
   });
 
   const execute = store.makeExecute(executeImplementation);
@@ -75,12 +88,12 @@
   let result = await executionResult.next();
   expect(result.value).toEqual({
     data: {
-      posts: []
+      posts: [],
     },
     extensions: {
-      liveResourceIdentifier: ["Query.posts", 'Query.posts(needle:"skrrrrt")']
+      liveResourceIdentifier: ["Query.posts", 'Query.posts(needle:"skrrrrt")'],
     },
-    isLive: true
+    isLive: true,
   });
   ```
 
@@ -93,9 +106,9 @@
       {
         field: "Query.posts",
         // index will only be used if the needle argument value equals "brrrrt"
-        args: [["needle", "brrrrt"]]
-      }
-    ]
+        args: [["needle", "brrrrt"]],
+      },
+    ],
   });
   ```
 
@@ -167,7 +180,7 @@
       }
       // returning null or undefined will result in no throttle being used.
       return null;
-    }
+    },
   });
   ```
 

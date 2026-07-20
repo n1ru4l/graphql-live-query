@@ -1,5 +1,11 @@
 # @n1ru4l/graphql-live-query
 
+## 0.11.0
+
+### Minor Changes
+
+- [#1035](https://github.com/n1ru4l/graphql-live-query/pull/1035) [`5cdeddd`](https://github.com/n1ru4l/graphql-live-query/commit/5cdeddd62fbf593f267b167bc619baa4e11232bd) Thanks [@n1ru4l](https://github.com/n1ru4l)! - Set minimum required Node.js version to 24.
+
 ## 0.10.0
 
 ### Minor Changes

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.8.0",
+    "@n1ru4l/graphql-live-query-patch-jsondiffpatch": "0.9.0",
     "@repeaterjs/repeater": "3.0.4",
     "@graphql-codegen/cli": "2.16.5",
     "@graphql-codegen/gql-tag-operations-preset": "1.7.4",
