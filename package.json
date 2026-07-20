@@ -10,6 +10,9 @@
     "packages/todo-example/*"
   ],
   "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=24"
+  },
   "devDependencies": {
     "@babel/core": "7.21.8",
     "@babel/preset-env": "7.21.5",
