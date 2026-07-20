@@ -20,15 +20,15 @@
   ],
   "dependencies": {
     "@n1ru4l/graphql-live-query-patch": "^0.7.0",
-    "fast-json-patch": "^3.1.0"
+    "fast-json-patch": "^3.1.1"
   },
   "devDependencies": {
-    "graphql": "16.0.0-experimental-stream-defer.5",
+    "graphql": "17.0.2",
     "@n1ru4l/graphql-live-query": "*",
     "@n1ru4l/in-memory-live-query-store": "*"
   },
   "peerDependencies": {
-    "graphql": "^15.4.0 || ^16.0.0"
+    "graphql": "^15.4.0 || ^16.0.0 || ^17.0.0"
   },
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
