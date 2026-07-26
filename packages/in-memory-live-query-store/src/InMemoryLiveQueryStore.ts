@@ -171,7 +171,7 @@ type SchemaCacheRecord = {
   typeInfo: TypeInfo;
 };
 
-type LiveExecuteReturnType = PromiseOrValue<
+export type LiveExecuteReturnType = PromiseOrValue<
   // TODO: change this to AsyncGenerator once we drop support for GraphQL.js 15
   AsyncIterableIterator<ExecutionResult | LiveExecutionResult> | ExecutionResult
 >;
